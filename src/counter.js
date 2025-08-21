@@ -1,9 +1,7 @@
-export function setupCounter(element) {
-  let counter = 0
-  const setCounter = (count) => {
-    counter = count
-    element.innerHTML = `count is ${counter}`
-  }
-  element.addEventListener('click', () => setCounter(counter + 1))
-  setCounter(0)
-}
+const button = document.getElementById('soundBtn');
+const clickSound = new Audio('/pop.mp3');
+
+button.addEventListener('click', () => {
+  clickSound.currentTime = 0; // rewind if already playing
+  clickSound.play();
+});

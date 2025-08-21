@@ -10,52 +10,14 @@
     <title>My test page</title>
   </head>
   <body>
-    <h1>Welcome to my website</h1>
+    <h1>Welcome To My Website</h1>
+    <nav class="nav-buttons" style="margin-bottom: 2rem;">
+      <a href="about.html" class="nav-link"><span>About</span></a>
+      <a href="projects.html" class="nav-link"><span>Projects</span></a>
+      <a href="reading.html" class="nav-link"><span>Reading</span></a>
+    </nav>
     <h2>A cozy corner of the internet </h2>
     <img src="images/mymelodyone.gif" style="display: block; margin: 0 auto;" alt="Centered image">
-    <nav class="nav-buttons">
-      <a href="about.html" class="nav-link">
-        <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 inset-ring inset-ring-gray-500/10">
-          About Page
-        </span>
-      </a>
-      <a href="projects.html" class="nav-link">
-        <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 inset-ring inset-ring-red-600/10">
-          Projects
-        </span>
-      </a>
-      <a href="reading.html" class="nav-link">
-        <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 inset-ring inset-ring-yellow-600/20">
-          What I’m Reading & Read
-        </span>
-      </a>
-    </nav>
-    <audio id="pop-sound" src="/pop.mp3" preload="auto"></audio>
-    <script>
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('mouseenter', function(event) {
-          const audio = document.getElementById('pop-sound');
-          if (audio) {
-            audio.currentTime = 0;
-            audio.play();
-          }
-        });
-        link.addEventListener('click', function(event) {
-          event.preventDefault();
-          const audio = document.getElementById('pop-sound');
-          if (audio) {
-            audio.currentTime = 0;
-            audio.play();
-            setTimeout(() => {
-              window.location.href = link.href;
-            }, 600); // 600ms delay for pop sound
-          } else {
-            window.location.href = link.href;
-          }
-        });
-      });
-    </script>
-
     <h3></h3>
   </body>
 </html>

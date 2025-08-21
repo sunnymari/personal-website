@@ -8,8 +8,43 @@
 </head>
 <body>
   <nav class="nav-buttons" style="margin-bottom: 2rem;">
+    <a href="about.html" class="nav-link"><span>About</span></a>
+    <a href="projects.html" class="nav-link"><span>Projects</span></a>
+    <a href="reading.html" class="nav-link"><span>Reading</span></a>
+  </nav>
+  <nav class="nav-buttons" style="margin-bottom: 2rem;">
     <a href="index.html" class="nav-link"><span>Home</span></a>
   </nav>
+  <audio id="pop-sound" src="/pop.mp3" preload="auto"></audio>
+  <script>
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('mouseenter', function(event) {
+        const audio = document.getElementById('pop-sound');
+        if (audio) {
+          audio.currentTime = 0;
+          audio.play().catch(error => {
+            console.log('Audio play failed on hover:', error);
+          });
+        }
+      });
+      
+      link.addEventListener('click', function(event) {
+        event.preventDefault();
+        const audio = document.getElementById('pop-sound');
+        if (audio) {
+          audio.currentTime = 0;
+          audio.play().catch(error => {
+            console.log('Audio play failed on click:', error);
+          });
+          setTimeout(() => {
+            window.location.href = link.href;
+          }, 600);
+        } else {
+          window.location.href = link.href;
+        }
+      });
+    });
+  </script>
   <div class="container">
     <h1>About Us</h1>
     <p>Welcome to our project. We are a team of engineers, researchers, and crypto enthusiasts building tools for the future of decentralized finance.</p>
