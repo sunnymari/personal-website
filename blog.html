@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📝 Marissa's Blog 📝</title>
+  <link href="style.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Fredoka+One&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="nav-buttons" style="margin-bottom: 2rem;">
+    <a href="about.html" class="nav-link"><span>🌸 About</span></a>
+    <a href="projects.html" class="nav-link"><span>🎀 Projects</span></a>
+    <a href="reading.html" class="nav-link"><span>📚 Reading</span></a>
+    <a href="blog.html" class="nav-link"><span>📝 Blog</span></a>
+  </nav>
+  <nav class="nav-buttons" style="margin-bottom: 2rem;">
+    <a href="index.html" class="nav-link"><span>🏠 Home</span></a>
+  </nav>
+  <audio id="pop-sound" src="/pop.mp3" preload="auto"></audio>
+  <script>
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('mouseenter', function(event) {
+        const audio = document.getElementById('pop-sound');
+        if (audio) {
+          audio.currentTime = 0;
+          audio.play().catch(error => {
+            console.log('Audio play failed on hover:', error);
+          });
+        }
+      });
+      
+      link.addEventListener('click', function(event) {
+        event.preventDefault();
+        const audio = document.getElementById('pop-sound');
+        if (audio) {
+          audio.currentTime = 0;
+          audio.play().catch(error => {
+            console.log('Audio play failed on click:', error);
+          });
+          setTimeout(() => {
+            window.location.href = link.href;
+          }, 600);
+        } else {
+          window.location.href = link.href;
+        }
+      });
+    });
+  </script>
+
+  <div class="container">
+    <h1>📝 My Blog 📝</h1>
+    <p>Welcome to my blog! Here I share my thoughts on coding, technology, and life. ✨</p>
+    
+    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>🚀 "We had to Google it to make sure it actually existed" - How I Turned Doubt into Success</h2>
+      <p style="color: #666; font-size: 0.9rem;">📅 August 21, 2025</p>
+      <p>"We have never heard of your school, we had to google it to make sure it actually existed." Those words are what have sent most people running to the hills or wanting to astral project out of their chair during an interview, but for me, it was a challenge.</p>
+      
+      <p>During recruitment season many bright students are often faced with their own inadequacies, however, these faults can be rebranded as strengths, not weaknesses. So how did I get the job? As Nico Avocado says I was two steps ahead.</p>
+
+      <div style="text-align: center; margin: 1rem 0;">
+        <div class="tenor-gif-embed" data-postid="24881891" data-share-method="host" data-aspect-ratio="0.98125" data-width="100%">
+          <a href="https://tenor.com/view/two-steps-ahead-im-always-two-steps-ahead-nikado-avocado-nikado-avacado-gif-24881891">Two Steps Ahead Im Always Two Steps Ahead GIF</a>from <a href="https://tenor.com/search/two+steps+ahead-gifs">Two Steps Ahead GIFs</a>
+        </div>
+        <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+      </div>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">1. I was scrappy</h3>
+      <p>Before applying to the internship, I had extensive internship experience going back to high school. The first tech startup I worked at was in 2017, a 3-D printing company known as Xometry, where I was a digital marketer—a gig I got from cold-calling startups in my area.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">2. My experiences were unique</h3>
+      <p>In addition to typical software engineering internships, I had been a teacher with the well-respected AmeriCorps program. This aligned with one of the core values of the firm, as they were involved with local educational volunteer programs in the area.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">3. I did not come to the interview empty-handed</h3>
+      <p>To demonstrate my initiative and genuine interest in the firm, I created an investment thesis based on my personal interests and tailored it to align with the scope of the firm's focus areas. This comprehensive and well-researched thesis not only highlighted my analytical skills and understanding of the industry but also provided a tangible example of how I could contribute to the firm. I presented this thesis during my final interview, which allowed me to showcase my knowledge, creativity, and dedication to making a meaningful impact within the organization.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">4. I practiced</h3>
+      <p>Before my interview, I utilized online resources containing both behavioral and technical interview questions and did mock interviews with friends.</p>
+
+      <p style="font-weight: bold; color: #ff69b4; font-size: 1.1rem; text-align: center; margin-top: 2rem;">
+        So, don't doubt yourself your weakness just might be your greatest strength ✨
+      </p>
+    </div>
+
+    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>🚀 Four Things I Have Learned from Working at a Startup</h2>
+      <p style="color: #666; font-size: 0.9rem;">📅 August 18, 2025 | Previously published on my Medium in 2022</p>
+      <p>I am a rising junior in college and a computer science major with a passion for science — especially computer science. So when I was able to apply what I had been learning at school as an engineer for a startup (not just any startup, but one that rebuilds the internet for you), I said YES. Throughout my time working as a software engineer at Sonr, I have learned things I would not have in the traditional college setting. Here are the four main lessons I have learned:</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">1. School is a starting point — it is up to you to finish the rest</h3>
+      <p>My computer science coursework mainly focused on object-oriented programming, and the fact that I have taken applicable math and science courses has aided in the comprehension of my work tasks. However, working in the field has gifted me with irreplaceable knowledge. For example, in the classroom, we are not working in teams, so using Git Flow did not apply to the scope of our coursework. While working at Sonr, I have been able to learn and apply Git Flow. Git Flow is one of the most common tools used by engineering companies; it describes the project's release cycle and adds specific roles to different branches.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">2. You don't learn to swim by reading a book on how to swim</h3>
+      <p>During the school year, one of my greatest resources was my textbook; it was essential to read before lectures. However, to be a good programmer, you don't just read or solve school problems; you build. I had two goals this year: get a certification and add more to my GitHub because my GitHub was actually barren. I can proudly say I have achieved both goals. I received my Chainalysis Cryptocurrency certification, and my GitHub has new additions from work and personal projects. I used to fear personal projects, but with the coaching of my coworkers, I have begun to make them. Currently, I am working on personal projects that intertwine my love of art and science, such as a Y2K-inspired GitHub-hosted website and a pink tic-tac-toe game.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">3. Feel stupid every day</h3>
+      <p>Before my job, I had reached a plateau. I was doing well in school, but I knew there were things I needed to learn because "the wise man knows what he does not know." Working at a startup gave me the ability to learn what I didn't know and learn things ahead of when I would be in school. Therefore, I am confident this upcoming fall semester will be less taxing than previous semesters.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">4. Read about everything</h3>
+      <p>In our office, there are a lot of books. Books about math, science, philosophy, and more — you name it. One thing I've noticed from reading and absorbing a multitude of literature is that it makes you a better thinker and person. By exposing yourself to a variety of literature, you open your mind to diverse thoughts and perspectives and start to see the world differently.</p>
+
+      <p style="font-weight: bold; color: #ff69b4; font-size: 1.1rem; text-align: center; margin-top: 2rem;">
+        Working at Sonr has made me a better learner, thinker, developer, and person. It has shown me how to be resilient, work harder, and adapt to change. This is your sign to go work at a startup. ✨
+      </p>
+    </div>
+
+    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>👔 The Manager: Meeting Your Workplace Fate (and How to Prepare)</h2>
+      <p style="color: #666; font-size: 0.9rem;">📅 August 15, 2025</p>
+      <p>The manager, also known as the person who decides your workplace fate (just kidding, but only a little). Good managers are critical in one's first job out of undergrad. They play a pivotal role in the trajectory of one's career growth and professional development.</p>
+      
+      <p>I met my manager on Superday when he interviewed me. Ultimately, my Superday was successful, and I got hired for the job—yay! However, being hired is one thing; doing well on the job is another. I believe in the power of preparation because, as Benjamin Franklin said, "By failing to prepare, you are preparing to fail."</p>
+
+      <p>Therefore, I decided to meet with my manager months before my start date to ensure I had knowledge of the tech stack and more insight into the company culture. I prepared for the meeting by making a list of questions reviewed by my career coach. Each question was divided into three categories: tech stack, company culture, and engineering team culture.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">📋 My Question List:</h3>
+      <ol style="margin-left: 1.5rem; line-height: 1.8;">
+        <li>What are the expectations within the first 30 days of the job?</li>
+        <li>What is your culture around problem-solving?</li>
+        <li>When will I have a chance to meet the team?</li>
+        <li>What project will I be joining what are the expectations - goals -and outcomes?</li>
+        <li>What do you like about the culture, what would you change?</li>
+        <li>How can I be an asset to the culture?</li>
+        <li>Will we be meeting regular basis?</li>
+        <li>Who will I be asking questions in the beginning?</li>
+        <li>What does Day 1 look like/ what are the logistics?</li>
+        <li>What technical things I can learn now to prepare?</li>
+      </ol>
+
+      <p style="font-weight: bold; color: #ff69b4; font-size: 1.1rem; text-align: center; margin-top: 2rem;">
+        I highly encourage every new SWE to set up a meeting with their manager early to begin building a strong relationship. ✨
+      </p>
+    </div>
+
+    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>🤖 AI Ethics in Software Development</h2>
+      <p style="color: #666; font-size: 0.9rem;">📅 August 12, 2025</p>
+      <p>As AI becomes more integrated into our daily lives, it's crucial to consider the ethical implications of the software we build. Here are my thoughts on responsible AI development...</p>
+      <a href="#" style="color: #ff69b4; font-weight: bold;">Read more →</a>
+    </div>
+
+    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>📚 My Reading Challenge: 50 Books This Year</h2>
+      <p style="color: #666; font-size: 0.9rem;">📅 August 15, 2025</p>
+      <p>I've set a goal to read 50 books this year! Here's my current progress and some of my favorite reads so far. Reading has been such a great way to learn and grow...</p>
+      <a href="#" style="color: #ff69b4; font-weight: bold;">Read more →</a>
+    </div>
+
+    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>🏠 Miniature House Design: A Creative Outlet</h2>
+      <p style="color: #666; font-size: 0.9rem;">📅 August 12, 2025</p>
+      <p>When I'm not coding, I love working on miniature house designs. It's a perfect creative outlet that helps me relax and think differently about design and space...</p>
+      <a href="#" style="color: #ff69b4; font-weight: bold;">Read more →</a>
+    </div>
+
+    <p style="text-align: center; margin-top: 2rem; font-style: italic; color: #ff69b4;">
+      More blog posts coming soon! 🌸✨
+    </p>
+  </div>
+</body>
+</html>

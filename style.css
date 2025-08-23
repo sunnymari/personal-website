@@ -1,11 +1,12 @@
 body {
-  background-color: #ffb6c1;
+  background: linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffd1dc);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   margin: 0;
+  font-family: 'Comic Neue', cursive;
 }
 
 main, nav, h1, h2, h3, h4, h5, h6, img {
@@ -16,37 +17,89 @@ main, nav, h1, h2, h3, h4, h5, h6, img {
 }
 
 h1 {
-  font-size: 3rem;
+  font-family: 'Fredoka One', cursive;
+  font-size: 3.5rem;
   font-weight: bold;
   margin-top: 2rem;
   margin-bottom: 1rem;
+  color: #ff69b4;
+  text-shadow: 3px 3px 0px #fff, 6px 6px 0px #ffb6c1;
+  animation: bounce 2s infinite;
 }
 
 h2 {
-  color: white;
+  font-family: 'Comic Neue', cursive;
+  color: #ff69b4;
   font-style: italic;
-  font-size: 2rem;
+  font-size: 2.2rem;
   margin-bottom: 1.5rem;
+  text-shadow: 2px 2px 0px #fff;
 }
 
 .nav-buttons a span {
   display: inline-block;
-  background: #fff;
-  color: #d72660;
-  border-radius: 8px;
-  padding: 0.75em 2em;
+  background: linear-gradient(45deg, #fff, #ffe6f2);
+  color: #ff69b4;
+  border-radius: 25px;
+  padding: 1em 2em;
   margin: 0.5em;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  border: 2px solid #d72660;
-  transition: background 0.2s, color 0.2s;
+  font-family: 'Comic Neue', cursive;
+  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+  border: 3px solid #ff69b4;
+  transition: all 0.3s ease;
   cursor: pointer;
+  text-shadow: 1px 1px 0px #fff;
 }
 
 .nav-buttons a span:hover {
-  background: #d72660;
+  background: linear-gradient(45deg, #ff69b4, #ff1493);
   color: #fff;
+  transform: scale(1.1) rotate(2deg);
+  box-shadow: 0 6px 20px rgba(255, 105, 180, 0.5);
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Kawaii container styling */
+.container {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 25px;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(255, 105, 180, 0.2);
+  border: 3px solid #ff69b4;
+  font-family: 'Comic Neue', cursive;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.container h1 {
+  color: #ff69b4;
+  font-family: 'Fredoka One', cursive;
+  text-shadow: 2px 2px 0px #fff;
+}
+
+.container a {
+  color: #ff69b4;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.container a:hover {
+  color: #ff1493;
+  text-decoration: underline;
 }
 
 /* Existing styles below */
