@@ -1,24 +1,41 @@
 <!DOCTYPE html>
 <html lang="en-US">
   <head>
-    <link href="/style.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dekko&family=Comic+Neue:wght@300;400;700&family=Fredoka+One&display=swap" rel="stylesheet">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>✨ Marissa's Kawaii Website ✨</title>
+
+    <!-- If your site is not at the web root, use "style.css" (no leading slash) -->
+    <link href="style.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dekko&family=Comic+Neue:wght@300;400;700&family=Fredoka+One&display=swap" rel="stylesheet">
   </head>
   <body>
     <h1>Welcome To My Website</h1>
+
     <nav class="nav-buttons" style="margin-bottom: 2rem;">
       <a href="about.html" class="nav-link"><span>🌸 About</span></a>
       <a href="projects.html" class="nav-link"><span>🎀 Projects</span></a>
       <a href="reading.html" class="nav-link"><span>📚 Reading</span></a>
       <a href="blog.html" class="nav-link"><span>📝 Blog</span></a>
     </nav>
+
     <h2>💕 A cozy corner of the internet 💕</h2>
-    <img src="images/mymelodyone.gif" style="display: block; margin: 0 auto;" alt="Centered image">
+    <img src="images/mymelodyone.gif" style="display:block;margin:0 auto;" alt="Centered image">
     <h3></h3>
+
+    <!-- Ko-fi floating chat -->
+    <script src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
+    <script>
+      kofiWidgetOverlay.draw('F1F811AMXE', {
+        type: 'floating-chat',
+        'floating-chat.donateButton.text': 'Support me',
+        'floating-chat.donateButton.background-color': '#ff38b8',
+        'floating-chat.donateButton.text-color': '#fff'
+      });
+    </script>
   </body>
 </html>
+
