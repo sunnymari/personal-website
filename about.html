@@ -6,6 +6,66 @@
   <title>🌸 About Marissa 🌸</title>
   <link href="style.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Fredoka+One&family=Dancing+Script:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Roboto+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <style>
+    .flip-container {
+      perspective: 1000px;
+      width: 100%;
+      max-width: 300px;
+      height: 300px;
+      margin: 10px;
+    }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flip-container:hover .flip-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-front, .flip-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .flip-back {
+      transform: rotateY(180deg);
+    }
+    .flip-back img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .flip-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    @media (max-width: 768px) {
+      .flip-container {
+        max-width: 250px;
+        height: 250px;
+        position: relative !important;
+        transform: none !important;
+        margin: 20px auto !important;
+      }
+      .flip-container:first-child {
+        margin-bottom: 30px;
+      }
+    }
+    @media (max-width: 480px) {
+      .flip-container {
+        max-width: 200px;
+        height: 200px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -58,9 +118,20 @@
     });
   </script>
   <div class="container">
-    <h1>🌸 About Me 🌸</h1>
-    <p>Hi I'm Marissa I am a Software Engineer</p>
-    <img src="images/fffe1c84-55c6-41b1-bb0d-b126c15b0cc1.JPG" alt="Marissa" style="width: 300px; height: 300px; object-fit: cover; border-radius: 10px; display: block; margin: 20px auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <h1 style="text-align: center;">🌸 About Me 🌸</h1>
+    <p style="text-align: center;">Hi I'm Marissa I am a Software Engineer</p>
+    <div style="max-width: 900px; margin: 30px auto; padding: 0 20px; display: flex; justify-content: center; align-items: center;">
+      <div class="flip-container" style="margin: 0 auto;">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <img src="images/fffe1c84-55c6-41b1-bb0d-b126c15b0cc1.JPG" alt="Marissa">
+          </div>
+          <div class="flip-back">
+            <img src="images/3a9135c3-d20c-4350-b97e-bedb6b0c78e4.jpg" alt="Marissa">
+          </div>
+        </div>
+      </div>
+    </div>
     
     <p>I'm currently pursuing my Master's degree at UC Berkeley in the MAS-E program while working as a backend Software Engineer. I'm passionate about becoming a full-stack developer and am actively working toward that goal. 🎓🚀</p>
 
