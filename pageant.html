@@ -309,12 +309,14 @@ header {
 
 /* COUNTDOWN SHARE MODAL */
 .cd-share-overlay {
-  position: fixed; inset: 0; z-index: 9100;
+  position: fixed; inset: 0; z-index: 10050;
   background: rgba(100,0,60,0.55);
   backdrop-filter: blur(8px);
   display: none; align-items: center; justify-content: center; padding: 20px;
+  pointer-events: none;
 }
-.cd-share-overlay.visible { display: flex; animation: fadeIn 0.3s ease; }
+.cd-share-overlay.visible { display: flex; animation: fadeIn 0.3s ease; pointer-events: auto; }
+.cd-share-overlay .cd-share-modal { pointer-events: auto; }
 
 .cd-share-modal {
   max-width: 400px; width: 100%;
@@ -551,7 +553,7 @@ header {
     </div>
     <div class="countdown-done" id="cdDone">👑 IT'S PAGEANT DAY QUEEN!! 👑</div>
     <div class="countdown-sub" id="cdSub">until Marissa takes the crown 💋</div>
-    <div><button class="countdown-share-btn" onclick="openCdShare()">📸 Share the Countdown</button></div>
+    <div><button type="button" class="countdown-share-btn" onclick="window.openCdShare && window.openCdShare();">📸 Share the Countdown</button></div>
   </div>
 </div>
 
@@ -857,17 +859,17 @@ function launchConfetti() {
   setTimeout(() => { c.style.display = 'none'; }, 5000);
 }
 
-// --- Countdown share modal ---
-function openCdShare() {
-  updateCountdown();
-  const el = document.getElementById('cdShareOverlay');
+// --- Countdown share modal (expose globally for onclick) ---
+window.openCdShare = function() {
+  if (typeof updateCountdown === 'function') updateCountdown();
+  var el = document.getElementById('cdShareOverlay');
   if (el) el.classList.add('visible');
-}
+};
 
-function closeCdShare() {
-  const el = document.getElementById('cdShareOverlay');
+window.closeCdShare = function() {
+  var el = document.getElementById('cdShareOverlay');
   if (el) el.classList.remove('visible');
-}
+};
 
 function saveCdCard() {
   const d = document.getElementById('previewDays');
@@ -937,9 +939,9 @@ function fallbackCopyCd(caption) {
 
 
 <!-- COUNTDOWN SHARE MODAL -->
-<div class="cd-share-overlay" id="cdShareOverlay">
-  <div class="cd-share-modal">
-    <button class="cd-share-close" onclick="closeCdShare()">✕</button>
+<div class="cd-share-overlay" id="cdShareOverlay" onclick="if(event.target===this) closeCdShare();">
+  <div class="cd-share-modal" onclick="event.stopPropagation();">
+    <button type="button" class="cd-share-close" onclick="window.closeCdShare && window.closeCdShare();">✕</button>
     <div class="cd-share-title">✨ share the countdown ✨</div>
     <div class="cd-card-preview">
       <span class="cd-card-deco">💋 ✨ 🦋 👑 🦋 ✨ 💋</span>
