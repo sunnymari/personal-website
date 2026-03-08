@@ -856,6 +856,83 @@ function launchConfetti() {
   }
   setTimeout(() => { c.style.display = 'none'; }, 5000);
 }
+
+// --- Countdown share modal ---
+function openCdShare() {
+  updateCountdown();
+  const el = document.getElementById('cdShareOverlay');
+  if (el) el.classList.add('visible');
+}
+
+function closeCdShare() {
+  const el = document.getElementById('cdShareOverlay');
+  if (el) el.classList.remove('visible');
+}
+
+function saveCdCard() {
+  const d = document.getElementById('previewDays');
+  const h = document.getElementById('previewHours');
+  const m = document.getElementById('previewMins');
+  const s = document.getElementById('previewSecs');
+  const days = d ? d.textContent : '--';
+  const hours = h ? h.textContent : '--';
+  const mins = m ? m.textContent : '--';
+  const secs = s ? s.textContent : '--';
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Countdown Card</title></head><body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ffe0f5,#f0d0ff,#d8eeff);font-family:'Fredoka One',cursive;">
+<div style="background:linear-gradient(135deg,#ffe0f5 0%,#f0d0ff 45%,#d8eeff 100%);border-radius:18px;border:2px solid rgba(255,130,210,0.4);padding:24px 20px;text-align:center;max-width:360px;">
+<div style="font-size:14px;letter-spacing:5px;margin-bottom:8px;">💋 ✨ 🦋 👑 🦋 ✨ 💋</div>
+<div style="font-size:11px;background:linear-gradient(180deg,#fff,#ffb3e0 30%,#ff5ec4 70%,#c45aff);-webkit-background-clip:text;color:transparent;letter-spacing:2px;margin-bottom:12px;">Miss America California · June 15, 2026</div>
+<div style="font-size:48px;margin-bottom:8px;">👑</div>
+<div style="display:flex;gap:10px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;">
+<div style="background:rgba(255,255,255,0.75);border:1.5px solid rgba(255,130,210,0.4);border-radius:12px;padding:8px 12px;min-width:52px;"><span style="font-size:22px;background:linear-gradient(180deg,#ff5ec4,#c45aff);-webkit-background-clip:text;color:transparent;">${days}</span><span style="display:block;font-size:8px;font-weight:900;color:#c060a0;">Days</span></div>
+<div style="background:rgba(255,255,255,0.75);border:1.5px solid rgba(255,130,210,0.4);border-radius:12px;padding:8px 12px;min-width:52px;"><span style="font-size:22px;background:linear-gradient(180deg,#ff5ec4,#c45aff);-webkit-background-clip:text;color:transparent;">${hours}</span><span style="display:block;font-size:8px;font-weight:900;color:#c060a0;">Hours</span></div>
+<div style="background:rgba(255,255,255,0.75);border:1.5px solid rgba(255,130,210,0.4);border-radius:12px;padding:8px 12px;min-width:52px;"><span style="font-size:22px;background:linear-gradient(180deg,#ff5ec4,#c45aff);-webkit-background-clip:text;color:transparent;">${mins}</span><span style="display:block;font-size:8px;font-weight:900;color:#c060a0;">Mins</span></div>
+<div style="background:rgba(255,255,255,0.75);border:1.5px solid rgba(255,130,210,0.4);border-radius:12px;padding:8px 12px;min-width:52px;"><span style="font-size:22px;background:linear-gradient(180deg,#ff5ec4,#c45aff);-webkit-background-clip:text;color:transparent;">${secs}</span><span style="display:block;font-size:8px;font-weight:900;color:#c060a0;">Secs</span></div>
+</div>
+<div style="font-size:13px;color:#ff1493;letter-spacing:1px;margin-bottom:6px;">Marissa is competing for Miss America California 👑</div>
+<div style="font-size:9px;color:#c45aff;letter-spacing:2px;">marissaspageantlife · 2026</div>
+<div style="font-size:8px;color:rgba(196,90,255,0.65);margin-top:4px;">#MissAmericaCalifornia #PageantLife #MarissaQueenEra</div>
+</div>
+<script>window.onload=function(){window.print();}<\/script></body></html>`;
+  const w = window.open('', '_blank', 'width=500,height=700');
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+  }
+}
+
+function copyCdCaption() {
+  const dEl = document.getElementById('previewDays');
+  const hEl = document.getElementById('previewHours');
+  const mEl = document.getElementById('previewMins');
+  const sEl = document.getElementById('previewSecs');
+  const days = dEl ? dEl.textContent : '--';
+  const caption = `👑 ${days} DAYS until Marissa competes for Miss America California!! ✨ June 15, 2026 — mark your calendars bestie!! 💋🦋\n\n#MissAmericaCalifornia #PageantLife #MarissaQueenEra #PageantQueen`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(caption).then(function() {
+      const success = document.getElementById('cdCopySuccess');
+      if (success) {
+        success.classList.add('visible');
+        setTimeout(function() { success.classList.remove('visible'); }, 4000);
+      }
+    }).catch(function() {
+      fallbackCopyCd(caption);
+    });
+  } else {
+    fallbackCopyCd(caption);
+  }
+}
+
+function fallbackCopyCd(caption) {
+  var copied = prompt('Copy this caption:', caption);
+  if (copied !== null) {
+    const success = document.getElementById('cdCopySuccess');
+    if (success) {
+      success.classList.add('visible');
+      setTimeout(function() { success.classList.remove('visible'); }, 4000);
+    }
+  }
+}
 </script>
 
 
