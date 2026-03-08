@@ -1,29 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Roboto+Serif:ital,wght@0,400;0,700;1,400&display=swap');
+
 body {
-  background: linear-gradient(135deg, #ff69b4, #ffb6c1, #ffc0cb, #ffd1dc, #ffe6f2);
-  background-size: 400% 400%;
-  animation: gradient-shift 15s ease infinite;
+  background: linear-gradient(180deg, #ffb7c5 0%, #ffc9d4 40%, #ffd6e0 100%);
+  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   margin: 0;
-  font-family: 'Roboto Serif', serif;
+  font-family: 'Nunito', sans-serif;
   position: relative;
   padding-top: 80px;
   padding-bottom: 60px;
 }
 
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle at 50% 50%, rgba(255, 182, 193, 0.15) 2px, transparent 2px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 main, nav, h1, h2, h3, h4, h5, h6, img {
@@ -33,15 +37,34 @@ main, nav, h1, h2, h3, h4, h5, h6, img {
   text-align: center;
 }
 
-h1 {
-  font-family: 'Roboto Serif', serif;
-  font-size: 3.5rem;
-  font-weight: bold;
+/* Hero section spacing and hierarchy */
+.hero-section {
   margin-top: 2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+h1,
+.hero-title {
+  font-family: 'Roboto Serif', serif;
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 0;
   color: #ff69b4;
   text-shadow: 3px 3px 0px #fff, 6px 6px 0px #ffb6c1;
   display: inline-block;
+}
+
+.tagline {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.hero-image {
+  display: block;
+  margin: 0 auto;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(255, 105, 150, 0.3);
 }
 
 h1 .char {
@@ -83,36 +106,42 @@ h1 .char:nth-child(23) { animation-delay: 1.2s; }
 }
 
 h2 {
-  font-family: 'Roboto Serif', serif;
+  font-family: 'Nunito', sans-serif;
   color: #ff69b4;
   font-style: italic;
   font-size: 2.2rem;
+  font-weight: 700;
   margin-bottom: 1.5rem;
   text-shadow: 2px 2px 0px #fff;
+}
+
+.nav-buttons {
+  margin-bottom: 2.5rem;
 }
 
 .nav-buttons a span {
   display: inline-block;
   background: linear-gradient(45deg, #fff, #ffe6f2);
-  color: #ff69b4;
+  color: #d4145a;
   border-radius: 25px;
   padding: 1em 2em;
   margin: 0.5em;
   font-size: 1.2rem;
-  font-weight: 600;
-  font-family: 'Comic Neue', cursive;
-  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
-  border: 3px solid #ff69b4;
-  transition: all 0.3s ease;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0 4px 16px rgba(212, 20, 90, 0.2);
+  border: 3px solid #e91e7a;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
   cursor: pointer;
   text-shadow: 1px 1px 0px #fff;
 }
 
 .nav-buttons a span:hover {
-  background: linear-gradient(45deg, #ff69b4, #ff1493);
+  background: linear-gradient(135deg, #ff1493, #e91e7a);
   color: #fff;
-  transform: scale(1.1) rotate(2deg);
-  box-shadow: 0 6px 20px rgba(255, 105, 180, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 8px 28px rgba(255, 20, 147, 0.4);
+  border-color: #c2185b;
 }
 
 @keyframes bounce {
@@ -131,21 +160,22 @@ h2 {
 .container {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 25px;
-  padding: 2rem;
+  padding: 2.5rem;
   box-shadow: 0 8px 25px rgba(255, 105, 180, 0.2);
   border: 3px solid #ff69b4;
-  font-family: 'Roboto Serif', serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 1.1rem;
-  line-height: 1.8;
+  line-height: 1.85;
   max-width: 960px;
   width: 100%;
-  margin: 0 auto 2rem;
+  margin: 0 auto 3rem;
 }
 
 .container h1 {
   color: #ff69b4;
   font-family: 'Roboto Serif', serif;
   text-shadow: 2px 2px 0px #fff;
+  font-size: clamp(2rem, 5vw, 3.5rem);
 }
 
 .container a {
@@ -207,12 +237,12 @@ footer {
 
 .header-text,
 .footer-text {
-  font-family: 'Noto Sans', sans-serif;
+  font-family: 'Nunito', sans-serif;
   color: white;
   font-size: 2.5rem;
-  font-weight: 500;
+  font-weight: 700;
   margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
   letter-spacing: 3px;
   display: inline-block;
   padding: 0 4rem;
@@ -288,9 +318,14 @@ footer {
 
 /* Additional mobile-friendly typography and spacing */
 @media (max-width: 768px) {
-  h1 {
-    font-size: 2.6rem;
+  .hero-section {
     margin-top: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  h1,
+  .hero-title {
+    font-size: clamp(2.5rem, 10vw, 4rem);
   }
 
   h2 {
@@ -310,7 +345,8 @@ footer {
 }
 
 @media (max-width: 480px) {
-  h1 {
+  h1,
+  .hero-title {
     font-size: 2.1rem;
   }
 
