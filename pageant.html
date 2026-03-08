@@ -657,6 +657,50 @@ for (let i = 0; i < 20; i++) {
   bg.appendChild(s);
 }
 
+// Countdown to pageant day
+const PAGEANT_DATE = new Date('2026-06-15T00:00:00');
+
+function updateCountdown() {
+  const now = new Date();
+  let diff = PAGEANT_DATE.getTime() - now.getTime();
+
+  const unitsEl = document.getElementById('countdownUnits');
+  const doneEl = document.getElementById('cdDone');
+
+  if (diff <= 0) {
+    if (unitsEl) unitsEl.style.display = 'none';
+    if (doneEl) doneEl.style.display = 'block';
+    ['cdDays','cdHours','cdMins','cdSecs','previewDays','previewHours','previewMins','previewSecs'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '00';
+    });
+    return;
+  }
+
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / (60 * 60 * 24));
+  const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
+  const mins = Math.floor((totalSeconds % (60 * 60)) / 60);
+  const secs = totalSeconds % 60;
+
+  const mainIds = ['cdDays','cdHours','cdMins','cdSecs'];
+  const values = [days, hours, mins, secs];
+
+  mainIds.forEach((id, idx) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = String(values[idx]).padStart(2, '0');
+  });
+
+  const previewIds = ['previewDays','previewHours','previewMins','previewSecs'];
+  previewIds.forEach((id, idx) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = String(values[idx]).padStart(2, '0');
+  });
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
 const NODES = {
   practice:{icon:'💅',title:'Practice & Prep',desc:"It's crunch time, Marissa! 💕 How do you spend your prep week before the local pageant?",choices:[
     {emoji:'🏃‍♀️',text:'5AM Runway Drills',effect:'+Glam, +Charm',stats:{glam:15,charm:10},result:'You hit the runway at sunrise every morning. Your walk becomes ICONIC — judges notice the confidence radiating off you!',icon:'🌅',title:'Sunrise Grind!'},
