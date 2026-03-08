@@ -24,6 +24,10 @@
       "destination": "/blog.html"
     },
     {
+      "source": "/pageant",
+      "destination": "/pageant.html"
+    },
+    {
       "source": "/pop.mp3",
       "destination": "/public/pop.mp3"
     }
