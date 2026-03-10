@@ -72,6 +72,7 @@ h1 .char {
   opacity: 0;
   transform: translateX(-50px);
   animation: slideInChar 0.5s ease-out forwards;
+  min-width: 0.3em;
 }
 
 h1 .char:nth-child(1) { animation-delay: 0.1s; }
