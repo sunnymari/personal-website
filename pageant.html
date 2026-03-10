@@ -207,42 +207,41 @@
       left: 18%;
     }
 
-    /* Needs panel (bottom-right) — liquid glass */
+    /* Needs panel (bottom-right) — Sims style */
     .needs-panel {
       position: fixed;
       bottom: 14px;
       right: 14px;
       z-index: 900;
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.65);
-      border-radius: 18px;
-      padding: 14px 18px;
-      min-width: 240px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      background: rgba(200, 210, 200, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 2px solid rgba(180, 195, 180, 0.7);
+      border-radius: 8px;
+      padding: 6px 8px;
+      min-width: 200px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
 
     .needs-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px 18px;
+      gap: 3px 10px;
     }
 
     .need-item {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
     }
 
     .need-label {
       font-size: 10px;
       font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1px;
       display: flex;
       align-items: center;
       gap: 5px;
+      padding-left: 2px;
     }
 
     .need-label .need-icon {
@@ -250,21 +249,25 @@
     }
 
     .need-label-text {
-      color: rgba(0, 0, 0, 0.35);
+      color: rgba(0, 0, 0, 0.6);
+      text-transform: capitalize;
+      letter-spacing: 0;
     }
 
     .need-bar-bg {
       width: 100%;
-      height: 8px;
-      background: rgba(0, 0, 0, 0.06);
-      border-radius: 4px;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 5px;
       overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .need-bar-fill {
       height: 100%;
-      border-radius: 4px;
+      border-radius: 5px;
       transition: width 0.8s cubic-bezier(.34, 1.56, .64, 1);
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.35);
     }
 
     /* Portrait (bottom-left) */
@@ -282,46 +285,46 @@
       object-fit: contain;
     }
 
-    /* Crown progress — liquid glass */
+    /* Crown progress — Sims style */
     .crown-progress {
       position: fixed;
-      bottom: 160px;
+      bottom: 140px;
       right: 14px;
-      min-width: 240px;
+      min-width: 200px;
       z-index: 900;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 12px;
-      padding: 14px 18px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      background: rgba(200, 210, 200, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 2px solid rgba(180, 195, 180, 0.7);
+      border-radius: 8px;
+      padding: 6px 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
 
     .crown-label {
-      font-size: 8px;
+      font-size: 11px;
       font-weight: 800;
-      color: rgba(0, 0, 0, 0.3);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 5px;
+      color: rgba(0, 0, 0, 0.6);
+      margin-bottom: 4px;
+      padding-left: 2px;
     }
 
     .crown-track {
       width: 100%;
-      height: 6px;
-      background: rgba(0, 0, 0, 0.06);
-      border-radius: 3px;
+      height: 14px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 7px;
       overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .crown-fill {
       height: 100%;
-      border-radius: 3px;
-      background: #1a1a1a;
+      border-radius: 7px;
+      background: linear-gradient(90deg, #4db84d, #6dd66d);
       transition: width 1s cubic-bezier(.34, 1.56, .64, 1);
       position: relative;
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.35);
     }
 
     .crown-fill::after {
@@ -329,66 +332,75 @@
     }
 
     .crown-pct {
-      font-size: 9px;
-      color: rgba(0, 0, 0, 0.3);
+      font-size: 10px;
+      color: rgba(0, 0, 0, 0.5);
       margin-top: 4px;
       font-weight: 800;
+      text-align: center;
     }
 
     /* Countdown — fixed top-left */
     .countdown-bar {
       position: fixed;
-      top: 52px;
-      left: 14px;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 900;
-      text-align: left;
-      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: 50px;
+      padding: 6px 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      white-space: nowrap;
     }
 
     .cd-event {
       font-size: 9px;
-      font-weight: 700;
-      color: rgba(0, 0, 0, 0.25);
-      letter-spacing: 1.5px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.3);
+      letter-spacing: 1px;
       text-transform: uppercase;
-      margin-bottom: 4px;
+      display: none;
     }
 
     .cd-units {
       display: flex;
       gap: 0;
-      align-items: baseline;
+      align-items: center;
     }
 
     .cd-unit {
       text-align: center;
-      padding: 0 4px;
+      padding: 0 3px;
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
     }
 
     .cd-num {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 900;
-      color: rgba(0, 0, 0, 0.7);
-      display: block;
+      color: rgba(0, 0, 0, 0.6);
       line-height: 1;
       font-variant-numeric: tabular-nums;
     }
 
     .cd-unit-label {
-      font-size: 7px;
-      font-weight: 700;
-      color: rgba(0, 0, 0, 0.18);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-top: 2px;
-      display: block;
+      font-size: 8px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.2);
+      text-transform: lowercase;
+      letter-spacing: 0.5px;
     }
 
     .cd-sep {
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.08);
-      align-self: flex-start;
-      margin-top: 1px;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.1);
       padding: 0 1px;
     }
 
@@ -400,31 +412,30 @@
     }
 
     .cd-sub {
-      font-size: 8px;
+      font-size: 9px;
       font-weight: 700;
-      color: rgba(0, 0, 0, 0.18);
-      margin-top: 4px;
-      letter-spacing: 0.5px;
+      color: rgba(0, 0, 0, 0.2);
+      border-left: 1px solid rgba(0, 0, 0, 0.08);
+      padding-left: 12px;
     }
 
     .cd-share-btn {
-      margin-top: 4px;
       font-family: 'Nunito', sans-serif;
-      font-size: 9px;
+      font-size: 8px;
       font-weight: 800;
-      background: rgba(0, 0, 0, 0.03);
+      background: rgba(0, 0, 0, 0.04);
       color: rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(0, 0, 0, 0.06);
-      border-radius: 3px;
+      border-radius: 50px;
       padding: 3px 10px;
       cursor: pointer;
       transition: all 0.2s;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
     }
 
     .cd-share-btn:hover {
-      background: rgba(0, 0, 0, 0.06);
+      background: rgba(0, 0, 0, 0.08);
       color: rgba(0, 0, 0, 0.5);
     }
 
@@ -701,26 +712,22 @@
       top: 14px;
       right: 14px;
       z-index: 900;
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.65);
-      border-radius: 12px;
-      padding: 8px 14px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 10px;
-      font-weight: 800;
-      color: rgba(0, 0, 0, 0.4);
-      letter-spacing: 1px;
-      text-transform: uppercase;
+      background: none;
+      border: none;
+      padding: 0;
       cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      transition: transform 0.2s;
+    }
+
+    .log-btn img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      image-rendering: pixelated;
     }
 
     .log-btn:hover {
-      background: rgba(255, 255, 255, 0.65);
-      color: rgba(0, 0, 0, 0.6);
+      transform: scale(1.1);
     }
 
     /* Log overlay */
@@ -1157,20 +1164,146 @@
       border-radius: 10px;
     }
 
-    @media (max-width: 600px) {
-      .action-btn {
-        font-size: 12px;
-        padding: 8px 14px;
+    @media (max-width: 768px) {
+      body {
+        overflow: hidden;
+        height: 100vh;
       }
 
-      .needs-panel {
-        min-width: 200px;
-        padding: 10px 12px;
+      .sims-layout {
+        height: 100vh;
+        justify-content: center;
+        padding-top: 0;
+        padding-bottom: 0;
       }
 
       #character-canvas {
         height: 60vh;
-        min-height: 450px;
+        min-height: 300px;
+      }
+
+      /* Keep buttons on sides like desktop */
+      .character-area {
+        min-height: auto;
+      }
+
+      .action-btn {
+        font-size: 11px;
+        padding: 8px 12px;
+      }
+
+      /* Tighten button positions for narrower screen */
+      .action-btn[data-node="practice"] { right: 2%; }
+      .action-btn[data-node="outfit"] { right: 2%; }
+      .action-btn[data-node="platform"] { right: 2%; }
+      .action-btn[data-node="strategy"] { right: 2%; }
+      .action-btn[data-node="interview"] { left: 2%; }
+      .action-btn[data-node="locals"] { left: 2%; }
+      .action-btn[data-node="state"] { left: 2%; }
+      .action-btn[data-node="crown"] { left: 2%; }
+
+      /* Countdown — compact on mobile */
+      .countdown-bar {
+        padding: 5px 12px;
+        gap: 8px;
+      }
+
+      .cd-num {
+        font-size: 14px;
+      }
+
+      .cd-sub {
+        display: none;
+      }
+
+      .cd-share-btn {
+        display: none;
+      }
+
+      /* Needs panel — bottom, full width */
+      .needs-panel {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        min-width: unset;
+        border-radius: 8px 8px 0 0;
+        padding: 8px 12px;
+      }
+
+      .needs-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px 12px;
+      }
+
+      /* Crown progress — compact above needs panel */
+      .crown-progress {
+        position: fixed;
+        bottom: 100px;
+        right: 0;
+        left: 0;
+        min-width: unset;
+        width: auto;
+        margin: 0 16px;
+        border-radius: 10px;
+        padding: 8px 14px;
+      }
+
+      .crown-label {
+        font-size: 7px;
+        letter-spacing: 1px;
+        margin-bottom: 3px;
+      }
+
+      .crown-track {
+        height: 4px;
+      }
+
+      .crown-pct {
+        font-size: 9px;
+        margin-top: 3px;
+      }
+
+      /* Portrait — hidden on mobile */
+      .portrait-panel {
+        display: none;
+      }
+
+      /* Home link */
+      .home-link {
+        top: 10px;
+        left: 10px;
+        font-size: 11px;
+      }
+
+      /* Journey log */
+      .log-btn {
+        top: 10px;
+        right: 10px;
+      }
+
+      .log-btn img {
+        width: 36px;
+        height: 36px;
+      }
+
+      /* Modals */
+      .choice-modal {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      .choices-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-modal {
+        padding: 20px;
+      }
+
+      /* Log modal */
+      .log-modal {
+        width: 95%;
+        max-height: 80vh;
       }
     }
   </style>
@@ -1183,22 +1316,20 @@
 
   <a href="/" class="home-link">marissa codes</a>
 
-  <!-- Countdown (fixed top-left) -->
+  <!-- Countdown (top center pill) -->
   <div class="countdown-bar">
-    <div class="cd-event">Miss America California — June 15, 2026</div>
     <div class="cd-units" id="countdownUnits">
-      <div class="cd-unit"><span class="cd-num" id="cdDays">--</span><span class="cd-unit-label">Days</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cdDays">--</span><span class="cd-unit-label">d</span></div>
       <div class="cd-sep">:</div>
-      <div class="cd-unit"><span class="cd-num" id="cdHours">--</span><span class="cd-unit-label">Hours</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cdHours">--</span><span class="cd-unit-label">h</span></div>
       <div class="cd-sep">:</div>
-      <div class="cd-unit"><span class="cd-num" id="cdMins">--</span><span class="cd-unit-label">Mins</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cdMins">--</span><span class="cd-unit-label">m</span></div>
       <div class="cd-sep">:</div>
-      <div class="cd-unit"><span class="cd-num" id="cdSecs">--</span><span class="cd-unit-label">Secs</span></div>
+      <div class="cd-unit"><span class="cd-num" id="cdSecs">--</span><span class="cd-unit-label">s</span></div>
     </div>
     <div class="cd-done" id="cdDone">Pageant Day</div>
-    <div class="cd-sub" id="cdSub">until Marissa takes the crown</div>
-    <button type="button" class="cd-share-btn" onclick="window.openCdShare && window.openCdShare();">Share
-      Countdown</button>
+    <div class="cd-sub" id="cdSub">until the crown</div>
+    <button type="button" class="cd-share-btn" onclick="window.openCdShare && window.openCdShare();">Share</button>
   </div>
 
   <div class="sims-layout">
@@ -1227,7 +1358,7 @@
   </div>
 
   <!-- Journey Log Button (fixed bottom-left) -->
-  <button class="log-btn" onclick="openLog()">Journey Log</button>
+  <button class="log-btn" onclick="openLog()"><img src="/bookicon.png" alt="Journey Log"></button>
 
   <!-- Journey Log Overlay -->
   <div class="log-overlay" id="logOverlay" onclick="if(event.target===this) closeLog();">
@@ -1260,37 +1391,37 @@
       <div class="need-item">
         <div class="need-label"><span class="need-label-text">Glam</span></div>
         <div class="need-bar-bg">
-          <div class="need-bar-fill" id="bar-glam" style="width:40%;background:#e87aac"></div>
+          <div class="need-bar-fill" id="bar-glam" style="width:40%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
         </div>
       </div>
       <div class="need-item">
         <div class="need-label"><span class="need-label-text">Talent</span></div>
         <div class="need-bar-bg">
-          <div class="need-bar-fill" id="bar-talent" style="width:50%;background:#a878d4"></div>
+          <div class="need-bar-fill" id="bar-talent" style="width:50%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
         </div>
       </div>
       <div class="need-item">
         <div class="need-label"><span class="need-label-text">Charm</span></div>
         <div class="need-bar-bg">
-          <div class="need-bar-fill" id="bar-charm" style="width:45%;background:#5ab87a"></div>
+          <div class="need-bar-fill" id="bar-charm" style="width:45%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
         </div>
       </div>
       <div class="need-item">
         <div class="need-label"><span class="need-label-text">Impact</span></div>
         <div class="need-bar-bg">
-          <div class="need-bar-fill" id="bar-impact" style="width:35%;background:#5a9ad4"></div>
+          <div class="need-bar-fill" id="bar-impact" style="width:35%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
         </div>
       </div>
       <div class="need-item">
         <div class="need-label"><span class="need-label-text">Energy</span></div>
         <div class="need-bar-bg">
-          <div class="need-bar-fill" id="bar-energy" style="width:70%;background:#d4a85a"></div>
+          <div class="need-bar-fill" id="bar-energy" style="width:70%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
         </div>
       </div>
       <div class="need-item">
         <div class="need-label"><span class="need-label-text">Fun</span></div>
         <div class="need-bar-bg">
-          <div class="need-bar-fill" id="bar-fun" style="width:85%;background:#5ab87a"></div>
+          <div class="need-bar-fill" id="bar-fun" style="width:85%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
         </div>
       </div>
     </div>
@@ -1689,10 +1820,19 @@
 
     function closeResult() { document.getElementById('resultPopup').classList.remove('visible'); }
 
+    function getSimsBarColor(val) {
+      if (val >= 60) return 'linear-gradient(90deg,#4db84d,#6dd66d)';
+      if (val >= 30) return 'linear-gradient(90deg,#c8a020,#e0c040)';
+      return 'linear-gradient(90deg,#c03030,#d05050)';
+    }
+
     function updateStatBars() {
       Object.entries(stats).forEach(([stat, val]) => {
         const bar = document.getElementById(`bar-${stat}`);
-        if (bar) bar.style.width = val + '%';
+        if (bar) {
+          bar.style.width = val + '%';
+          bar.style.background = getSimsBarColor(val);
+        }
       });
     }
 
