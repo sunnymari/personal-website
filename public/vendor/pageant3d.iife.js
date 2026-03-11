@@ -20169,92 +20169,6 @@ var Pageant3D = (() => {
       return new _PolyhedronGeometry(data.vertices, data.indices, data.radius, data.details);
     }
   };
-  var _v0 = /* @__PURE__ */ new Vector3();
-  var _v1$1 = /* @__PURE__ */ new Vector3();
-  var _normal = /* @__PURE__ */ new Vector3();
-  var _triangle = /* @__PURE__ */ new Triangle();
-  var EdgesGeometry = class extends BufferGeometry {
-    constructor(geometry = null, thresholdAngle = 1) {
-      super();
-      this.type = "EdgesGeometry";
-      this.parameters = {
-        geometry,
-        thresholdAngle
-      };
-      if (geometry !== null) {
-        const precisionPoints = 4;
-        const precision = Math.pow(10, precisionPoints);
-        const thresholdDot = Math.cos(DEG2RAD * thresholdAngle);
-        const indexAttr = geometry.getIndex();
-        const positionAttr = geometry.getAttribute("position");
-        const indexCount = indexAttr ? indexAttr.count : positionAttr.count;
-        const indexArr = [0, 0, 0];
-        const vertKeys = ["a", "b", "c"];
-        const hashes = new Array(3);
-        const edgeData = {};
-        const vertices = [];
-        for (let i = 0; i < indexCount; i += 3) {
-          if (indexAttr) {
-            indexArr[0] = indexAttr.getX(i);
-            indexArr[1] = indexAttr.getX(i + 1);
-            indexArr[2] = indexAttr.getX(i + 2);
-          } else {
-            indexArr[0] = i;
-            indexArr[1] = i + 1;
-            indexArr[2] = i + 2;
-          }
-          const { a, b, c } = _triangle;
-          a.fromBufferAttribute(positionAttr, indexArr[0]);
-          b.fromBufferAttribute(positionAttr, indexArr[1]);
-          c.fromBufferAttribute(positionAttr, indexArr[2]);
-          _triangle.getNormal(_normal);
-          hashes[0] = `${Math.round(a.x * precision)},${Math.round(a.y * precision)},${Math.round(a.z * precision)}`;
-          hashes[1] = `${Math.round(b.x * precision)},${Math.round(b.y * precision)},${Math.round(b.z * precision)}`;
-          hashes[2] = `${Math.round(c.x * precision)},${Math.round(c.y * precision)},${Math.round(c.z * precision)}`;
-          if (hashes[0] === hashes[1] || hashes[1] === hashes[2] || hashes[2] === hashes[0]) {
-            continue;
-          }
-          for (let j = 0; j < 3; j++) {
-            const jNext = (j + 1) % 3;
-            const vecHash0 = hashes[j];
-            const vecHash1 = hashes[jNext];
-            const v0 = _triangle[vertKeys[j]];
-            const v1 = _triangle[vertKeys[jNext]];
-            const hash = `${vecHash0}_${vecHash1}`;
-            const reverseHash = `${vecHash1}_${vecHash0}`;
-            if (reverseHash in edgeData && edgeData[reverseHash]) {
-              if (_normal.dot(edgeData[reverseHash].normal) <= thresholdDot) {
-                vertices.push(v0.x, v0.y, v0.z);
-                vertices.push(v1.x, v1.y, v1.z);
-              }
-              edgeData[reverseHash] = null;
-            } else if (!(hash in edgeData)) {
-              edgeData[hash] = {
-                index0: indexArr[j],
-                index1: indexArr[jNext],
-                normal: _normal.clone()
-              };
-            }
-          }
-        }
-        for (const key in edgeData) {
-          if (edgeData[key]) {
-            const { index0, index1 } = edgeData[key];
-            _v0.fromBufferAttribute(positionAttr, index0);
-            _v1$1.fromBufferAttribute(positionAttr, index1);
-            vertices.push(_v0.x, _v0.y, _v0.z);
-            vertices.push(_v1$1.x, _v1$1.y, _v1$1.z);
-          }
-        }
-        this.setAttribute("position", new Float32BufferAttribute(vertices, 3));
-      }
-    }
-    copy(source) {
-      super.copy(source);
-      this.parameters = Object.assign({}, source.parameters);
-      return this;
-    }
-  };
   var OctahedronGeometry = class _OctahedronGeometry extends PolyhedronGeometry {
     constructor(radius = 1, detail = 0) {
       const vertices = [
@@ -20314,6 +20228,77 @@ var Pageant3D = (() => {
       return new _OctahedronGeometry(data.radius, data.detail);
     }
   };
+  var WireframeGeometry = class extends BufferGeometry {
+    constructor(geometry = null) {
+      super();
+      this.type = "WireframeGeometry";
+      this.parameters = {
+        geometry
+      };
+      if (geometry !== null) {
+        const vertices = [];
+        const edges = /* @__PURE__ */ new Set();
+        const start = new Vector3();
+        const end = new Vector3();
+        if (geometry.index !== null) {
+          const position = geometry.attributes.position;
+          const indices = geometry.index;
+          let groups = geometry.groups;
+          if (groups.length === 0) {
+            groups = [{ start: 0, count: indices.count, materialIndex: 0 }];
+          }
+          for (let o = 0, ol = groups.length; o < ol; ++o) {
+            const group = groups[o];
+            const groupStart = group.start;
+            const groupCount = group.count;
+            for (let i = groupStart, l = groupStart + groupCount; i < l; i += 3) {
+              for (let j = 0; j < 3; j++) {
+                const index1 = indices.getX(i + j);
+                const index2 = indices.getX(i + (j + 1) % 3);
+                start.fromBufferAttribute(position, index1);
+                end.fromBufferAttribute(position, index2);
+                if (isUniqueEdge(start, end, edges) === true) {
+                  vertices.push(start.x, start.y, start.z);
+                  vertices.push(end.x, end.y, end.z);
+                }
+              }
+            }
+          }
+        } else {
+          const position = geometry.attributes.position;
+          for (let i = 0, l = position.count / 3; i < l; i++) {
+            for (let j = 0; j < 3; j++) {
+              const index1 = 3 * i + j;
+              const index2 = 3 * i + (j + 1) % 3;
+              start.fromBufferAttribute(position, index1);
+              end.fromBufferAttribute(position, index2);
+              if (isUniqueEdge(start, end, edges) === true) {
+                vertices.push(start.x, start.y, start.z);
+                vertices.push(end.x, end.y, end.z);
+              }
+            }
+          }
+        }
+        this.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+      }
+    }
+    copy(source) {
+      super.copy(source);
+      this.parameters = Object.assign({}, source.parameters);
+      return this;
+    }
+  };
+  function isUniqueEdge(start, end, edges) {
+    const hash1 = `${start.x},${start.y},${start.z}-${end.x},${end.y},${end.z}`;
+    const hash2 = `${end.x},${end.y},${end.z}-${start.x},${start.y},${start.z}`;
+    if (edges.has(hash1) === true || edges.has(hash2) === true) {
+      return false;
+    } else {
+      edges.add(hash1);
+      edges.add(hash2);
+      return true;
+    }
+  }
   var MeshStandardMaterial = class extends Material {
     constructor(parameters) {
       super();
@@ -26165,15 +26150,17 @@ var Pageant3D = (() => {
         });
         if (firstMesh && firstMesh.geometry) {
           try {
-            const edges = new EdgesGeometry(firstMesh.geometry, 10);
-            const line = new LineSegments(
-              edges,
-              new LineBasicMaterial({ color: 65437, transparent: true, opacity: 0.95 })
-            );
-            line.position.set(0, 0, 0);
-            line.rotation.set(0, 0, 0);
-            line.scale.set(1, 1, 1);
+            const wire = new WireframeGeometry(firstMesh.geometry);
+            const mat = new LineBasicMaterial({
+              color: 65437,
+              transparent: true,
+              opacity: 1,
+              depthTest: false,
+              depthWrite: false
+            });
+            const line = new LineSegments(wire, mat);
             line.frustumCulled = false;
+            line.renderOrder = 9999;
             firstMesh.add(line);
           } catch (_) {
           }
