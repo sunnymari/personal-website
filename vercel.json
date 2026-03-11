@@ -28,6 +28,22 @@
       "destination": "/pageant.html"
     },
     {
+      "source": "/bookicon.png",
+      "destination": "/public/bookicon.png"
+    },
+    {
+      "source": "/cornerUI.png",
+      "destination": "/public/cornerUI.png"
+    },
+    {
+      "source": "/Meshy_AI_Animation_Idle_11_withSkin.glb",
+      "destination": "/public/Meshy_AI_Animation_Idle_11_withSkin.glb"
+    },
+    {
+      "source": "/Meshy_AI_Animation_air_squat_withSkin.glb",
+      "destination": "/public/Meshy_AI_Animation_air_squat_withSkin.glb"
+    },
+    {
       "source": "/pop.mp3",
       "destination": "/public/pop.mp3"
     }
