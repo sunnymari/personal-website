@@ -20435,6 +20435,40 @@ var Pageant3D = (() => {
       return this;
     }
   };
+  var MeshNormalMaterial = class extends Material {
+    constructor(parameters) {
+      super();
+      this.isMeshNormalMaterial = true;
+      this.type = "MeshNormalMaterial";
+      this.bumpMap = null;
+      this.bumpScale = 1;
+      this.normalMap = null;
+      this.normalMapType = TangentSpaceNormalMap;
+      this.normalScale = new Vector2(1, 1);
+      this.displacementMap = null;
+      this.displacementScale = 1;
+      this.displacementBias = 0;
+      this.wireframe = false;
+      this.wireframeLinewidth = 1;
+      this.flatShading = false;
+      this.setValues(parameters);
+    }
+    copy(source) {
+      super.copy(source);
+      this.bumpMap = source.bumpMap;
+      this.bumpScale = source.bumpScale;
+      this.normalMap = source.normalMap;
+      this.normalMapType = source.normalMapType;
+      this.normalScale.copy(source.normalScale);
+      this.displacementMap = source.displacementMap;
+      this.displacementScale = source.displacementScale;
+      this.displacementBias = source.displacementBias;
+      this.wireframe = source.wireframe;
+      this.wireframeLinewidth = source.wireframeLinewidth;
+      this.flatShading = source.flatShading;
+      return this;
+    }
+  };
   var MeshLambertMaterial = class extends Material {
     constructor(parameters) {
       super();
@@ -26037,21 +26071,8 @@ var Pageant3D = (() => {
         model.traverse((obj) => {
           if (!obj.isMesh) return;
           obj.frustumCulled = false;
-          if (obj.material) {
-            const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
-            mats.forEach((m) => {
-              m.side = DoubleSide;
-              m.transparent = false;
-              m.opacity = 1;
-              m.depthWrite = true;
-              if (m.color) m.color.setHex(16757728);
-              if ("emissive" in m && m.emissive) {
-                m.emissive.setHex(5579349);
-                m.emissiveIntensity = 0.6;
-              }
-              m.needsUpdate = true;
-            });
-          }
+          obj.material = new MeshNormalMaterial({ side: DoubleSide });
+          obj.material.needsUpdate = true;
         });
         const boxHelper = new Box3Helper(finalBox, 16716947);
         scene.add(boxHelper);
