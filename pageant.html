@@ -1527,6 +1527,21 @@
       setBootStatus('Starting 3D…');
       window.__threeModuleStarted = false;
       window.__setBoot3dStatus = setBootStatus;
+
+      window.addEventListener('error', function (e) {
+        try {
+          var msg = (e && e.message) ? e.message : 'Unknown error';
+          setBootStatus('3D error: ' + msg);
+        } catch (_) { }
+      });
+
+      window.addEventListener('unhandledrejection', function (e) {
+        try {
+          var reason = (e && e.reason) ? e.reason : 'Unknown rejection';
+          setBootStatus('3D promise error: ' + String(reason));
+        } catch (_) { }
+      });
+
       setTimeout(function () {
         if (!window.__threeModuleStarted) {
           setBootStatus('3D failed to start (module import blocked). Try hard refresh.');
@@ -1540,8 +1555,10 @@
     import * as THREE from '/vendor/three.module.js';
     import { GLTFLoader } from '/vendor/GLTFLoader.js';
 
+    // Mark started as soon as the module is evaluated (before any other code can throw).
+    window.__threeModuleStarted = true;
+
     (function () {
-      window.__threeModuleStarted = true;
       const canvas = document.getElementById('character-canvas');
       const characterArea = canvas ? canvas.closest('.character-area') : null;
 
