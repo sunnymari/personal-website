@@ -270,19 +270,9 @@
       box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.35);
     }
 
-    /* Portrait (bottom-left) */
+    /* Portrait (bottom-left) — hidden for now */
     .portrait-panel {
-      position: fixed;
-      bottom: -7px;
-      left: 0px;
-      z-index: 900;
-      pointer-events: none;
-    }
-
-    .portrait-panel img {
-      width: 240px;
-      height: auto;
-      object-fit: contain;
+      display: none;
     }
 
     /* Crown progress — Sims style */
@@ -559,9 +549,13 @@
     }
 
     .choice-emoji {
-      font-size: 22px;
       display: block;
       margin-bottom: 5px;
+      line-height: 0;
+    }
+
+    .choice-emoji canvas {
+      image-rendering: pixelated;
     }
 
     .choice-text {
@@ -870,23 +864,13 @@
       pointer-events: none;
       z-index: 9999;
       display: none;
+      perspective: 600px;
     }
 
     .confetti-piece {
       position: absolute;
-      animation: confettiFall 3s ease-in forwards;
-    }
-
-    @keyframes confettiFall {
-      0% {
-        transform: translateY(-20px) rotate(0deg);
-        opacity: 1;
-      }
-
-      100% {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
-      }
+      image-rendering: pixelated;
+      box-shadow: inset -2px -2px 0 rgba(0,0,0,0.2), inset 2px 2px 0 rgba(255,255,255,0.3);
     }
 
     /* Share overlays — liquid glass */
@@ -1337,19 +1321,14 @@
     <div class="character-area">
       <canvas id="character-canvas"></canvas>
       <div class="action-buttons" id="actionButtons">
-        <button class="action-btn active-node" data-node="practice" onclick="openNode('practice')">Practice &
-          Prep...</button>
-        <button class="action-btn locked" data-node="outfit" onclick="openNode('outfit')">Change Outfit...</button>
-        <button class="action-btn locked" data-node="platform" onclick="openNode('platform')">Platform &
-          Cause...</button>
-        <button class="action-btn locked" data-node="interview" onclick="openNode('interview')">Interview
-          Prep...</button>
-        <button class="action-btn locked" data-node="strategy" onclick="openNode('strategy')">Competition
-          Strategy...</button>
-        <button class="action-btn locked" data-node="locals" onclick="openNode('locals')">Local Title Win...</button>
-        <button class="action-btn locked" data-node="state" onclick="openNode('state')">State Competition...</button>
-        <button class="action-btn locked" data-node="crown" onclick="openNode('crown')">Miss America
-          California...</button>
+        <button class="action-btn active-node" data-node="practice" onclick="openNode('practice')">Practice & Prep</button>
+        <button class="action-btn locked" data-node="outfit" onclick="openNode('outfit')">Change Outfit</button>
+        <button class="action-btn locked" data-node="platform" onclick="openNode('platform')">Platform & Cause</button>
+        <button class="action-btn locked" data-node="interview" onclick="openNode('interview')">Interview Prep</button>
+        <button class="action-btn locked" data-node="strategy" onclick="openNode('strategy')">Competition Strategy</button>
+        <button class="action-btn locked" data-node="locals" onclick="openNode('locals')">Local Title Win</button>
+        <button class="action-btn locked" data-node="state" onclick="openNode('state')">State Competition</button>
+        <button class="action-btn locked" data-node="crown" onclick="openNode('crown')">Miss America California</button>
       </div>
     </div>
 
@@ -1450,7 +1429,7 @@
       <div class="result-btns">
         <button class="next-btn" onclick="closeResult()">Continue</button>
         <button class="share-result-btn" id="shareResultBtn" style="display:none;"
-          onclick="showShareCard(document.getElementById('resultEmoji').textContent, document.getElementById('resultTitle').textContent, document.getElementById('resultText').textContent)">Share</button>
+          onclick="showShareCard('⭐', document.getElementById('resultTitle').textContent, document.getElementById('resultText').textContent)">Share</button>
       </div>
     </div>
   </div>
@@ -1565,6 +1544,8 @@
 
       let model = null;
       let mixer = null;
+      let idleAction = null;
+      let actionClip = null;
       let modelTop = 2.0;
       let modelBaseY = 0;
       const clock = new THREE.Clock();
@@ -1610,15 +1591,52 @@
         // Play idle animation if available
         if (gltf.animations && gltf.animations.length > 0) {
           mixer = new THREE.AnimationMixer(model);
-          const action = mixer.clipAction(gltf.animations[0]);
-          action.play();
+          idleAction = mixer.clipAction(gltf.animations[0]);
+          idleAction.play();
         }
+
+        // Preload action animation
+        loader.load('/Meshy_AI_Animation_air_squat_withSkin.glb', function (actionGltf) {
+          if (actionGltf.animations && actionGltf.animations.length > 0) {
+            actionClip = actionGltf.animations[0];
+          }
+        });
 
       },
         undefined,
         function (error) {
           console.error('Error loading model:', error);
         });
+
+      // Play action animation then return to idle
+      window.playActionAnim = function () {
+        if (!mixer || !model || !actionClip || !idleAction) return;
+        const action = mixer.clipAction(actionClip);
+        action.reset();
+        action.setLoop(THREE.LoopRepeat, 2);
+        action.clampWhenFinished = true;
+
+        // Crossfade: idle stays running, action blends in on top
+        idleAction.enabled = true;
+        idleAction.setEffectiveWeight(1);
+        action.enabled = true;
+        action.setEffectiveWeight(1);
+        action.setEffectiveTimeScale(1);
+        action.play();
+        idleAction.crossFadeTo(action, 0.6, true);
+
+        // When action finishes, blend back to idle
+        mixer.addEventListener('finished', function onFinished(e) {
+          if (e.action === action) {
+            mixer.removeEventListener('finished', onFinished);
+            // Crossfade back — keep idle running so no T-pose gap
+            action.crossFadeTo(idleAction, 0.8, true);
+            idleAction.enabled = true;
+            idleAction.setEffectiveWeight(1);
+            idleAction.play();
+          }
+        });
+      };
 
       // Rotation disabled
 
@@ -1688,6 +1706,95 @@
     }
     updateCountdown();
     setInterval(updateCountdown, 1000);
+
+    // ========== PIXEL ICON SYSTEM ==========
+    // 8x8 pixel art icons - each row is 8 pixels, 1=filled, 0=empty
+    const PIXEL_ICONS = {
+      star:     { color: '#ffd700', grid: '00111100,01111110,11111111,01111110,00111100,01100110,11000011,10000001' },
+      heart:    { color: '#ff5ec4', grid: '01101100,11111110,11111111,11111111,01111110,00111100,00011000,00000000' },
+      crown:    { color: '#ffd700', grid: '10000001,11000011,11100111,11111111,11111111,01111110,01111110,00000000' },
+      book:     { color: '#6ec6ff', grid: '01111100,01000010,01011010,01000010,01011010,01000010,01111100,00000000' },
+      sparkle:  { color: '#c45aff', grid: '00010000,00010000,01010100,00111000,01010100,00010000,00010000,00000000' },
+      fire:     { color: '#ff6b6b', grid: '00010000,00110000,01110100,01111100,11111110,11111110,01111100,00111000' },
+      music:    { color: '#a878d4', grid: '00011100,00010010,00010010,00010010,01110010,11110010,11110000,01100000' },
+      globe:    { color: '#5ab87a', grid: '00111100,01101110,11101111,11011111,11111011,11110111,01101110,00111100' },
+      bolt:     { color: '#d4a85a', grid: '00001100,00011000,00110000,01111110,00001100,00011000,00110000,01000000' },
+      trophy:   { color: '#ffd700', grid: '11111111,01111110,01111110,00111100,00011000,00011000,00111100,01111110' },
+      diamond:  { color: '#6ec6ff', grid: '00011000,00111100,01111110,11111111,01111110,00111100,00011000,00000000' },
+      flower:   { color: '#ff5ec4', grid: '00010000,01010100,00111000,11111110,00111000,01010100,00010000,00000000' },
+      shield:   { color: '#5a9ad4', grid: '01111110,11111111,11111111,11111111,11111111,01111110,00111100,00011000' },
+      wave:     { color: '#5ab87a', grid: '00000000,00000000,01100110,10011001,10011001,01100110,00000000,00000000' },
+      mic:      { color: '#a878d4', grid: '00111100,01111110,01111110,00111100,00011000,00011000,00011000,01111110' },
+      medal:    { color: '#ffd700', grid: '11000011,01100110,00111100,00011000,00111100,01111110,01111110,00111100' },
+      run:      { color: '#e87aac', grid: '00110000,00110000,01110000,11111100,01100000,01010000,10010000,10001000' },
+      mirror:   { color: '#c45aff', grid: '00111100,01111110,11111111,11111111,11111111,01111110,00111100,00011000' },
+      chat:     { color: '#5a9ad4', grid: '01111110,11111111,11111111,11111111,01111110,00110000,01000000,00000000' },
+      target:   { color: '#ff6b6b', grid: '00111100,01111110,11100111,11010111,11100111,01111110,00111100,00000000' },
+      dress:    { color: '#e87aac', grid: '00011000,00111100,00111100,00011000,00111100,01111110,11111111,11111111' },
+      palette:  { color: '#a878d4', grid: '00111100,01111110,11101111,11001111,11101111,11111111,01111110,00111100' },
+      brain:    { color: '#e87aac', grid: '00111100,01111110,11011011,11011011,11101111,11111111,01111110,00111100' },
+      leaf:     { color: '#5ab87a', grid: '00000010,00000110,00001110,00011110,00111100,01111000,11110000,01100000' },
+      butterfly:{ color: '#c45aff', grid: '11000011,11100111,11111111,01111110,01111110,11111111,11100111,11000011' },
+      handshake:{ color: '#5ab87a', grid: '00000000,01100110,11111111,11111111,01111110,00111100,00011000,00000000' },
+    };
+
+    // emoji -> pixel icon key mapping
+    const EMOJI_MAP = {
+      '💅': 'sparkle', '👗': 'dress', '💛': 'heart', '🎯': 'target', '🎤': 'mic',
+      '🥇': 'medal', '🌟': 'star', '👑': 'crown',
+      '🏃‍♀️': 'run', '📚': 'book', '🎭': 'palette', '🧘‍♀️': 'sparkle',
+      '🤍': 'diamond', '💜': 'heart', '✨': 'sparkle', '🔴': 'fire',
+      '💬': 'chat', '📰': 'book', '🪞': 'mirror', '❤️': 'heart',
+      '🌍': 'globe', '🌊': 'wave', '🎓': 'book',
+      '😊': 'heart', '🔥': 'fire', '🤝': 'handshake',
+      '🦋': 'butterfly', '📣': 'mic', '💖': 'heart', '💪': 'bolt',
+      '🌅': 'star', '📖': 'book', '🎪': 'trophy', '🧠': 'brain',
+      '🌱': 'leaf', '🛡️': 'shield', '🫶': 'heart', '🌸': 'flower',
+      '💫': 'sparkle', '⭐': 'star', '📡': 'bolt', '🏅': 'medal', '🏆': 'trophy',
+    };
+
+    function renderPixelIcon(emojiOrKey, size = 24) {
+      const key = EMOJI_MAP[emojiOrKey] || emojiOrKey;
+      const icon = PIXEL_ICONS[key] || PIXEL_ICONS['star'];
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      canvas.style.imageRendering = 'pixelated';
+      canvas.style.width = size + 'px';
+      canvas.style.height = size + 'px';
+      const ctx = canvas.getContext('2d');
+      const rows = icon.grid.split(',');
+      const px = size / 8;
+      ctx.fillStyle = icon.color;
+      rows.forEach((row, y) => {
+        for (let x = 0; x < 8; x++) {
+          if (row[x] === '1') ctx.fillRect(x * px, y * px, px, px);
+        }
+      });
+      // Add highlight pixels for 3D effect
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      rows.forEach((row, y) => {
+        for (let x = 0; x < 8; x++) {
+          if (row[x] === '1' && y === 0 || (row[x] === '1' && rows[y-1] && rows[y-1][x] === '0')) {
+            ctx.fillRect(x * px, y * px, px, px * 0.4);
+          }
+        }
+      });
+      ctx.fillStyle = 'rgba(0,0,0,0.2)';
+      rows.forEach((row, y) => {
+        for (let x = 0; x < 8; x++) {
+          if (row[x] === '1' && (y === 7 || (rows[y+1] && rows[y+1][x] === '0'))) {
+            ctx.fillRect(x * px, (y + 1) * px - px * 0.4, px, px * 0.4);
+          }
+        }
+      });
+      return canvas;
+    }
+
+    function pixelIconHTML(emojiOrKey, size = 24) {
+      const canvas = renderPixelIcon(emojiOrKey, size);
+      return canvas.outerHTML;
+    }
 
     // ========== GAME LOGIC ==========
     const NODES = {
@@ -1766,7 +1873,8 @@
       if (btn.classList.contains('locked')) { showNotif('Complete previous stages first!'); return; }
       currentNode = nodeId;
       const data = NODES[nodeId];
-      document.getElementById('panelIcon').textContent = data.icon;
+      document.getElementById('panelIcon').innerHTML = '';
+      document.getElementById('panelIcon').appendChild(renderPixelIcon(data.icon, 28));
       document.getElementById('panelTitle').textContent = data.title;
       document.getElementById('panelDesc').textContent = data.desc;
       const grid = document.getElementById('choicesGrid');
@@ -1774,7 +1882,8 @@
       data.choices.forEach((choice, i) => {
         const el = document.createElement('button');
         el.className = 'choice-btn';
-        el.innerHTML = `<span class="choice-emoji">${choice.emoji}</span><span class="choice-text">${choice.text}</span><span class="choice-effect">${choice.effect}</span>`;
+        el.innerHTML = `<span class="choice-emoji"></span><span class="choice-text">${choice.text}</span><span class="choice-effect">${choice.effect}</span>`;
+        el.querySelector('.choice-emoji').appendChild(renderPixelIcon(choice.emoji, 22));
         el.onclick = () => makeChoice(i);
         grid.appendChild(el);
       });
@@ -1787,13 +1896,17 @@
     function makeChoice(i) {
       const data = NODES[currentNode];
       const choice = data.choices[i];
+      // Play action animation
+      if (window.playActionAnim) window.playActionAnim();
       const changes = [];
       Object.entries(choice.stats).forEach(([stat, val]) => {
         stats[stat] = Math.min(100, stats[stat] + val);
         changes.push({ stat, val });
       });
       updateStatBars();
-      document.getElementById('resultEmoji').textContent = choice.icon;
+      const resultEmojiEl = document.getElementById('resultEmoji');
+      resultEmojiEl.innerHTML = '';
+      resultEmojiEl.appendChild(renderPixelIcon(choice.icon, 40));
       document.getElementById('resultTitle').textContent = choice.title;
       document.getElementById('resultText').textContent = choice.result;
       document.getElementById('statChanges').innerHTML = changes.map(c =>
@@ -1853,14 +1966,32 @@
     function launchConfetti() {
       const c = document.getElementById('confetti');
       c.style.display = 'block'; c.innerHTML = '';
-      const colors = ['#4cd964', '#6ec6ff', '#ffd700', '#ff5ec4', '#c45aff', '#fff'];
-      for (let i = 0; i < 100; i++) {
+      const colors = ['#4cd964', '#6ec6ff', '#ffd700', '#ff5ec4', '#c45aff', '#ff6b6b', '#fff'];
+      for (let i = 0; i < 120; i++) {
         const p = document.createElement('div');
         p.className = 'confetti-piece';
-        p.style.cssText = `left:${Math.random() * 100}%;background:${colors[Math.floor(Math.random() * colors.length)]};animation-delay:${Math.random() * 2}s;animation-duration:${2 + Math.random() * 2}s;border-radius:${Math.random() > .5 ? '50%' : '2px'};width:${6 + Math.random() * 8}px;height:${6 + Math.random() * 8}px;`;
+        const size = 8 + Math.floor(Math.random() * 6) * 2; // pixel-snapped sizes
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100;
+        const delay = Math.random() * 2.5;
+        const duration = 2.5 + Math.random() * 2;
+        const drift = (Math.random() - 0.5) * 200;
+        const rotX = Math.random() * 1080;
+        const rotY = Math.random() * 1080;
+        const rotZ = Math.random() * 720;
+        const animName = `cf_${i}`;
+        const keyframes = `@keyframes ${animName} {
+          0% { transform: translate3d(0, -20px, 0) rotateX(0) rotateY(0) rotateZ(0); opacity: 1; }
+          100% { transform: translate3d(${drift}px, 100vh, ${(Math.random()-0.5)*100}px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg); opacity: 0; }
+        }`;
+        const style = document.createElement('style');
+        style.textContent = keyframes;
+        document.head.appendChild(style);
+        p.style.cssText = `left:${left}%;top:-10px;width:${size}px;height:${size}px;background:${color};animation:${animName} ${duration}s ${delay}s ease-in forwards;`;
         c.appendChild(p);
+        setTimeout(() => style.remove(), (delay + duration) * 1000 + 100);
       }
-      setTimeout(() => { c.style.display = 'none'; }, 5000);
+      setTimeout(() => { c.style.display = 'none'; c.innerHTML = ''; }, 6000);
     }
 
     function showShareCard(emoji, title, text) {
