@@ -26170,11 +26170,11 @@ var Pageant3D = (() => {
               edges,
               new LineBasicMaterial({ color: 65437, transparent: true, opacity: 0.95 })
             );
-            line.position.copy(firstMesh.getWorldPosition(new Vector3()));
-            line.quaternion.copy(firstMesh.getWorldQuaternion(new Quaternion()));
-            line.scale.copy(firstMesh.getWorldScale(new Vector3()));
+            line.position.set(0, 0, 0);
+            line.rotation.set(0, 0, 0);
+            line.scale.set(1, 1, 1);
             line.frustumCulled = false;
-            scene.add(line);
+            firstMesh.add(line);
           } catch (_) {
           }
         }

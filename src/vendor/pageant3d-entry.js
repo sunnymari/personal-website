@@ -145,11 +145,12 @@ export function initPageant3D() {
             edges,
             new THREE.LineBasicMaterial({ color: 0x00ff9d, transparent: true, opacity: 0.95 })
           );
-          line.position.copy(firstMesh.getWorldPosition(new THREE.Vector3()));
-          line.quaternion.copy(firstMesh.getWorldQuaternion(new THREE.Quaternion()));
-          line.scale.copy(firstMesh.getWorldScale(new THREE.Vector3()));
+          // Attach to mesh so transforms always match (Safari-safe)
+          line.position.set(0, 0, 0);
+          line.rotation.set(0, 0, 0);
+          line.scale.set(1, 1, 1);
           line.frustumCulled = false;
-          scene.add(line);
+          firstMesh.add(line);
         } catch (_) { }
       }
 
