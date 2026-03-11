@@ -22182,6 +22182,75 @@ var Pageant3D = (() => {
       }
     }
   };
+  var AxesHelper = class extends LineSegments {
+    constructor(size = 1) {
+      const vertices = [
+        0,
+        0,
+        0,
+        size,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        size,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        size
+      ];
+      const colors = [
+        1,
+        0,
+        0,
+        1,
+        0.6,
+        0,
+        0,
+        1,
+        0,
+        0.6,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0.6,
+        1
+      ];
+      const geometry = new BufferGeometry();
+      geometry.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+      geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
+      const material = new LineBasicMaterial({ vertexColors: true, toneMapped: false });
+      super(geometry, material);
+      this.type = "AxesHelper";
+    }
+    setColors(xAxisColor, yAxisColor, zAxisColor) {
+      const color = new Color();
+      const array = this.geometry.attributes.color.array;
+      color.set(xAxisColor);
+      color.toArray(array, 0);
+      color.toArray(array, 3);
+      color.set(yAxisColor);
+      color.toArray(array, 6);
+      color.toArray(array, 9);
+      color.set(zAxisColor);
+      color.toArray(array, 12);
+      color.toArray(array, 15);
+      this.geometry.attributes.color.needsUpdate = true;
+      return this;
+    }
+    dispose() {
+      this.geometry.dispose();
+      this.material.dispose();
+    }
+  };
   if (typeof __THREE_DEVTOOLS__ !== "undefined") {
     __THREE_DEVTOOLS__.dispatchEvent(new CustomEvent("register", { detail: {
       revision: REVISION
@@ -24721,6 +24790,7 @@ var Pageant3D = (() => {
     const camera = new PerspectiveCamera(30, canvas.clientWidth / canvas.clientHeight, 0.1, 1e3);
     const PS1_SCALE = 0.45;
     const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: false });
+    renderer.setClearColor(0, 0);
     renderer.setSize(
       Math.floor(canvas.clientWidth * PS1_SCALE),
       Math.floor(canvas.clientHeight * PS1_SCALE),
@@ -24754,6 +24824,9 @@ var Pageant3D = (() => {
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.set(0, 0.25, 0);
     scene.add(shadow);
+    const axes = new AxesHelper(0.6);
+    axes.position.set(0, 0.02, 0);
+    scene.add(axes);
     let model = null;
     let mixer = null;
     let idleAction = null;
@@ -24773,7 +24846,7 @@ var Pageant3D = (() => {
         const preBox = new Box3().setFromObject(model);
         const preSize = preBox.getSize(new Vector3());
         const preMaxDim = Math.max(preSize.x, preSize.y, preSize.z) || 1;
-        const targetHeight = 1.65;
+        const targetHeight = 2.15;
         const scale = targetHeight / (preSize.y || preMaxDim);
         model.scale.setScalar(scale);
         const box = new Box3().setFromObject(model);
@@ -24785,15 +24858,27 @@ var Pageant3D = (() => {
         modelSize = finalBox.getSize(new Vector3());
         modelCenter = finalBox.getCenter(new Vector3());
         modelTop = modelSize.y;
+        model.traverse((obj) => {
+          if (!obj.isMesh) return;
+          if (obj.material) {
+            const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+            mats.forEach((m) => {
+              m.side = DoubleSide;
+              m.transparent = false;
+              m.depthWrite = true;
+              m.needsUpdate = true;
+            });
+          }
+        });
         plumbob.position.set(modelCenter.x, modelTop + 0.25, modelCenter.z);
         const fov2 = camera.fov * Math.PI / 180;
-        const margin = 1.25;
+        const margin = 1.55;
         const fitHeight = modelSize.y * margin / 2;
         const fitWidth = modelSize.x * margin / 2;
         const distanceForHeight = fitHeight / Math.tan(fov2 / 2);
         const distanceForWidth = fitWidth / (Math.tan(fov2 / 2) * camera.aspect);
         const distance = Math.max(distanceForHeight, distanceForWidth) + modelSize.z * 0.5;
-        const lookAt = new Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.15, modelCenter.z);
+        const lookAt = new Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.1, modelCenter.z);
         camera.position.set(lookAt.x, lookAt.y, lookAt.z + distance);
         camera.near = Math.max(0.01, distance / 100);
         camera.far = Math.max(1e3, distance * 10);

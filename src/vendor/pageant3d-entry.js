@@ -23,6 +23,7 @@ export function initPageant3D() {
 
   const PS1_SCALE = 0.45;
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+  renderer.setClearColor(0x000000, 0);
   renderer.setSize(
     Math.floor(canvas.clientWidth * PS1_SCALE),
     Math.floor(canvas.clientHeight * PS1_SCALE),
@@ -63,6 +64,11 @@ export function initPageant3D() {
   shadow.position.set(0, 0.25, 0);
   scene.add(shadow);
 
+  // Debug: confirm render loop is alive (remove later)
+  const axes = new THREE.AxesHelper(0.6);
+  axes.position.set(0, 0.02, 0);
+  scene.add(axes);
+
   let model = null;
   let mixer = null;
   let idleAction = null;
@@ -86,7 +92,7 @@ export function initPageant3D() {
       const preBox = new THREE.Box3().setFromObject(model);
       const preSize = preBox.getSize(new THREE.Vector3());
       const preMaxDim = Math.max(preSize.x, preSize.y, preSize.z) || 1;
-      const targetHeight = 1.65; // a bit taller so it feels "full character"
+      const targetHeight = 2.15; // larger so it reads clearly on mobile
       const scale = targetHeight / (preSize.y || preMaxDim);
       model.scale.setScalar(scale);
 
@@ -103,12 +109,26 @@ export function initPageant3D() {
       modelCenter = finalBox.getCenter(new THREE.Vector3());
       modelTop = modelSize.y;
 
+      // Safari safety: ensure meshes render even if glTF materials are picky
+      model.traverse((obj) => {
+        if (!obj.isMesh) return;
+        if (obj.material) {
+          const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+          mats.forEach((m) => {
+            m.side = THREE.DoubleSide;
+            m.transparent = false;
+            m.depthWrite = true;
+            m.needsUpdate = true;
+          });
+        }
+      });
+
       // Plumbob above head
       plumbob.position.set(modelCenter.x, modelTop + 0.25, modelCenter.z);
 
       // Fit camera to model bounds (with margin)
       const fov = (camera.fov * Math.PI) / 180;
-      const margin = 1.25;
+      const margin = 1.55;
       const fitHeight = (modelSize.y * margin) / 2;
       const fitWidth = (modelSize.x * margin) / 2;
       const distanceForHeight = fitHeight / Math.tan(fov / 2);
@@ -116,7 +136,7 @@ export function initPageant3D() {
       const distance = Math.max(distanceForHeight, distanceForWidth) + (modelSize.z * 0.5);
 
       // Slightly above center feels nicer for full-body framing
-      const lookAt = new THREE.Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.15, modelCenter.z);
+      const lookAt = new THREE.Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.1, modelCenter.z);
       camera.position.set(lookAt.x, lookAt.y, lookAt.z + distance);
       camera.near = Math.max(0.01, distance / 100);
       camera.far = Math.max(1000, distance * 10);
