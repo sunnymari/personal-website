@@ -1494,15 +1494,31 @@
     // This runs even if the module import fails (so we can see *something*).
     (function () {
       function setBootStatus(msg) {
-        var canvas = document.getElementById('character-canvas');
-        var area = canvas && canvas.closest ? canvas.closest('.character-area') : null;
-        if (!area) return;
         var el = document.getElementById('threeBootStatus');
         if (!el) {
           el = document.createElement('div');
           el.id = 'threeBootStatus';
-          el.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 14px;border-radius:14px;background:rgba(255,255,255,0.75);backdrop-filter:blur(10px);border:1px solid rgba(255,94,196,0.35);color:rgba(0,0,0,0.7);font-family:Nunito,system-ui,-apple-system,Segoe UI,sans-serif;font-weight:800;font-size:12px;letter-spacing:0.3px;text-align:center;max-width:min(320px,92vw);z-index:6;pointer-events:none;';
-          area.appendChild(el);
+          el.style.cssText = [
+            'position:fixed',
+            'left:50%',
+            'top:12px',
+            'transform:translateX(-50%)',
+            'padding:10px 14px',
+            'border-radius:999px',
+            'background:linear-gradient(135deg,#ff5ec4,#c45aff)',
+            'box-shadow:0 10px 30px rgba(255,94,196,0.35)',
+            'border:2px solid rgba(255,255,255,0.6)',
+            'color:#fff',
+            'font-family:Nunito,system-ui,-apple-system,Segoe UI,sans-serif',
+            'font-weight:900',
+            'font-size:12px',
+            'letter-spacing:0.4px',
+            'text-align:center',
+            'max-width:min(520px, 92vw)',
+            'z-index:20000',
+            'pointer-events:none'
+          ].join(';');
+          document.body.appendChild(el);
         }
         el.textContent = msg;
       }
@@ -1519,10 +1535,18 @@
     })();
   </script>
 
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/vendor/three.module.js"
+      }
+    }
+  </script>
+
   <script type="module">
     // ========== THREE.JS CHARACTER (Rigged GLB Model) ==========
-    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+    import * as THREE from '/vendor/three.module.js';
+    import { GLTFLoader } from '/vendor/GLTFLoader.js';
 
     (function () {
       window.__threeModuleStarted = true;

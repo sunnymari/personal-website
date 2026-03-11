@@ -28,6 +28,10 @@
       "destination": "/pageant.html"
     },
     {
+      "source": "/vendor/(.*)",
+      "destination": "/public/vendor/$1"
+    },
+    {
       "source": "/bookicon.png",
       "destination": "/public/bookicon.png"
     },
