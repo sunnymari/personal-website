@@ -140,18 +140,16 @@ export function initPageant3D() {
       // If we still can't see it, draw an edges/wireframe overlay from geometry.
       if (firstMesh && firstMesh.geometry) {
         try {
-          const wire = new THREE.WireframeGeometry(firstMesh.geometry);
-          const mat = new THREE.LineBasicMaterial({
-            color: 0x00ff9d,
-            transparent: true,
-            opacity: 1,
-            depthTest: false,
-            depthWrite: false
-          });
-          const line = new THREE.LineSegments(wire, mat);
-          line.frustumCulled = false;
-          line.renderOrder = 9999;
+          const edges = new THREE.EdgesGeometry(firstMesh.geometry, 10);
+          const line = new THREE.LineSegments(
+            edges,
+            new THREE.LineBasicMaterial({ color: 0x00ff9d, transparent: true, opacity: 0.95 })
+          );
           // Attach to mesh so transforms always match (Safari-safe)
+          line.position.set(0, 0, 0);
+          line.rotation.set(0, 0, 0);
+          line.scale.set(1, 1, 1);
+          line.frustumCulled = false;
           firstMesh.add(line);
         } catch (_) { }
       }
