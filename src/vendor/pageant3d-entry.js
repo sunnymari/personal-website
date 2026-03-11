@@ -127,12 +127,31 @@ export function initPageant3D() {
 
       // Force-visibility pass: use a simple material that doesn't depend on textures/lights.
       // If the model appears with this, the issue is glTF materials/texture pipeline on Safari.
+      let firstMesh = null;
       model.traverse((obj) => {
         if (!obj.isMesh) return;
+        if (!firstMesh) firstMesh = obj;
+        obj.visible = true;
         obj.frustumCulled = false;
         obj.material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
         obj.material.needsUpdate = true;
       });
+
+      // If we still can't see it, draw an edges/wireframe overlay from geometry.
+      if (firstMesh && firstMesh.geometry) {
+        try {
+          const edges = new THREE.EdgesGeometry(firstMesh.geometry, 10);
+          const line = new THREE.LineSegments(
+            edges,
+            new THREE.LineBasicMaterial({ color: 0x00ff9d, transparent: true, opacity: 0.95 })
+          );
+          line.position.copy(firstMesh.getWorldPosition(new THREE.Vector3()));
+          line.quaternion.copy(firstMesh.getWorldQuaternion(new THREE.Quaternion()));
+          line.scale.copy(firstMesh.getWorldScale(new THREE.Vector3()));
+          line.frustumCulled = false;
+          scene.add(line);
+        } catch (_) { }
+      }
 
       // Debug helpers: show where the model is
       const boxHelper = new THREE.Box3Helper(finalBox, 0xff1493);
