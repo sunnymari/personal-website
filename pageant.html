@@ -1496,6 +1496,56 @@
 
     (function () {
       const canvas = document.getElementById('character-canvas');
+      const characterArea = canvas ? canvas.closest('.character-area') : null;
+
+      function set3dStatus(msg) {
+        if (!characterArea) return;
+        let el = document.getElementById('threeStatus');
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'threeStatus';
+          el.style.cssText = [
+            'position:absolute',
+            'left:50%',
+            'top:50%',
+            'transform:translate(-50%,-50%)',
+            'padding:10px 14px',
+            'border-radius:14px',
+            'background:rgba(255,255,255,0.75)',
+            'backdrop-filter:blur(10px)',
+            'border:1px solid rgba(255,94,196,0.35)',
+            'color:rgba(0,0,0,0.7)',
+            'font-family:Nunito, system-ui, -apple-system, Segoe UI, sans-serif',
+            'font-weight:800',
+            'font-size:12px',
+            'letter-spacing:0.3px',
+            'text-align:center',
+            'max-width:min(320px, 92vw)',
+            'z-index:5',
+            'pointer-events:none'
+          ].join(';');
+          characterArea.appendChild(el);
+        }
+        el.textContent = msg;
+      }
+
+      function clear3dStatus() {
+        const el = document.getElementById('threeStatus');
+        if (el) el.remove();
+      }
+
+      if (!canvas) {
+        return;
+      }
+
+      // Quick WebGL sanity check (gives a visible reason on Safari if blocked)
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (!gl) {
+        set3dStatus('3D disabled: WebGL not available in this browser.');
+        return;
+      }
+
+      set3dStatus('Loading 3D character…');
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(30, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
       // Camera will be positioned after model loads for correct framing
@@ -1552,8 +1602,24 @@
 
       // Load rigged GLB model
       const loader = new GLTFLoader();
-      loader.load('/Meshy_AI_Animation_Idle_11_withSkin.glb', function (gltf) {
+
+      const IDLE_URL = '/Meshy_AI_Animation_Idle_11_withSkin.glb';
+      const ACTION_URL = '/Meshy_AI_Animation_air_squat_withSkin.glb';
+
+      // If these are 404 on production, we’ll show it directly on-screen.
+      Promise.all([
+        fetch(IDLE_URL, { method: 'HEAD' }).then(r => ({ url: IDLE_URL, ok: r.ok, status: r.status })).catch(() => ({ url: IDLE_URL, ok: false, status: 0 })),
+        fetch(ACTION_URL, { method: 'HEAD' }).then(r => ({ url: ACTION_URL, ok: r.ok, status: r.status })).catch(() => ({ url: ACTION_URL, ok: false, status: 0 }))
+      ]).then(results => {
+        const bad = results.find(x => !x.ok);
+        if (bad) {
+          set3dStatus(`3D asset missing: ${bad.url} (${bad.status || 'network error'})`);
+        }
+      });
+
+      loader.load(IDLE_URL, function (gltf) {
         model = gltf.scene;
+        clear3dStatus();
 
         // Calculate bounding box to center and scale
         const box = new THREE.Box3().setFromObject(model);
@@ -1596,7 +1662,7 @@
         }
 
         // Preload action animation
-        loader.load('/Meshy_AI_Animation_air_squat_withSkin.glb', function (actionGltf) {
+        loader.load(ACTION_URL, function (actionGltf) {
           if (actionGltf.animations && actionGltf.animations.length > 0) {
             actionClip = actionGltf.animations[0];
           }
@@ -1606,6 +1672,7 @@
         undefined,
         function (error) {
           console.error('Error loading model:', error);
+          set3dStatus('3D failed to load: model error (see console).');
         });
 
       // Play action animation then return to idle
