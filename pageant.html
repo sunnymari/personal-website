@@ -1,992 +1,2131 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Play Marissa's Pageant Sim</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play Marissa's Pageant Sim</title>
 
-:root {
-  --bubblegum: #ff5ec4;
-  --hotpink: #ff1493;
-  --chrome: #e8c8f0;
-  --lilac: #d4a8ff;
-  --babyblue: #a8d8ff;
-  --bg: #ffe0f5;
-  --card-bg: rgba(255,255,255,0.55);
-  --text-dark: #8b0057;
-}
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap');
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Liquid glass shared vars */
+    :root {
+      --glass: rgba(255, 255, 255, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.6);
+      --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      --glass-blur: blur(20px);
+      --accent: #1a1a1a;
+      --muted: rgba(0, 0, 0, 0.4);
+      --faint: rgba(0, 0, 0, 0.08);
+    }
 
-body {
-  font-family: 'Nunito', sans-serif;
-  background: var(--bg);
-  min-height: 100vh;
-  overflow-x: hidden;
-  padding-top: 48px;
-  background-image:
-    radial-gradient(ellipse at 0% 0%, #ffc2e8 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, #d4a8ff 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 100%, #a8d8ff 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, #ffb8e0 0%, transparent 40%);
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,180,230,0.04) 2px,rgba(255,180,230,0.04) 4px);
-  pointer-events: none; z-index: 0;
-}
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #f5f5f7;
+      height: 100vh;
+      overflow: hidden;
+      color: #1a1a1a;
+      position: relative;
+    }
 
-.sparkle-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-.sparkle-bg span { position: absolute; animation: floatUp linear infinite; opacity: 0.5; }
+    /* Liquid glass mixin */
+    .glass {
+      background: var(--glass);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
 
-@keyframes floatUp {
-  0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.5; }
-  90% { opacity: 0.3; }
-  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-}
+    /* Home link */
+    .home-link {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 1000;
+      color: rgba(0, 0, 0, 0.4);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      transition: color 0.2s;
+    }
 
-/* HEADER */
-header {
-  position: relative; z-index: 10;
-  text-align: center;
-  padding: 28px 20px 18px;
-  background: linear-gradient(180deg, rgba(255,180,230,0.5) 0%, transparent 100%);
-  border-bottom: 3px solid rgba(255,100,180,0.25);
-  backdrop-filter: blur(4px);
-}
+    .home-link:hover {
+      color: #1a1a1a;
+    }
 
-.y2k-deco {
-  font-size: 20px; letter-spacing: 4px; margin-bottom: 6px;
-  display: block; animation: decoPulse 2s ease-in-out infinite;
-}
-@keyframes decoPulse {
-  0%,100% { letter-spacing: 4px; }
-  50% { letter-spacing: 8px; }
-}
+    .sims-layout {
+      padding-top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
 
-.chrome-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: clamp(24px, 5.5vw, 46px);
-  background: linear-gradient(180deg,#fff 0%,#ffb3e0 20%,#ff5ec4 45%,#c45aff 65%,#ff5ec4 80%,#ffb3e0 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 10px rgba(255,94,196,0.5));
-  letter-spacing: 2px; text-transform: uppercase;
-}
+    /* Three.js canvas area */
+    .character-area {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 75vh;
+      overflow: visible;
+    }
 
-.chrome-subtitle {
-  font-family: 'Fredoka One', cursive;
-  font-size: clamp(13px, 2.5vw, 20px);
-  background: linear-gradient(90deg,#d4a8ff,#ff5ec4,#a8d8ff,#ff5ec4,#d4a8ff);
-  background-size: 200% auto;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  animation: holoShift 3s linear infinite;
-  letter-spacing: 3px; margin-top: 4px;
-}
+    #character-canvas {
+      width: 100%;
+      height: 75vh;
+      min-height: 600px;
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+    }
 
-.header-tagline {
-  font-size: 12px; color: #c060a0; margin-top: 8px;
-  letter-spacing: 2px; font-weight: 800; text-transform: uppercase;
-}
+    /* Floating action buttons — liquid glass pills */
+    .action-buttons {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
 
-@keyframes holoShift {
-  0% { background-position: 0% center; }
-  100% { background-position: 200% center; }
-}
+    .action-btn {
+      position: absolute;
+      pointer-events: auto;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 24px;
+      padding: 10px 22px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.65);
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      transition: all 0.25s cubic-bezier(.34, 1.56, .64, 1);
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
 
-/* TICKER */
-.ticker-wrap { overflow: hidden; padding: 7px 0; background: rgba(255,180,230,0.2); border-bottom: 1px solid rgba(255,130,200,0.2); }
-.ticker { white-space: nowrap; display: inline-block; animation: ticker 18s linear infinite; font-size: 13px; color: #c060a0; font-weight: 800; letter-spacing: 1px; }
-@keyframes ticker { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+    .action-btn:hover {
+      transform: scale(1.06) translateY(-2px);
+      background: rgba(255, 255, 255, 0.75);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      color: #1a1a1a;
+    }
 
-/* SIM */
-.sim-section { position: relative; z-index: 10; text-align: center; padding: 20px 16px 10px; }
-.sim-card {
-  display: inline-block;
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(14px);
-  border: 2px solid rgba(255,150,220,0.55);
-  border-radius: 26px; padding: 18px 36px;
-  box-shadow: 0 8px 32px rgba(255,94,196,0.18), inset 0 1px 0 rgba(255,255,255,0.85);
-  position: relative;
-}
-.sim-card::before { content:'🦋'; position:absolute; top:-14px; left:18px; font-size:22px; animation:flutter 2s ease-in-out infinite; }
-.sim-card::after { content:'🦋'; position:absolute; top:-14px; right:18px; font-size:22px; animation:flutter 2s ease-in-out infinite 0.5s; transform:scaleX(-1); }
-@keyframes flutter { 0%,100%{transform:rotate(-10deg) scale(1);} 50%{transform:rotate(10deg) scale(1.1);} }
+    .action-btn.active-node {
+      animation: btnPulse 2.5s ease-in-out infinite;
+    }
 
-.sim-emoji { font-size: 64px; display: block; animation: simBob 2.5s ease-in-out infinite; filter: drop-shadow(0 4px 12px rgba(255,94,196,0.4)); }
-.plumbob { display:inline-block; width:18px; height:18px; background:linear-gradient(135deg,#b8ffec,#5effd4); clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%); animation:plumbobFloat 1.8s ease-in-out infinite; filter:drop-shadow(0 0 6px #5effd4); margin-bottom:4px; }
-.sim-name { font-family:'Fredoka One',cursive; font-size:18px; background:linear-gradient(90deg,#ff5ec4,#c45aff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:2px; margin-top:4px; }
+    .action-btn.locked {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
 
-.sim-stats { display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
-.stat-pill { background:rgba(255,255,255,0.7); backdrop-filter:blur(8px); border:2px solid rgba(255,130,210,0.5); border-radius:50px; padding:6px 14px; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:78px; box-shadow:0 2px 10px rgba(255,94,196,0.12), inset 0 1px 0 rgba(255,255,255,0.9); }
-.stat-label { font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; color:#c060a0; }
-.bar-bg { width:60px; height:7px; background:rgba(255,180,230,0.3); border-radius:10px; overflow:hidden; border:1px solid rgba(255,130,200,0.3); }
-.bar-fill { height:100%; border-radius:10px; transition:width 0.8s cubic-bezier(.34,1.56,.64,1); }
-.stat-val { font-size:10px; font-weight:900; color:#a020a0; }
+    .action-btn.locked:hover {
+      transform: none;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
 
-/* GAME AREA */
-.game-area { position:relative; z-index:10; max-width:920px; margin:0 auto; padding:16px 16px 60px; }
+    .action-btn.completed {
+      background: rgba(255, 255, 255, 0.65);
+      border-color: rgba(76, 217, 100, 0.35);
+      color: rgba(0, 0, 0, 0.55);
+    }
 
-/* CROWN */
-.crown-section { background:rgba(255,255,255,0.6); backdrop-filter:blur(12px); border:2px solid rgba(255,130,210,0.5); border-radius:22px; padding:16px 20px; margin-bottom:20px; box-shadow:0 4px 20px rgba(255,94,196,0.12), inset 0 1px 0 rgba(255,255,255,0.9); text-align:center; }
-.crown-label { font-family:'Fredoka One',cursive; font-size:14px; color:var(--hotpink); letter-spacing:2px; margin-bottom:10px; text-transform:uppercase; }
-.crown-track { width:100%; height:22px; background:rgba(255,180,230,0.25); border-radius:50px; border:2px solid rgba(255,130,200,0.4); overflow:hidden; }
-.crown-fill { height:100%; border-radius:50px; background:linear-gradient(90deg,#ffb3e0,#ff5ec4,#c45aff,#ff5ec4); background-size:200% auto; animation:holoShift 2s linear infinite; transition:width 1s cubic-bezier(.34,1.56,.64,1); position:relative; }
-.crown-fill::after { content:'👑'; position:absolute; right:-4px; top:50%; transform:translateY(-50%); font-size:18px; }
-.crown-pct { font-family:'Fredoka One',cursive; font-size:13px; color:#a020a0; margin-top:8px; letter-spacing:1px; }
+    .action-btn.completed::after {
+      content: ' ·';
+      color: #4cd964;
+    }
 
-/* MAP */
-.section-label { font-family:'Fredoka One',cursive; font-size:16px; text-align:center; background:linear-gradient(90deg,#ff5ec4,#c45aff,#a8d8ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:3px; text-transform:uppercase; margin-bottom:14px; display:block; }
-.map-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:12px; margin-bottom:22px; }
-.map-node { background:rgba(255,255,255,0.55); backdrop-filter:blur(10px); border:2px solid rgba(255,150,210,0.4); border-radius:18px; padding:16px 10px 12px; text-align:center; cursor:pointer; transition:all 0.25s cubic-bezier(.34,1.56,.64,1); position:relative; overflow:hidden; box-shadow:0 4px 16px rgba(255,94,196,0.08), inset 0 1px 0 rgba(255,255,255,0.9); }
-.map-node::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.5) 0%,transparent 50%,rgba(200,150,255,0.08) 100%); border-radius:18px; pointer-events:none; }
-.map-node:hover { transform:translateY(-5px) scale(1.04); box-shadow:0 12px 32px rgba(255,94,196,0.3), inset 0 1px 0 rgba(255,255,255,0.9); border-color:var(--bubblegum); }
-.map-node.active { border-color:var(--hotpink); box-shadow:0 0 0 3px rgba(255,20,147,0.15), 0 8px 24px rgba(255,94,196,0.25); animation:nodePulse 2s ease-in-out infinite; }
-@keyframes nodePulse { 0%,100%{box-shadow:0 0 0 3px rgba(255,20,147,0.15), 0 8px 24px rgba(255,94,196,0.25);} 50%{box-shadow:0 0 0 7px rgba(255,20,147,0.08), 0 12px 32px rgba(255,94,196,0.35);} }
-.map-node.completed { border-color:#c45aff; background:rgba(212,168,255,0.18); }
-.map-node.completed::after { content:'✨'; position:absolute; top:6px; right:8px; font-size:14px; }
-.map-node.locked { opacity:0.5; cursor:not-allowed; filter:grayscale(0.3); }
-.map-node.locked:hover { transform:none; box-shadow:0 4px 16px rgba(255,94,196,0.08); }
-.node-icon { font-size:34px; display:block; margin-bottom:6px; }
-.node-name { font-family:'Fredoka One',cursive; font-size:12px; color:var(--text-dark); line-height:1.3; margin-bottom:6px; }
-.node-tag { display:inline-block; font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:1px; padding:2px 8px; border-radius:50px; background:rgba(255,94,196,0.12); border:1px solid rgba(255,94,196,0.35); color:var(--hotpink); }
+    @keyframes btnPulse {
 
-/* CHOICE PANEL */
-.choice-panel { display:none; background:rgba(255,255,255,0.68); backdrop-filter:blur(16px); border:2px solid rgba(255,130,210,0.5); border-radius:24px; padding:22px; margin-bottom:20px; box-shadow:0 8px 40px rgba(255,94,196,0.18), inset 0 1px 0 rgba(255,255,255,0.95); animation:panelIn 0.35s cubic-bezier(.34,1.56,.64,1); }
-.choice-panel.visible { display:block; }
-@keyframes panelIn { from{opacity:0;transform:scale(0.95) translateY(10px);} to{opacity:1;transform:scale(1) translateY(0);} }
-.panel-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; padding-bottom:12px; border-bottom:2px dashed rgba(255,130,210,0.3); }
-.panel-icon { font-size:40px; }
-.panel-title { font-family:'Fredoka One',cursive; font-size:17px; color:var(--hotpink); letter-spacing:1px; text-transform:uppercase; }
-.panel-desc { font-size:13px; color:#9b4080; margin-bottom:16px; line-height:1.6; font-weight:700; }
-.choices-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.choice-btn { background:rgba(255,255,255,0.72); border:2px solid rgba(200,130,255,0.4); border-radius:16px; padding:14px 12px; cursor:pointer; text-align:left; transition:all 0.2s cubic-bezier(.34,1.56,.64,1); box-shadow:0 2px 10px rgba(200,130,255,0.1), inset 0 1px 0 rgba(255,255,255,0.9); position:relative; overflow:hidden; }
-.choice-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.55) 0%,transparent 60%); pointer-events:none; }
-.choice-btn:hover { border-color:var(--bubblegum); background:rgba(255,240,252,0.92); transform:scale(1.04) translateY(-2px); box-shadow:0 8px 20px rgba(255,94,196,0.22); }
-.choice-emoji { font-size:26px; display:block; margin-bottom:5px; }
-.choice-text { font-size:12px; font-weight:900; color:#8b0057; display:block; }
-.choice-effect { font-size:10px; color:#c45aff; margin-top:3px; display:block; font-weight:800; }
+      0%,
+      100% {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      }
 
-/* RESULT */
-.result-popup { display:none; background:rgba(255,255,255,0.75); backdrop-filter:blur(20px); border:2px solid rgba(255,130,210,0.55); border-radius:24px; padding:24px; margin-bottom:20px; text-align:center; box-shadow:0 12px 50px rgba(255,94,196,0.22), inset 0 1px 0 rgba(255,255,255,0.95); animation:popIn 0.4s cubic-bezier(.34,1.56,.64,1); position:relative; overflow:hidden; }
-.result-popup::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.5) 0%,rgba(212,168,255,0.1) 50%,rgba(168,216,255,0.1) 100%); pointer-events:none; }
-.result-popup.visible { display:block; }
-.result-emoji { font-size:60px; display:block; margin-bottom:10px; }
-.result-title { font-family:'Fredoka One',cursive; font-size:22px; background:linear-gradient(90deg,#ff5ec4,#c45aff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; letter-spacing:1px; text-transform:uppercase; }
-.result-text { font-size:13px; color:#7a3060; line-height:1.7; margin-bottom:16px; font-weight:700; }
-.stat-changes { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:16px; }
-.stat-change { font-size:11px; font-weight:900; padding:4px 10px; border-radius:50px; border:2px solid; }
-.stat-change.up { color:var(--hotpink); border-color:rgba(255,20,147,0.4); background:rgba(255,20,147,0.07); }
-.next-btn { font-family:'Fredoka One',cursive; font-size:15px; background:linear-gradient(135deg,#ff5ec4,#c45aff); color:#fff; border:none; padding:12px 28px; border-radius:50px; cursor:pointer; transition:all 0.2s; letter-spacing:1.5px; box-shadow:0 4px 16px rgba(255,94,196,0.35), inset 0 1px 0 rgba(255,255,255,0.3); text-transform:uppercase; }
-.next-btn:hover { transform:scale(1.07) translateY(-2px); box-shadow:0 8px 24px rgba(255,94,196,0.5); }
+      50% {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 3px rgba(0, 0, 0, 0.04);
+      }
+    }
 
-/* LOG */
-.log-section { background:rgba(255,255,255,0.55); backdrop-filter:blur(10px); border:2px solid rgba(200,130,255,0.4); border-radius:20px; padding:16px; box-shadow:0 4px 20px rgba(200,130,255,0.1); }
-.log-title { font-family:'Fredoka One',cursive; font-size:13px; color:#c45aff; margin-bottom:10px; letter-spacing:2px; text-transform:uppercase; }
-.log-entries { display:flex; flex-direction:column; gap:6px; max-height:170px; overflow-y:auto; }
-.log-entry { font-size:12px; font-weight:700; padding:7px 12px; background:rgba(255,180,230,0.15); border-left:3px solid var(--bubblegum); border-radius:8px; color:#8b3060; animation:slideIn 0.3s ease; }
+    /* Right side — stages 1-4 */
+    .action-btn[data-node="practice"] {
+      top: 25%;
+      right: 18%;
+    }
 
-/* NOTIF */
-.notif { position:fixed; top:20px; right:20px; background:rgba(255,255,255,0.88); backdrop-filter:blur(12px); border:2px solid rgba(255,94,196,0.5); border-radius:16px; padding:12px 18px; font-family:'Fredoka One',cursive; font-size:13px; color:var(--hotpink); z-index:999; display:none; box-shadow:0 4px 20px rgba(255,94,196,0.28); letter-spacing:1px; animation:slideInRight 0.3s ease; max-width:220px; }
-.notif.visible { display:block; }
+    .action-btn[data-node="outfit"] {
+      top: 40%;
+      right: 18%;
+    }
 
-/* CONFETTI */
-.confetti { position:fixed; inset:0; pointer-events:none; z-index:999; display:none; }
-.confetti-piece { position:absolute; animation:confettiFall 3s ease-in forwards; }
+    .action-btn[data-node="platform"] {
+      top: 55%;
+      right: 18%;
+    }
 
-/* ANIMATIONS */
-@keyframes simBob { 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-10px) rotate(2deg);} }
-@keyframes plumbobFloat { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-8px) rotate(180deg);} }
-@keyframes slideIn { from{opacity:0;transform:translateX(-10px);} to{opacity:1;transform:translateX(0);} }
-@keyframes popIn { from{opacity:0;transform:scale(0.85);} to{opacity:1;transform:scale(1);} }
-@keyframes slideInRight { from{opacity:0;transform:translateX(30px);} to{opacity:1;transform:translateX(0);} }
-@keyframes confettiFall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1;} 100%{transform:translateY(100vh) rotate(720deg);opacity:0;} }
+    .action-btn[data-node="strategy"] {
+      top: 70%;
+      right: 18%;
+    }
 
-::-webkit-scrollbar { width:6px; }
-::-webkit-scrollbar-track { background:rgba(255,180,230,0.2); border-radius:10px; }
-::-webkit-scrollbar-thumb { background:var(--bubblegum); border-radius:10px; }
+    /* Left side — stages 5-8 */
+    .action-btn[data-node="interview"] {
+      top: 25%;
+      left: 18%;
+    }
 
-/* ===== COUNTDOWN ===== */
-.countdown-section {
-  position: relative; z-index: 10;
-  text-align: center;
-  padding: 16px 20px 10px;
-}
-.countdown-card {
-  display: inline-block;
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(14px);
-  border: 2px solid rgba(255,130,210,0.5);
-  border-radius: 24px;
-  padding: 16px 28px 18px;
-  box-shadow: 0 8px 32px rgba(255,94,196,0.18), inset 0 1px 0 rgba(255,255,255,0.9);
-  position: relative;
-  width: 100%; max-width: 560px;
-}
-.countdown-card::before { content:'🌟'; position:absolute; top:-14px; left:18px; font-size:22px; animation:flutter 2.2s ease-in-out infinite; }
-.countdown-card::after  { content:'🌟'; position:absolute; top:-14px; right:18px; font-size:22px; animation:flutter 2.2s ease-in-out infinite 0.7s; }
-.countdown-label {
-  font-family: 'Fredoka One', cursive;
-  font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
-  color: #c060a0; margin-bottom: 10px;
-}
-.countdown-event {
-  font-family: 'Fredoka One', cursive;
-  font-size: clamp(14px, 3.5vw, 20px);
-  background: linear-gradient(90deg, #ff5ec4, #c45aff, #ff5ec4);
-  background-size: 200% auto;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  animation: holoShift 3s linear infinite;
-  letter-spacing: 1px; margin-bottom: 14px;
-}
-.countdown-units {
-  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
-}
-.countdown-unit {
-  background: linear-gradient(160deg, rgba(255,255,255,0.85), rgba(255,220,245,0.6));
-  border: 2px solid rgba(255,130,210,0.45);
-  border-radius: 16px;
-  padding: 10px 14px 8px;
-  min-width: 64px;
-  box-shadow: 0 4px 14px rgba(255,94,196,0.12), inset 0 1px 0 rgba(255,255,255,0.95);
-  position: relative; overflow: hidden;
-}
-.countdown-unit::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 60%);
-  pointer-events: none;
-}
-.countdown-num {
-  font-family: 'Fredoka One', cursive;
-  font-size: clamp(24px, 5vw, 36px);
-  background: linear-gradient(180deg, #ff5ec4, #c45aff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  line-height: 1; display: block;
-  filter: drop-shadow(0 2px 4px rgba(255,94,196,0.3));
-}
-.countdown-unit-label {
-  font-size: 9px; font-weight: 900; text-transform: uppercase;
-  letter-spacing: 1.5px; color: #c060a0; margin-top: 4px; display: block;
-}
-.countdown-sep {
-  font-family: 'Fredoka One', cursive;
-  font-size: 28px; color: rgba(255,94,196,0.4);
-  align-self: center; margin-top: -8px;
-  animation: sepPulse 1s ease-in-out infinite;
-}
-@keyframes sepPulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
-.countdown-done {
-  font-family: 'Fredoka One', cursive;
-  font-size: 20px;
-  background: linear-gradient(90deg, #ff5ec4, #c45aff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  letter-spacing: 1px; display: none;
-}
-.countdown-sub {
-  font-size: 11px; font-weight: 800; color: #c060a0;
-  margin-top: 10px; letter-spacing: 1px;
-}
+    .action-btn[data-node="locals"] {
+      top: 40%;
+      left: 18%;
+    }
 
+    .action-btn[data-node="state"] {
+      top: 55%;
+      left: 18%;
+    }
 
-.countdown-share-btn {
-  margin-top: 12px;
-  font-family: 'Fredoka One', cursive;
-  font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
-  background: linear-gradient(135deg, #ff5ec4, #c45aff);
-  color: #fff; border: none; border-radius: 50px;
-  padding: 10px 24px; cursor: pointer;
-  box-shadow: 0 4px 16px rgba(255,94,196,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
-  transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
-  display: inline-flex; align-items: center; gap: 7px;
-}
-.countdown-share-btn:hover { transform: scale(1.06) translateY(-2px); box-shadow: 0 8px 24px rgba(255,94,196,0.5); }
+    .action-btn[data-node="crown"] {
+      top: 70%;
+      left: 18%;
+    }
 
-/* COUNTDOWN SHARE MODAL */
-.cd-share-overlay {
-  position: fixed; inset: 0; z-index: 10050;
-  background: rgba(100,0,60,0.55);
-  backdrop-filter: blur(8px);
-  display: none; align-items: center; justify-content: center; padding: 20px;
-  pointer-events: none;
-}
-.cd-share-overlay.visible { display: flex; animation: fadeIn 0.3s ease; pointer-events: auto; }
-.cd-share-overlay .cd-share-modal { pointer-events: auto; }
+    /* Needs panel (bottom-right) — Sims style */
+    .needs-panel {
+      position: fixed;
+      bottom: 14px;
+      right: 14px;
+      z-index: 900;
+      background: rgba(200, 210, 200, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 2px solid rgba(180, 195, 180, 0.7);
+      border-radius: 8px;
+      padding: 6px 8px;
+      min-width: 200px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
 
-.cd-share-modal {
-  max-width: 400px; width: 100%;
-  background: rgba(255,255,255,0.94);
-  backdrop-filter: blur(20px);
-  border: 3px solid rgba(255,94,196,0.5);
-  border-radius: 28px; padding: 24px 22px 20px;
-  box-shadow: 0 20px 60px rgba(255,20,147,0.25), inset 0 1px 0 rgba(255,255,255,0.95);
-  animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1);
-  position: relative;
-}
-.cd-share-close {
-  position: absolute; top: 14px; right: 14px;
-  background: rgba(255,94,196,0.12); border: none;
-  width: 32px; height: 32px; border-radius: 50%;
-  font-size: 16px; cursor: pointer; color: var(--hotpink);
-  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-}
-.cd-share-close:hover { background: var(--hotpink); color: #fff; }
+    .needs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 10px;
+    }
 
-.cd-share-title {
-  font-family: 'Fredoka One', cursive; font-size: 16px;
-  background: linear-gradient(90deg, #ff5ec4, #c45aff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  text-align: center; margin-bottom: 14px;
-  letter-spacing: 1px; text-transform: uppercase;
-}
+    .need-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
 
-/* THE PREVIEW CARD */
-.cd-card-preview {
-  background: linear-gradient(135deg, #ffe0f5 0%, #f0d0ff 45%, #d8eeff 100%);
-  border-radius: 18px; border: 2px solid rgba(255,130,210,0.4);
-  padding: 20px 16px 16px; text-align: center; margin-bottom: 14px;
-  position: relative; overflow: hidden;
-}
-.cd-card-preview::before {
-  content: ''; position: absolute; inset: 0;
-  background: repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,180,230,0.06) 3px,rgba(255,180,230,0.06) 6px);
-  pointer-events: none;
-}
-.cd-card-deco { font-size: 15px; letter-spacing: 5px; margin-bottom: 6px; display: block; }
-.cd-card-heading {
-  font-family: 'Fredoka One', cursive; font-size: 11px;
-  background: linear-gradient(180deg,#fff 0%,#ffb3e0 30%,#ff5ec4 70%,#c45aff 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
-  filter: drop-shadow(0 1px 3px rgba(255,94,196,0.3));
-}
-.cd-card-crown { font-size: 44px; display: block; margin-bottom: 6px; animation: simBob 2.5s ease-in-out infinite; }
-.cd-card-countdown {
-  display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap;
-}
-.cd-card-unit {
-  background: rgba(255,255,255,0.75); border: 1.5px solid rgba(255,130,210,0.4);
-  border-radius: 12px; padding: 6px 10px; min-width: 52px;
-}
-.cd-card-num {
-  font-family: 'Fredoka One', cursive; font-size: 22px;
-  background: linear-gradient(180deg,#ff5ec4,#c45aff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  display: block; line-height: 1;
-}
-.cd-card-unit-label { font-size: 8px; font-weight: 900; color: #c060a0; text-transform: uppercase; letter-spacing: 1px; }
-.cd-card-event {
-  font-family: 'Fredoka One', cursive; font-size: 13px; color: #ff1493;
-  letter-spacing: 1px; margin-bottom: 4px;
-}
-.cd-card-footer { font-family:'Fredoka One',cursive; font-size:9px; color:#c45aff; letter-spacing:2px; text-transform:uppercase; margin-top:8px; }
-.cd-card-hashtag { font-size:8px; color:rgba(196,90,255,0.65); margin-top:3px; letter-spacing:1px; }
+    .need-label {
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding-left: 2px;
+    }
 
-.cd-share-btns { display: flex; flex-direction: column; gap: 9px; }
-.cd-copy-success { display:none; text-align:center; font-family:'Fredoka One',cursive; font-size:12px; color:#c45aff; margin-top:5px; letter-spacing:1px; animation:popIn 0.3s ease; }
-.cd-copy-success.visible { display:block; }
+    .need-label .need-icon {
+      font-size: 13px;
+    }
 
-/* ===== SHARE CARD ===== */
-.share-overlay {
-  position: fixed; inset: 0; z-index: 9000;
-  background: rgba(100,0,60,0.55);
-  backdrop-filter: blur(8px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.share-overlay.visible { display: flex; animation: fadeIn 0.3s ease; }
-@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+    .need-label-text {
+      color: rgba(0, 0, 0, 0.6);
+      text-transform: capitalize;
+      letter-spacing: 0;
+    }
 
-.share-modal {
-  max-width: 420px; width: 100%;
-  background: rgba(255,255,255,0.94);
-  backdrop-filter: blur(20px);
-  border: 3px solid rgba(255,94,196,0.5);
-  border-radius: 28px;
-  padding: 24px 22px 20px;
-  box-shadow: 0 20px 60px rgba(255,20,147,0.25), inset 0 1px 0 rgba(255,255,255,0.95);
-  animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1);
-  position: relative;
-  max-height: 90vh; overflow-y: auto;
-}
-.share-close {
-  position: absolute; top: 14px; right: 14px;
-  background: rgba(255,94,196,0.12); border: none;
-  width: 32px; height: 32px; border-radius: 50%;
-  font-size: 16px; cursor: pointer; color: var(--hotpink);
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-}
-.share-close:hover { background: var(--hotpink); color: #fff; }
-.share-modal-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: 17px;
-  background: linear-gradient(90deg, #ff5ec4, #c45aff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  text-align: center; margin-bottom: 14px;
-  letter-spacing: 1px; text-transform: uppercase;
-}
-.card-inner {
-  background: linear-gradient(135deg, #ffe0f5 0%, #f0d0ff 45%, #d8eeff 100%);
-  border-radius: 18px;
-  border: 2px solid rgba(255,130,210,0.4);
-  padding: 20px 16px 16px;
-  text-align: center;
-  margin-bottom: 14px;
-  position: relative;
-  overflow: hidden;
-}
-.card-inner::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,180,230,0.06) 3px,rgba(255,180,230,0.06) 6px);
-  pointer-events: none;
-}
-.card-deco { font-size: 15px; letter-spacing: 5px; margin-bottom: 5px; display: block; }
-.card-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: 12px;
-  background: linear-gradient(180deg, #fff 0%, #ffb3e0 30%, #ff5ec4 70%, #c45aff 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px;
-  filter: drop-shadow(0 1px 3px rgba(255,94,196,0.3));
-}
-.card-outcome-emoji { font-size: 50px; display: block; margin: 8px 0 4px; }
-.card-outcome-title {
-  font-family: 'Fredoka One', cursive; font-size: 19px;
-  background: linear-gradient(90deg, #ff5ec4, #c45aff, #ff5ec4);
-  background-size: 200% auto;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  animation: holoShift 3s linear infinite;
-  text-transform: uppercase; letter-spacing: 1px;
-}
-.card-outcome-text {
-  font-size: 11px; color: #9b4080; line-height: 1.5;
-  margin: 6px 0 10px; font-weight: 700; padding: 0 6px;
-}
-.card-stats-row { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
-.card-stat {
-  background: rgba(255,255,255,0.75);
-  border: 1.5px solid rgba(255,130,210,0.4);
-  border-radius: 50px;
-  padding: 3px 9px;
-  font-size: 10px; font-weight: 900; color: #c060a0;
-}
-.card-footer { font-family:'Fredoka One',cursive; font-size:10px; color:#c45aff; letter-spacing:2px; text-transform:uppercase; }
-.card-hashtag { font-size:9px; color:rgba(196,90,255,0.65); margin-top:3px; letter-spacing:1px; }
-.share-btns { display: flex; flex-direction: column; gap: 9px; }
-.share-btn {
-  font-family: 'Fredoka One', cursive; font-size: 14px; letter-spacing: 1px;
-  padding: 12px 20px; border-radius: 50px; border: none; cursor: pointer;
-  transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
-  display: flex; align-items: center; justify-content: center;
-  gap: 8px; text-transform: uppercase; width: 100%;
-}
-.share-btn-main { background: linear-gradient(135deg, #ff5ec4, #c45aff); color: #fff; box-shadow: 0 4px 16px rgba(255,94,196,0.35); }
-.share-btn-main:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 8px 24px rgba(255,94,196,0.5); }
-.share-btn-copy { background: rgba(255,255,255,0.85); color: var(--hotpink); border: 2px solid rgba(255,94,196,0.4); }
-.share-btn-copy:hover { background: rgba(255,94,196,0.08); transform: scale(1.03); }
-.copy-success { display:none; text-align:center; font-family:'Fredoka One',cursive; font-size:12px; color:#c45aff; margin-top:5px; letter-spacing:1px; animation:popIn 0.3s ease; }
-.copy-success.visible { display:block; }
+    .need-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
 
-</style>
+    .need-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.8s cubic-bezier(.34, 1.56, .64, 1);
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    /* Portrait (bottom-left) — hidden for now */
+    .portrait-panel {
+      display: none;
+    }
+
+    /* Crown progress — Sims style */
+    .crown-progress {
+      position: fixed;
+      bottom: 140px;
+      right: 14px;
+      min-width: 200px;
+      z-index: 900;
+      background: rgba(200, 210, 200, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 2px solid rgba(180, 195, 180, 0.7);
+      border-radius: 8px;
+      padding: 6px 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .crown-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.6);
+      margin-bottom: 4px;
+      padding-left: 2px;
+    }
+
+    .crown-track {
+      width: 100%;
+      height: 14px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 7px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .crown-fill {
+      height: 100%;
+      border-radius: 7px;
+      background: linear-gradient(90deg, #4db84d, #6dd66d);
+      transition: width 1s cubic-bezier(.34, 1.56, .64, 1);
+      position: relative;
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .crown-fill::after {
+      content: '';
+    }
+
+    .crown-pct {
+      font-size: 10px;
+      color: rgba(0, 0, 0, 0.5);
+      margin-top: 4px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    /* Countdown — fixed top-left */
+    .countdown-bar {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: 50px;
+      padding: 6px 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      white-space: nowrap;
+    }
+
+    .cd-event {
+      font-size: 9px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.3);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: none;
+    }
+
+    .cd-units {
+      display: flex;
+      gap: 0;
+      align-items: center;
+    }
+
+    .cd-unit {
+      text-align: center;
+      padding: 0 3px;
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+
+    .cd-num {
+      font-size: 16px;
+      font-weight: 900;
+      color: rgba(0, 0, 0, 0.6);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cd-unit-label {
+      font-size: 8px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.2);
+      text-transform: lowercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cd-sep {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.1);
+      padding: 0 1px;
+    }
+
+    .cd-done {
+      font-size: 12px;
+      font-weight: 900;
+      color: #1a1a1a;
+      display: none;
+    }
+
+    .cd-sub {
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.2);
+      border-left: 1px solid rgba(0, 0, 0, 0.08);
+      padding-left: 12px;
+    }
+
+    .cd-share-btn {
+      font-family: 'Nunito', sans-serif;
+      font-size: 8px;
+      font-weight: 800;
+      background: rgba(0, 0, 0, 0.04);
+      color: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 50px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .cd-share-btn:hover {
+      background: rgba(0, 0, 0, 0.08);
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Modals — liquid glass */
+    .choice-overlay,
+    .result-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(245, 245, 247, 0.6);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .choice-overlay.visible,
+    .result-overlay.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .choice-modal {
+      max-width: 500px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      animation: popIn 0.35s cubic-bezier(.34, 1.56, .64, 1);
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .choice-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .choice-modal-icon {
+      font-size: 28px;
+      width: 44px;
+      height: 44px;
+      background: rgba(0, 0, 0, 0.04);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .choice-modal-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #1a1a1a;
+      letter-spacing: 0.5px;
+    }
+
+    .choice-modal-desc {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 1.6;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .choices-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 16px;
+      padding: 14px 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s cubic-bezier(.34, 1.56, .64, 1);
+      color: #1a1a1a;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .choice-btn:hover {
+      background: rgba(255, 255, 255, 0.7);
+      transform: scale(1.03) translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .choice-emoji {
+      display: block;
+      margin-bottom: 5px;
+      line-height: 0;
+    }
+
+    .choice-emoji canvas {
+      image-rendering: pixelated;
+    }
+
+    .choice-text {
+      font-size: 12px;
+      font-weight: 900;
+      color: #1a1a1a;
+      display: block;
+    }
+
+    .choice-effect {
+      font-size: 10px;
+      color: rgba(0, 0, 0, 0.35);
+      margin-top: 3px;
+      display: block;
+      font-weight: 800;
+    }
+
+    .choice-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(0, 0, 0, 0.04);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      color: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .choice-close:hover {
+      background: rgba(0, 0, 0, 0.08);
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .result-modal {
+      max-width: 440px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 24px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      animation: popIn 0.4s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    .result-emoji {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .result-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .result-text {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 1.7;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .stat-changes {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .stat-change {
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 12px;
+      border-radius: 50px;
+    }
+
+    .stat-change.up {
+      color: #1a1a1a;
+      background: rgba(0, 0, 0, 0.05);
+      border: none;
+    }
+
+    .result-btns {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .next-btn {
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .next-btn:hover {
+      transform: scale(1.04) translateY(-1px);
+      background: #333;
+    }
+
+    .share-result-btn {
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      background: rgba(0, 0, 0, 0.06);
+      color: rgba(0, 0, 0, 0.5);
+      border: none;
+      padding: 12px 28px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .share-result-btn:hover {
+      background: rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    /* Log button — fixed bottom-left above portrait */
+    .log-btn {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 900;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .log-btn img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .log-btn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Log overlay */
+    .log-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10050;
+      background: rgba(245, 245, 247, 0.6);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .log-overlay.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .log-modal {
+      max-width: 440px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      animation: popIn 0.35s cubic-bezier(.34, 1.56, .64, 1);
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .log-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(0, 0, 0, 0.04);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      color: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .log-close:hover {
+      background: rgba(0, 0, 0, 0.08);
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .log-title {
+      font-size: 10px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.3);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .log-entries {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 12px;
+      background: rgba(0, 0, 0, 0.03);
+      border-left: 2px solid rgba(0, 0, 0, 0.12);
+      border-radius: 8px;
+      color: rgba(0, 0, 0, 0.45);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Notification — liquid glass */
+    .notif {
+      position: fixed;
+      top: 60px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 900;
+      color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      animation: slideInRight 0.3s ease;
+    }
+
+    .notif.visible {
+      display: block;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Confetti */
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+      perspective: 600px;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      image-rendering: pixelated;
+      box-shadow: inset -2px -2px 0 rgba(0,0,0,0.2), inset 2px 2px 0 rgba(255,255,255,0.3);
+    }
+
+    /* Share overlays — liquid glass */
+    .share-overlay,
+    .cd-share-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10050;
+      background: rgba(245, 245, 247, 0.6);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      pointer-events: none;
+    }
+
+    .share-overlay.visible,
+    .cd-share-overlay.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+      pointer-events: auto;
+    }
+
+    .share-modal,
+    .cd-share-modal {
+      max-width: 400px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      animation: popIn 0.4s cubic-bezier(.34, 1.56, .64, 1);
+      pointer-events: auto;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .share-close,
+    .cd-share-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(0, 0, 0, 0.04);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 14px;
+      cursor: pointer;
+      color: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .share-close:hover,
+    .cd-share-close:hover {
+      background: rgba(0, 0, 0, 0.08);
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .share-modal-title,
+    .cd-share-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: rgba(0, 0, 0, 0.5);
+      text-align: center;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .card-inner,
+    .cd-card-preview {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      padding: 20px 16px;
+      text-align: center;
+      margin-bottom: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .card-deco,
+    .cd-card-deco {
+      font-size: 11px;
+      letter-spacing: 6px;
+      margin-bottom: 5px;
+      display: block;
+      color: rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title,
+    .cd-card-heading {
+      font-size: 10px;
+      font-weight: 900;
+      color: rgba(0, 0, 0, 0.3);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card-outcome-emoji,
+    .cd-card-crown {
+      font-size: 36px;
+      display: block;
+      margin: 8px 0;
+    }
+
+    .card-outcome-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #1a1a1a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-outcome-text {
+      font-size: 11px;
+      color: rgba(0, 0, 0, 0.4);
+      line-height: 1.5;
+      margin: 6px 0 10px;
+      font-weight: 700;
+    }
+
+    .card-stats-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .card-stat {
+      background: rgba(0, 0, 0, 0.04);
+      border-radius: 50px;
+      padding: 3px 10px;
+      font-size: 10px;
+      font-weight: 900;
+      color: rgba(0, 0, 0, 0.4);
+      border: none;
+    }
+
+    .card-footer,
+    .cd-card-footer {
+      font-size: 9px;
+      font-weight: 900;
+      color: rgba(0, 0, 0, 0.2);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .card-hashtag,
+    .cd-card-hashtag {
+      font-size: 8px;
+      color: rgba(0, 0, 0, 0.15);
+      margin-top: 3px;
+      letter-spacing: 1px;
+    }
+
+    .cd-card-event {
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(0, 0, 0, 0.5);
+      margin-bottom: 4px;
+    }
+
+    .cd-card-countdown {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .cd-card-unit {
+      background: rgba(0, 0, 0, 0.04);
+      border-radius: 10px;
+      padding: 6px 10px;
+      min-width: 50px;
+      border: none;
+    }
+
+    .cd-card-num {
+      font-size: 20px;
+      font-weight: 900;
+      color: #1a1a1a;
+      display: block;
+      line-height: 1;
+    }
+
+    .cd-card-unit-label {
+      font-size: 8px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.25);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .share-btns,
+    .cd-share-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .share-btn {
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 12px 20px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-transform: uppercase;
+      width: 100%;
+    }
+
+    .share-btn-main {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .share-btn-main:hover {
+      transform: scale(1.03) translateY(-1px);
+      background: #333;
+    }
+
+    .share-btn-copy {
+      background: rgba(0, 0, 0, 0.05);
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    .share-btn-copy:hover {
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .copy-success,
+    .cd-copy-success {
+      display: none;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(0, 0, 0, 0.4);
+      margin-top: 5px;
+      animation: popIn 0.3s ease;
+    }
+
+    .copy-success.visible,
+    .cd-copy-success.visible {
+      display: block;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        overflow: hidden;
+        height: 100vh;
+      }
+
+      .sims-layout {
+        height: 100vh;
+        justify-content: center;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+
+      #character-canvas {
+        height: 60vh;
+        min-height: 300px;
+      }
+
+      /* Keep buttons on sides like desktop */
+      .character-area {
+        min-height: auto;
+      }
+
+      .action-btn {
+        font-size: 11px;
+        padding: 8px 12px;
+      }
+
+      /* Tighten button positions for narrower screen */
+      .action-btn[data-node="practice"] { right: 2%; }
+      .action-btn[data-node="outfit"] { right: 2%; }
+      .action-btn[data-node="platform"] { right: 2%; }
+      .action-btn[data-node="strategy"] { right: 2%; }
+      .action-btn[data-node="interview"] { left: 2%; }
+      .action-btn[data-node="locals"] { left: 2%; }
+      .action-btn[data-node="state"] { left: 2%; }
+      .action-btn[data-node="crown"] { left: 2%; }
+
+      /* Countdown — compact on mobile */
+      .countdown-bar {
+        padding: 5px 12px;
+        gap: 8px;
+      }
+
+      .cd-num {
+        font-size: 14px;
+      }
+
+      .cd-sub {
+        display: none;
+      }
+
+      .cd-share-btn {
+        display: none;
+      }
+
+      /* Needs panel — bottom, full width */
+      .needs-panel {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        min-width: unset;
+        border-radius: 8px 8px 0 0;
+        padding: 8px 12px;
+      }
+
+      .needs-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px 12px;
+      }
+
+      /* Crown progress — compact above needs panel */
+      .crown-progress {
+        position: fixed;
+        bottom: 100px;
+        right: 0;
+        left: 0;
+        min-width: unset;
+        width: auto;
+        margin: 0 16px;
+        border-radius: 10px;
+        padding: 8px 14px;
+      }
+
+      .crown-label {
+        font-size: 7px;
+        letter-spacing: 1px;
+        margin-bottom: 3px;
+      }
+
+      .crown-track {
+        height: 4px;
+      }
+
+      .crown-pct {
+        font-size: 9px;
+        margin-top: 3px;
+      }
+
+      /* Portrait — hidden on mobile */
+      .portrait-panel {
+        display: none;
+      }
+
+      /* Home link */
+      .home-link {
+        top: 10px;
+        left: 10px;
+        font-size: 11px;
+      }
+
+      /* Journey log */
+      .log-btn {
+        top: 10px;
+        right: 10px;
+      }
+
+      .log-btn img {
+        width: 36px;
+        height: 36px;
+      }
+
+      /* Modals */
+      .choice-modal {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      .choices-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-modal {
+        padding: 20px;
+      }
+
+      /* Log modal */
+      .log-modal {
+        width: 95%;
+        max-height: 80vh;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div style="position:fixed;top:0;left:0;right:0;z-index:10000;background:rgba(255,105,180,0.95);padding:8px 16px;text-align:center;font-size:14px;backdrop-filter:blur(8px);border-bottom:2px solid rgba(255,255,255,0.3);">
-  <a href="/" style="color:#fff;text-decoration:none;font-weight:bold;">marissa codes</a>
-  <span style="color:rgba(255,255,255,0.8);margin:0 10px;">|</span>
-  <a href="/about" style="color:#fff;text-decoration:none;">About</a>
-  <a href="/blog" style="color:#fff;text-decoration:none;margin-left:12px;">Blog</a>
-  <a href="/projects" style="color:#fff;text-decoration:none;margin-left:12px;">Projects</a>
-  <a href="/reading" style="color:#fff;text-decoration:none;margin-left:12px;">Reading</a>
-</div>
+  <div class="confetti" id="confetti"></div>
+  <div class="notif" id="notif">New stage unlocked!</div>
 
-<div class="sparkle-bg" id="sparkleBg"></div>
-<div class="confetti" id="confetti"></div>
-<div class="notif" id="notif">✨ New stage unlocked!</div>
+  <a href="/" class="home-link">marissa codes</a>
 
-<header>
-  <span class="y2k-deco">💋 ✨ 🦋 💅 👑 🌸 💖 🦋 ✨ 💋</span>
-  <div class="chrome-title">Marissa's Pageant Life</div>
-  <div class="chrome-subtitle">✦ Miss America California ✦</div>
-  <div class="header-tagline">~ choose your destiny, queen ~</div>
-</header>
+  <!-- Countdown (top center pill) -->
+  <div class="countdown-bar">
+    <div class="cd-units" id="countdownUnits">
+      <div class="cd-unit"><span class="cd-num" id="cdDays">--</span><span class="cd-unit-label">d</span></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cdHours">--</span><span class="cd-unit-label">h</span></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cdMins">--</span><span class="cd-unit-label">m</span></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit"><span class="cd-num" id="cdSecs">--</span><span class="cd-unit-label">s</span></div>
+    </div>
+    <div class="cd-done" id="cdDone">Pageant Day</div>
+    <div class="cd-sub" id="cdSub">until the crown</div>
+    <button type="button" class="cd-share-btn" onclick="window.openCdShare && window.openCdShare();">Share</button>
+  </div>
 
-<div class="ticker-wrap">
-  <div class="ticker">💄 PAGEANT LIFE &nbsp;&nbsp; 👑 MISS AMERICA CALIFORNIA &nbsp;&nbsp; ✨ MARISSA IS THAT GIRL &nbsp;&nbsp; 💋 CROWN INCOMING &nbsp;&nbsp; 🌸 BORN TO WIN &nbsp;&nbsp; 🦋 CALIFORNIA QUEEN &nbsp;&nbsp; 💅 GLAM UP &nbsp;&nbsp; 💖 LET'S GO MARISSA &nbsp;&nbsp; 🎀 SLAY ALL DAY &nbsp;&nbsp; ✨ QUEEN BEHAVIOR ONLY &nbsp;&nbsp;</div>
-</div>
-
-
-<!-- COUNTDOWN -->
-<div class="countdown-section">
-  <div class="countdown-card">
-    <div class="countdown-label">⏳ competition countdown ⏳</div>
-    <div class="countdown-event">👑 Miss America California — June 15, 2026 👑</div>
-    <div class="countdown-units" id="countdownUnits">
-      <div class="countdown-unit">
-        <span class="countdown-num" id="cdDays">--</span>
-        <span class="countdown-unit-label">Days</span>
-      </div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-unit">
-        <span class="countdown-num" id="cdHours">--</span>
-        <span class="countdown-unit-label">Hours</span>
-      </div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-unit">
-        <span class="countdown-num" id="cdMins">--</span>
-        <span class="countdown-unit-label">Mins</span>
-      </div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-unit">
-        <span class="countdown-num" id="cdSecs">--</span>
-        <span class="countdown-unit-label">Secs</span>
+  <div class="sims-layout">
+    <!-- 3D Character Area -->
+    <div class="character-area">
+      <canvas id="character-canvas"></canvas>
+      <div class="action-buttons" id="actionButtons">
+        <button class="action-btn active-node" data-node="practice" onclick="openNode('practice')">Practice & Prep</button>
+        <button class="action-btn locked" data-node="outfit" onclick="openNode('outfit')">Change Outfit</button>
+        <button class="action-btn locked" data-node="platform" onclick="openNode('platform')">Platform & Cause</button>
+        <button class="action-btn locked" data-node="interview" onclick="openNode('interview')">Interview Prep</button>
+        <button class="action-btn locked" data-node="strategy" onclick="openNode('strategy')">Competition Strategy</button>
+        <button class="action-btn locked" data-node="locals" onclick="openNode('locals')">Local Title Win</button>
+        <button class="action-btn locked" data-node="state" onclick="openNode('state')">State Competition</button>
+        <button class="action-btn locked" data-node="crown" onclick="openNode('crown')">Miss America California</button>
       </div>
     </div>
-    <div class="countdown-done" id="cdDone">👑 IT'S PAGEANT DAY QUEEN!! 👑</div>
-    <div class="countdown-sub" id="cdSub">until Marissa takes the crown 💋</div>
-    <div><button type="button" class="countdown-share-btn" onclick="window.openCdShare && window.openCdShare();">📸 Share the Countdown</button></div>
-  </div>
-</div>
 
-<div class="sim-section">
-  <div class="sim-card">
-    <div style="display:flex;flex-direction:column;align-items:center;">
-      <div class="plumbob"></div>
-      <span class="sim-emoji">👩‍🦱</span>
-      <div class="sim-name">✦ MARISSA ✦</div>
-    </div>
-  </div>
-  <div class="sim-stats" id="simStats">
-    <div class="stat-pill">
-      <span class="stat-label">💄 Glam</span>
-      <div class="bar-bg"><div class="bar-fill" id="bar-glam" style="width:40%;background:linear-gradient(90deg,#ff5ec4,#ff1493)"></div></div>
-      <span class="stat-val" id="val-glam">40</span>
-    </div>
-    <div class="stat-pill">
-      <span class="stat-label">🎭 Talent</span>
-      <div class="bar-bg"><div class="bar-fill" id="bar-talent" style="width:50%;background:linear-gradient(90deg,#c45aff,#9b30ff)"></div></div>
-      <span class="stat-val" id="val-talent">50</span>
-    </div>
-    <div class="stat-pill">
-      <span class="stat-label">💬 Charm</span>
-      <div class="bar-bg"><div class="bar-fill" id="bar-charm" style="width:45%;background:linear-gradient(90deg,#ffb3e0,#ff5ec4)"></div></div>
-      <span class="stat-val" id="val-charm">45</span>
-    </div>
-    <div class="stat-pill">
-      <span class="stat-label">💛 Impact</span>
-      <div class="bar-bg"><div class="bar-fill" id="bar-impact" style="width:35%;background:linear-gradient(90deg,#a8d8ff,#7ab8ff)"></div></div>
-      <span class="stat-val" id="val-impact">35</span>
-    </div>
-  </div>
-</div>
 
-<div class="game-area">
-  <div class="crown-section">
-    <div class="crown-label">👑 path to miss america california 👑</div>
-    <div class="crown-track"><div class="crown-fill" id="crownBar" style="width:0%"></div></div>
-    <div class="crown-pct" id="crownPct">0% — omg let's gooo bestie! 💋</div>
+
   </div>
 
-  <span class="section-label">✦ your pageant journey map ✦</span>
-  <div class="map-grid" id="mapGrid">
-    <div class="map-node active" data-node="practice" onclick="openNode('practice')">
-      <span class="node-icon">💅</span><div class="node-name">Practice &amp; Prep</div><span class="node-tag">Start Here! ✨</span>
-    </div>
-    <div class="map-node locked" data-node="outfit" onclick="openNode('outfit')">
-      <span class="node-icon">👗</span><div class="node-name">Outfit &amp; Crown Choices</div><span class="node-tag">🔒 Locked</span>
-    </div>
-    <div class="map-node locked" data-node="platform" onclick="openNode('platform')">
-      <span class="node-icon">💛</span><div class="node-name">Platform &amp; Cause</div><span class="node-tag">🔒 Locked</span>
-    </div>
-    <div class="map-node locked" data-node="strategy" onclick="openNode('strategy')">
-      <span class="node-icon">🎯</span><div class="node-name">Competition Strategy</div><span class="node-tag">🔒 Locked</span>
-    </div>
-    <div class="map-node locked" data-node="interview" onclick="openNode('interview')">
-      <span class="node-icon">🎤</span><div class="node-name">Interview Prep</div><span class="node-tag">🔒 Locked</span>
-    </div>
-    <div class="map-node locked" data-node="locals" onclick="openNode('locals')">
-      <span class="node-icon">🥇</span><div class="node-name">Local Title Win!</div><span class="node-tag">🔒 Locked</span>
-    </div>
-    <div class="map-node locked" data-node="state" onclick="openNode('state')">
-      <span class="node-icon">🌟</span><div class="node-name">State Competition</div><span class="node-tag">🔒 Locked</span>
-    </div>
-    <div class="map-node locked" data-node="crown" onclick="openNode('crown')">
-      <span class="node-icon">👑</span><div class="node-name">Miss America California</div><span class="node-tag">🔒 Final Stage!</span>
+  <!-- Journey Log Button (fixed bottom-left) -->
+  <button class="log-btn" onclick="openLog()"><img src="/bookicon.png" alt="Journey Log"></button>
+
+  <!-- Journey Log Overlay -->
+  <div class="log-overlay" id="logOverlay" onclick="if(event.target===this) closeLog();">
+    <div class="log-modal">
+      <button class="log-close" onclick="closeLog()">✕</button>
+      <div class="log-title">Marissa's Journey Log</div>
+      <div class="log-entries" id="logEntries">
+        <div class="log-entry">Marissa begins her journey to Miss America California...</div>
+      </div>
     </div>
   </div>
 
-  <div class="choice-panel" id="choicePanel">
-    <div class="panel-header">
-      <span class="panel-icon" id="panelIcon">💅</span>
-      <div class="panel-title" id="panelTitle">Loading...</div>
+  <!-- Portrait (bottom-left) -->
+  <div class="portrait-panel">
+    <img src="/cornerUI.png" alt="Marissa">
+  </div>
+
+  <!-- Needs Panel (bottom-right) -->
+  <!-- Crown Progress -->
+  <div class="crown-progress">
+    <div class="crown-label">Path to Miss America California</div>
+    <div class="crown-track">
+      <div class="crown-fill" id="crownBar" style="width:0%"></div>
     </div>
-    <div class="panel-desc" id="panelDesc"></div>
-    <div class="choices-grid" id="choicesGrid"></div>
+    <div class="crown-pct" id="crownPct">0% — let's gooo!</div>
   </div>
 
-  <div class="result-popup" id="resultPopup">
-    <span class="result-emoji" id="resultEmoji">✨</span>
-    <div class="result-title" id="resultTitle">Result</div>
-    <div class="result-text" id="resultText"></div>
-    <div class="stat-changes" id="statChanges"></div>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button class="next-btn" onclick="closeResult()">continue ▶︎</button><button class="next-btn" id="shareResultBtn" style="background:linear-gradient(135deg,#c45aff,#ff5ec4);display:none;" onclick="showShareCard(document.getElementById('resultEmoji').textContent, document.getElementById('resultTitle').textContent, document.getElementById('resultText').textContent)">📸 Share Result</button></div>
-  </div>
-
-  <div class="log-section">
-    <div class="log-title">🌸 Marissa's Journey Log 🌸</div>
-    <div class="log-entries" id="logEntries">
-      <div class="log-entry">✨ Marissa begins her journey to Miss America California... omg this is it!</div>
+  <div class="needs-panel">
+    <div class="needs-grid">
+      <div class="need-item">
+        <div class="need-label"><span class="need-label-text">Glam</span></div>
+        <div class="need-bar-bg">
+          <div class="need-bar-fill" id="bar-glam" style="width:40%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
+        </div>
+      </div>
+      <div class="need-item">
+        <div class="need-label"><span class="need-label-text">Talent</span></div>
+        <div class="need-bar-bg">
+          <div class="need-bar-fill" id="bar-talent" style="width:50%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
+        </div>
+      </div>
+      <div class="need-item">
+        <div class="need-label"><span class="need-label-text">Charm</span></div>
+        <div class="need-bar-bg">
+          <div class="need-bar-fill" id="bar-charm" style="width:45%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
+        </div>
+      </div>
+      <div class="need-item">
+        <div class="need-label"><span class="need-label-text">Impact</span></div>
+        <div class="need-bar-bg">
+          <div class="need-bar-fill" id="bar-impact" style="width:35%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
+        </div>
+      </div>
+      <div class="need-item">
+        <div class="need-label"><span class="need-label-text">Energy</span></div>
+        <div class="need-bar-bg">
+          <div class="need-bar-fill" id="bar-energy" style="width:70%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
+        </div>
+      </div>
+      <div class="need-item">
+        <div class="need-label"><span class="need-label-text">Fun</span></div>
+        <div class="need-bar-bg">
+          <div class="need-bar-fill" id="bar-fun" style="width:85%;background:linear-gradient(90deg,#4db84d,#6dd66d)"></div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-const sparkleEmojis = ['✨','💖','🌸','💋','🦋','💅','🌟','💕','👑','🎀','💗','🩷'];
-const bg = document.getElementById('sparkleBg');
-for (let i = 0; i < 20; i++) {
-  const s = document.createElement('span');
-  s.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
-  s.style.cssText = `left:${Math.random()*100}%;animation-delay:${Math.random()*12}s;animation-duration:${8+Math.random()*8}s;font-size:${11+Math.random()*14}px;`;
-  bg.appendChild(s);
-}
+  <!-- Choice Panel -->
+  <div class="choice-overlay" id="choicePanel">
+    <div class="choice-modal" style="position:relative;">
+      <button class="choice-close" onclick="closeChoicePanel()">✕</button>
+      <div class="choice-modal-header">
+        <span class="choice-modal-icon" id="panelIcon">💅</span>
+        <div class="choice-modal-title" id="panelTitle">Loading...</div>
+      </div>
+      <div class="choice-modal-desc" id="panelDesc"></div>
+      <div class="choices-grid" id="choicesGrid"></div>
+    </div>
+  </div>
 
-// Countdown to pageant day
-const PAGEANT_DATE = new Date('2026-06-15T00:00:00');
+  <!-- Result Popup -->
+  <div class="result-overlay" id="resultPopup">
+    <div class="result-modal">
+      <span class="result-emoji" id="resultEmoji"></span>
+      <div class="result-title" id="resultTitle">Result</div>
+      <div class="result-text" id="resultText"></div>
+      <div class="stat-changes" id="statChanges"></div>
+      <div class="result-btns">
+        <button class="next-btn" onclick="closeResult()">Continue</button>
+        <button class="share-result-btn" id="shareResultBtn" style="display:none;"
+          onclick="showShareCard('⭐', document.getElementById('resultTitle').textContent, document.getElementById('resultText').textContent)">Share</button>
+      </div>
+    </div>
+  </div>
 
-function updateCountdown() {
-  const now = new Date();
-  let diff = PAGEANT_DATE.getTime() - now.getTime();
+  <!-- Countdown Share Modal -->
+  <div class="cd-share-overlay" id="cdShareOverlay" onclick="if(event.target===this) closeCdShare();">
+    <div class="cd-share-modal" onclick="event.stopPropagation();">
+      <button type="button" class="cd-share-close" onclick="window.closeCdShare && window.closeCdShare();">✕</button>
+      <div class="cd-share-title">Share the Countdown</div>
+      <div class="cd-card-preview">
+        <span class="cd-card-deco">· · ·</span>
+        <div class="cd-card-heading">Miss America California · June 15, 2026</div>
+        <span class="cd-card-crown"
+          style="font-size:24px;font-weight:900;color:rgba(0,0,0,0.15);letter-spacing:4px;">CROWN</span>
+        <div class="cd-card-countdown">
+          <div class="cd-card-unit"><span class="cd-card-num" id="previewDays">--</span><span
+              class="cd-card-unit-label">Days</span></div>
+          <div class="cd-card-unit"><span class="cd-card-num" id="previewHours">--</span><span
+              class="cd-card-unit-label">Hours</span></div>
+          <div class="cd-card-unit"><span class="cd-card-num" id="previewMins">--</span><span
+              class="cd-card-unit-label">Mins</span></div>
+          <div class="cd-card-unit"><span class="cd-card-num" id="previewSecs">--</span><span
+              class="cd-card-unit-label">Secs</span></div>
+        </div>
+        <div class="cd-card-event">Marissa is competing for Miss America California</div>
+        <div class="cd-card-footer">marissaspageantlife · 2026</div>
+        <div class="cd-card-hashtag">#MissAmericaCalifornia #PageantLife #MarissaQueenEra</div>
+      </div>
+      <div class="cd-share-btns">
+        <button class="share-btn share-btn-main" onclick="saveCdCard()">Save Card</button>
+        <button class="share-btn share-btn-copy" onclick="copyCdCaption()">Copy Caption</button>
+        <div class="cd-copy-success" id="cdCopySuccess">Copied!</div>
+      </div>
+    </div>
+  </div>
 
-  const unitsEl = document.getElementById('countdownUnits');
-  const doneEl = document.getElementById('cdDone');
+  <!-- Share Card Overlay -->
+  <div class="share-overlay" id="shareOverlay">
+    <div class="share-modal">
+      <button class="share-close" onclick="closeShare()">✕</button>
+      <div class="share-modal-title">Your Pageant Destiny Card</div>
+      <div class="card-inner" id="shareCard">
+        <span class="card-deco">· · ·</span>
+        <div class="card-title">Marissa's Pageant Life · Miss America California</div>
+        <span class="card-outcome-emoji" id="cardEmoji">👑</span>
+        <div class="card-outcome-title" id="cardTitle">Queen!</div>
+        <div class="card-outcome-text" id="cardText"></div>
+        <div class="card-stats-row" id="cardStats"></div>
+        <div class="card-footer">marissaspageantlife.com</div>
+        <div class="card-hashtag">#MissAmericaCalifornia #PageantLife #MarissaQueenEra</div>
+      </div>
+      <div class="share-btns">
+        <button class="share-btn share-btn-main" onclick="downloadCard()">Save Card</button>
+        <button class="share-btn share-btn-copy" onclick="copyCaption()">Copy Caption</button>
+        <div class="copy-success" id="copySuccess">Copied!</div>
+      </div>
+    </div>
+  </div>
 
-  if (diff <= 0) {
-    if (unitsEl) unitsEl.style.display = 'none';
-    if (doneEl) doneEl.style.display = 'block';
-    ['cdDays','cdHours','cdMins','cdSecs','previewDays','previewHours','previewMins','previewSecs'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = '00';
-    });
-    return;
-  }
+  <script type="module">
+    // ========== THREE.JS CHARACTER (Rigged GLB Model) ==========
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-  const totalSeconds = Math.floor(diff / 1000);
-  const days = Math.floor(totalSeconds / (60 * 60 * 24));
-  const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
-  const mins = Math.floor((totalSeconds % (60 * 60)) / 60);
-  const secs = totalSeconds % 60;
+    (function () {
+      const canvas = document.getElementById('character-canvas');
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(30, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      // Camera will be positioned after model loads for correct framing
 
-  const mainIds = ['cdDays','cdHours','cdMins','cdSecs'];
-  const values = [days, hours, mins, secs];
+      // PS1-style low resolution rendering
+      const PS1_SCALE = 0.45; // render at 45% resolution for light PS1 look
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
+      renderer.setSize(
+        Math.floor(canvas.clientWidth * PS1_SCALE),
+        Math.floor(canvas.clientHeight * PS1_SCALE),
+        false // don't update canvas CSS size
+      );
+      renderer.setPixelRatio(1);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.3;
 
-  mainIds.forEach((id, idx) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = String(values[idx]).padStart(2, '0');
-  });
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xccccdd, 0.8);
+      scene.add(ambientLight);
+      const keyLight = new THREE.DirectionalLight(0xffeedd, 1.2);
+      keyLight.position.set(3, 5, 4);
+      scene.add(keyLight);
+      const rimLight = new THREE.DirectionalLight(0x8ec8ff, 0.4);
+      rimLight.position.set(-3, 3, -2);
+      scene.add(rimLight);
+      const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+      fillLight.position.set(-2, 1, 3);
+      scene.add(fillLight);
 
-  const previewIds = ['previewDays','previewHours','previewMins','previewSecs'];
-  previewIds.forEach((id, idx) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = String(values[idx]).padStart(2, '0');
-  });
-}
+      // Plumbob (floating diamond)
+      const plumbobGeo = new THREE.OctahedronGeometry(0.06, 0);
+      const plumbobMat = new THREE.MeshLambertMaterial({ color: 0x4cd964, flatShading: true, emissive: 0x2a8a3a, emissiveIntensity: 0.4 });
+      const plumbob = new THREE.Mesh(plumbobGeo, plumbobMat);
+      plumbob.scale.set(1, 1.5, 1);
+      scene.add(plumbob);
 
-updateCountdown();
-setInterval(updateCountdown, 1000);
+      // Ground shadow
+      const shadowGeo = new THREE.CircleGeometry(0.94, 16);
+      const shadowMtl = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.1, depthWrite: false });
+      const shadow = new THREE.Mesh(shadowGeo, shadowMtl);
+      shadow.renderOrder = -1;
+      shadow.rotation.x = -Math.PI / 2;
+      shadow.position.set(0, 0.25, 0);
+      scene.add(shadow);
 
-const NODES = {
-  practice:{icon:'💅',title:'Practice & Prep',desc:"It's crunch time, Marissa! 💕 How do you spend your prep week before the local pageant?",choices:[
-    {emoji:'🏃‍♀️',text:'5AM Runway Drills',effect:'+Glam, +Charm',stats:{glam:15,charm:10},result:'You hit the runway at sunrise every morning. Your walk becomes ICONIC — judges notice the confidence radiating off you!',icon:'🌅',title:'Sunrise Grind!'},
-    {emoji:'📚',text:'Study Past Winners',effect:'+Charm, +Impact',stats:{charm:12,impact:12},result:'You research every Miss America California winner since 2010. You know exactly what judges love and you deliver it flawlessly!',icon:'📖',title:'Homework Pays Off!'},
-    {emoji:'🎭',text:'Hire a Coach',effect:'+Talent, +Glam',stats:{talent:18,glam:8},result:"Your vocal coach and movement trainer transform your stage presence. You walk in owning every inch of that stage!",icon:'🎪',title:'Level Up!'},
-    {emoji:'🧘‍♀️',text:'Self-Care & Confidence',effect:'+All Stats',stats:{glam:7,talent:7,charm:7,impact:7},result:"You focus on your mental game. You remember why you started — and that inner fire? The judges literally cannot look away.",icon:'✨',title:'Inner Glow!'},
-  ],unlocks:['outfit']},
-  outfit:{icon:'👗',title:'Outfit & Crown Choices',desc:"Omg time to pick your look! 👗 Your style statement tells the judges who Marissa really is.",choices:[
-    {emoji:'🤍',text:'Classic Ball Gown',effect:'+Glam',stats:{glam:20},result:'You glide out in a sweeping ivory ball gown. The audience gasps. The judges scribble furiously. TIMELESS.',icon:'🤍',title:'Timeless Elegance!'},
-    {emoji:'💜',text:'Bold California Colors',effect:'+Charm, +Impact',stats:{charm:15,impact:10},result:'You rock a California sunset palette — deep gold and ocean blue. "She IS California," a judge whispers.',icon:'🌅',title:'California Queen!'},
-    {emoji:'✨',text:'Sparkle Everything',effect:'+Glam, +Talent',stats:{glam:15,talent:10},result:"Every light in the venue hits your gown and EXPLODES into sparkles. You are literally a disco ball of royalty.",icon:'💫',title:'Dazzling!'},
-    {emoji:'🔴',text:'Power Red Statement',effect:'+Charm, +Impact',stats:{charm:18,impact:12},result:'You walk out in a sleek red gown that says "I came to WIN." The crowd erupts before you even open your mouth.',icon:'🔥',title:'Power Move!'},
-  ],unlocks:['platform']},
-  platform:{icon:'💛',title:'Platform & Cause',desc:"Miss America is built on service 💛 What cause does Marissa champion to make California better?",choices:[
-    {emoji:'💜',text:'Mental Health Awareness',effect:'+Impact, +Charm',stats:{impact:18,charm:12},result:"You speak about mental health with raw honesty. The audience goes silent... then ERUPTS. You've changed minds today.",icon:'🧠',title:'Breaking Stigma!'},
-    {emoji:'🌍',text:'Youth Empowerment',effect:'+Impact, +Talent',stats:{impact:15,talent:10},result:'You launch a program connecting California teens with mentors. Real kids show up at the pageant to cheer you on.',icon:'🌱',title:'Next Gen Leader!'},
-    {emoji:'🌊',text:'Ocean Conservation',effect:'+Impact, +Glam',stats:{impact:18,glam:8},result:"California's coast is your classroom. You partner with marine researchers. Your platform is specific, passionate, and powerful.",icon:'🌊',title:'Coastal Champion!'},
-    {emoji:'🎓',text:'Education Access',effect:'+Impact, +Charm',stats:{impact:16,charm:14},result:"You advocate for first-generation college students — just like kids in your own community. It's personal, and they feel it.",icon:'📚',title:'Opening Doors!'},
-  ],unlocks:['strategy']},
-  strategy:{icon:'🎯',title:'Competition Strategy',desc:"The local pageant is HERE!! 🎯 How does Marissa show up on competition day?",choices:[
-    {emoji:'😊',text:'Be Genuine & Warm',effect:'+Charm, +Impact',stats:{charm:16,impact:10},result:'You make eye contact with every judge. You smile at your competitors. Everyone thinks: "I want HER to win." Game over.',icon:'💖',title:'Authentic Queen!'},
-    {emoji:'🔥',text:'Go All Out on Stage',effect:'+Glam, +Talent',stats:{glam:12,talent:16},result:"You save your biggest performance for the final walk. SHOWSTOPPER. Literally — someone drops their scoring sheet.",icon:'🎪',title:'Showstopper!'},
-    {emoji:'🤝',text:'Support Your Sisters',effect:'+Charm',stats:{charm:20},result:"You cheer for your fellow contestants backstage. The energy shifts. You become everyone's favorite — including the judges'.",icon:'🌸',title:'Sisterhood Wins!'},
-    {emoji:'🎯',text:'Focus on Your Strengths',effect:'+All Stats',stats:{glam:8,talent:8,charm:8,impact:8},result:'You block out the noise and compete as yourself. Every choice, every answer, every step — pure Marissa. BRILLIANT.',icon:'⭐',title:'Staying in Your Lane!'},
-  ],unlocks:['interview']},
-  interview:{icon:'🎤',title:'Interview Prep',desc:"The judges interview is where Miss America is truly won 🎤 How does Marissa prepare?",choices:[
-    {emoji:'📰',text:'Study Current Events',effect:'+Charm, +Impact',stats:{charm:12,impact:16},result:"A judge asks about California's water crisis. You answer with specific data AND personal passion. Their jaws drop.",icon:'📡',title:'Informed & Impressive!'},
-    {emoji:'🪞',text:'Mirror Practice Daily',effect:'+Glam, +Charm',stats:{glam:10,charm:18},result:'You rehearse in front of every mirror in your house for two weeks. On stage, the lights feel like coming home.',icon:'🌟',title:'Camera Ready!'},
-    {emoji:'💬',text:'Mock Interviews',effect:'+Charm, +Talent',stats:{charm:14,talent:14},result:'Your older sister grills you with impossible questions every night. Nothing surprises you. You are UNSHAKEABLE.',icon:'🛡️',title:'Battle Tested!'},
-    {emoji:'❤️',text:'Speak from the Heart',effect:'+Impact, +Charm',stats:{impact:20,charm:10},result:'"Why do you want this title?" "Because I believe I can truly serve California." No notes. Just truth. The judges are moved.',icon:'🫶',title:'Heart of Gold!'},
-  ],unlocks:['locals']},
-  locals:{icon:'🥇',title:'Local Title Win!',desc:"THE MOMENT OF TRUTH 🥇 Marissa has competed at the local/regional level! The envelope is being opened...",choices:[
-    {emoji:'🥇',text:'Win the Local Crown!',effect:'+ALL Stats Big!',stats:{glam:20,talent:20,charm:20,impact:20},result:"MARISSA WINS HER LOCAL TITLE!! The crown is placed on her head and the room erupts. This is real. This is happening. One step closer to Miss America California!!",icon:'👑',title:'Local Queen Marissa!!'},
-    {emoji:'💪',text:'Learn & Grow',effect:'+Talent, +Impact',stats:{talent:18,impact:18},result:"Not a win this round — but Marissa leaves with feedback GOLD. She knows exactly what to improve. Coming back stronger.",icon:'🌱',title:'Growth Mode!'},
-    {emoji:'🌟',text:'Win a Special Award',effect:'+Charm, +Impact',stats:{charm:15,impact:20},result:"Marissa wins Best Platform Presentation! The judges are clearly impressed. She's building her name in the circuit.",icon:'🏅',title:'Award Winner!'},
-    {emoji:'🎯',text:'Make the Finals!',effect:'+Glam, +Charm',stats:{glam:15,charm:15},result:"TOP 5 at locals! Marissa's name is called and she stands under the spotlight. This is her moment. Eyes on California.",icon:'✨',title:'Finalist Marissa!'},
-  ],unlocks:['state']},
-  state:{icon:'🌟',title:'State Competition',desc:"Marissa is competing at the STATE LEVEL!! 🌟 The biggest stage yet — how does she show up?",choices:[
-    {emoji:'🦋',text:'Reinvent Your Look',effect:'+Glam, +Charm',stats:{glam:22,charm:15},result:"New gown, new hair, new energy. Marissa walks into state and everyone whispers: 'Who IS that?'",icon:'🦋',title:'Transformation!'},
-    {emoji:'📣',text:'Go Harder on Platform',effect:'+Impact, +Charm',stats:{impact:25,charm:12},result:'You bring community leaders to speak alongside your platform. Judges have never seen this level of commitment.',icon:'🏆',title:'Platform Powerhouse!'},
-    {emoji:'🌊',text:'Ride the Momentum',effect:'+All Stats',stats:{glam:12,talent:12,charm:12,impact:12},result:"You trust your journey. Everything clicks. Every part of you is aligned. California, Marissa is HERE.",icon:'🌊',title:'In the Zone!'},
-    {emoji:'🎤',text:'Nail the Onstage Q&A',effect:'+Charm, +Impact, +Talent',stats:{charm:18,impact:15,talent:10},result:"The hardest question of the night. Silence. Then Marissa speaks and the whole room leans IN. Big scores.",icon:'🎤',title:'Mic Drop Moment!'},
-  ],unlocks:['crown']},
-  crown:{icon:'👑',title:'Miss America California Finals!!',desc:"THIS IS IT BESTIE!! 👑 The Miss America California crown is RIGHT THERE. Marissa, this is YOUR moment!",choices:[
-    {emoji:'👑',text:'Crown Moment!!',effect:'+EVERYTHING!!',stats:{glam:30,talent:30,charm:30,impact:30},result:"MARISSA IS CROWNED MISS AMERICA CALIFORNIA!! 🎉 The crown is placed on her head. Confetti falls. Tears flow. California has its queen — and she has been ready for this her entire life.",icon:'👑',title:'Miss America California!!'},
-    {emoji:'🌟',text:'Top 5 Finalist!',effect:'+Huge Stats',stats:{glam:20,talent:25,charm:25,impact:20},result:"TOP 5 at Miss America California!! Marissa stands under the spotlight in front of thousands. Her journey isn't over — it's just beginning.",icon:'🌟',title:'Top 5 Queen!'},
-    {emoji:'💖',text:'Best Platform Award!',effect:'+Impact Max',stats:{impact:35,charm:15},result:"Marissa wins the Miss America Community Service Award! Her platform changed real lives. The crown may come next year — but the impact is already HERE.",icon:'💖',title:'Service Queen!'},
-    {emoji:'🔥',text:'Talent Competition Win!',effect:'+Talent Max',stats:{talent:35,glam:15},result:"Marissa WINS the Miss America California Talent Competition! The performance of the entire NIGHT. Judges will not stop talking about it.",icon:'🔥',title:'Talent Queen!'},
-  ],unlocks:[]},
-};
+      let model = null;
+      let mixer = null;
+      let idleAction = null;
+      let actionClip = null;
+      let modelTop = 2.0;
+      let modelBaseY = 0;
+      const clock = new THREE.Clock();
 
-let stats = {glam:40,talent:50,charm:45,impact:35};
-let completedNodes = [];
-let currentNode = null;
+      // Load rigged GLB model
+      const loader = new GLTFLoader();
+      loader.load('/Meshy_AI_Animation_Idle_11_withSkin.glb', function (gltf) {
+        model = gltf.scene;
 
-function openNode(nodeId) {
-  const node = document.querySelector(`[data-node="${nodeId}"]`);
-  if (node.classList.contains('locked')) { showNotif('🔒 Complete previous stages first, queen!'); return; }
-  currentNode = nodeId;
-  const data = NODES[nodeId];
-  document.getElementById('panelIcon').textContent = data.icon;
-  document.getElementById('panelTitle').textContent = data.title;
-  document.getElementById('panelDesc').textContent = data.desc;
-  const grid = document.getElementById('choicesGrid');
-  grid.innerHTML = '';
-  data.choices.forEach((choice, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.innerHTML = `<span class="choice-emoji">${choice.emoji}</span><span class="choice-text">${choice.text}</span><span class="choice-effect">${choice.effect}</span>`;
-    btn.onclick = () => makeChoice(i);
-    grid.appendChild(btn);
-  });
-  document.getElementById('choicePanel').classList.add('visible');
-  document.getElementById('resultPopup').classList.remove('visible');
-  document.getElementById('choicePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
+        // Calculate bounding box to center and scale
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
 
-function makeChoice(i) {
-  const data = NODES[currentNode];
-  const choice = data.choices[i];
-  const changes = [];
-  Object.entries(choice.stats).forEach(([stat, val]) => {
-    stats[stat] = Math.min(100, stats[stat] + val);
-    changes.push({stat, val});
-  });
-  updateStatBars();
-  document.getElementById('resultEmoji').textContent = choice.icon;
-  document.getElementById('resultTitle').textContent = choice.title;
-  document.getElementById('resultText').textContent = choice.result;
-  document.getElementById('statChanges').innerHTML = changes.map(c =>
-    `<span class="stat-change up">+${c.val} ${c.stat.charAt(0).toUpperCase()+c.stat.slice(1)}</span>`
-  ).join('');
-  document.getElementById('choicePanel').classList.remove('visible');
-  document.getElementById('resultPopup').classList.add('visible');
-  document.getElementById('shareResultBtn').style.display = 'inline-flex';
-  const nodeEl = document.querySelector(`[data-node="${currentNode}"]`);
-  nodeEl.classList.add('completed'); nodeEl.classList.remove('active');
-  completedNodes.push(currentNode);
-  data.unlocks.forEach(id => {
-    const el = document.querySelector(`[data-node="${id}"]`);
-    if (el) {
-      el.classList.remove('locked'); el.classList.add('active');
-      const tag = el.querySelector('.node-tag');
-      tag.textContent = 'Ready! ✨';
-      tag.style.background = 'rgba(200,130,255,0.15)';
-      tag.style.borderColor = 'rgba(196,90,255,0.5)';
-      tag.style.color = '#c45aff';
-    }
-  });
-  const progress = (completedNodes.length / Object.keys(NODES).length) * 100;
-  document.getElementById('crownBar').style.width = progress + '%';
-  const msgs = ["omg let's gooo bestie! 💋","getting warmed up queen 💅","okay she's THAT girl ✨","looking like royalty rn 👑","almost there omg 🌸","California is WATCHING 👀","THIS IS YOUR MOMENT 🔥","MISS AMERICA CALIFORNIA!! 👑✨"];
-  document.getElementById('crownPct').textContent = Math.round(progress) + '% — ' + (msgs[completedNodes.length] || 'keep going!');
-  addLog(choice.icon, `${data.title}: "${choice.text}" — ${choice.title}`);
-  if (currentNode === 'crown') { launchConfetti(); setTimeout(() => showShareCard(choice.icon, choice.title, choice.result), 2000); }
-  else if (data.unlocks.length > 0) showNotif('🦋 New stage unlocked bestie!');
-}
+        // Scale to fit (~0.78 units tall)
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 0.78 / maxDim;
+        model.scale.setScalar(scale);
 
-function closeResult() { document.getElementById('resultPopup').classList.remove('visible'); }
+        // Recalculate after scale
+        const scaledBox = new THREE.Box3().setFromObject(model);
+        const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+        const scaledSize = scaledBox.getSize(new THREE.Vector3());
 
-function updateStatBars() {
-  Object.entries(stats).forEach(([stat, val]) => {
-    const bar = document.getElementById(`bar-${stat}`);
-    const el = document.getElementById(`val-${stat}`);
-    if (bar) bar.style.width = val + '%';
-    if (el) el.textContent = val;
-  });
-}
+        // Center horizontally, place feet on ground
+        model.position.x = -scaledCenter.x;
+        model.position.z = -scaledCenter.z;
+        model.position.y = -scaledBox.min.y;
+        modelBaseY = model.position.y;
 
-function addLog(icon, text) {
-  const entries = document.getElementById('logEntries');
-  const entry = document.createElement('div');
-  entry.className = 'log-entry';
-  entry.innerHTML = `${icon} ${text}`;
-  entries.insertBefore(entry, entries.firstChild);
-}
+        modelTop = scaledSize.y;
 
-function showNotif(msg) {
-  const el = document.getElementById('notif');
-  el.textContent = msg; el.classList.add('visible');
-  setTimeout(() => el.classList.remove('visible'), 3000);
-}
+        // Position plumbob above head
+        plumbob.position.set(0, modelTop * 0.6 + 2.047, 0);
 
-function launchConfetti() {
-  const c = document.getElementById('confetti');
-  c.style.display = 'block'; c.innerHTML = '';
-  const colors = ['#ff5ec4','#ffb3e0','#c45aff','#a8d8ff','#ff1493','#d4a8ff','#fff'];
-  for (let i = 0; i < 100; i++) {
-    const p = document.createElement('div');
-    p.className = 'confetti-piece';
-    p.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*2}s;animation-duration:${2+Math.random()*2}s;border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;`;
-    c.appendChild(p);
-  }
-  setTimeout(() => { c.style.display = 'none'; }, 5000);
-}
+        // Frame camera: center on model midpoint, pull back enough to see everything
+        const midY = modelTop * 2.2;
+        camera.position.set(0, midY, 5.0);
+        camera.lookAt(0, midY, 0);
 
-// --- Countdown share modal (expose globally for onclick) ---
-window.openCdShare = function() {
-  if (typeof updateCountdown === 'function') updateCountdown();
-  var el = document.getElementById('cdShareOverlay');
-  if (el) el.classList.add('visible');
-};
+        scene.add(model);
 
-window.closeCdShare = function() {
-  var el = document.getElementById('cdShareOverlay');
-  if (el) el.classList.remove('visible');
-};
+        // Play idle animation if available
+        if (gltf.animations && gltf.animations.length > 0) {
+          mixer = new THREE.AnimationMixer(model);
+          idleAction = mixer.clipAction(gltf.animations[0]);
+          idleAction.play();
+        }
 
-function saveCdCard() {
-  const d = document.getElementById('previewDays');
-  const h = document.getElementById('previewHours');
-  const m = document.getElementById('previewMins');
-  const s = document.getElementById('previewSecs');
-  const days = d ? d.textContent : '--';
-  const hours = h ? h.textContent : '--';
-  const mins = m ? m.textContent : '--';
-  const secs = s ? s.textContent : '--';
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Countdown Card</title></head><body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ffe0f5,#f0d0ff,#d8eeff);font-family:'Fredoka One',cursive;">
-<div style="background:linear-gradient(135deg,#ffe0f5 0%,#f0d0ff 45%,#d8eeff 100%);border-radius:18px;border:2px solid rgba(255,130,210,0.4);padding:24px 20px;text-align:center;max-width:360px;">
-<div style="font-size:14px;letter-spacing:5px;margin-bottom:8px;">💋 ✨ 🦋 👑 🦋 ✨ 💋</div>
-<div style="font-size:11px;background:linear-gradient(180deg,#fff,#ffb3e0 30%,#ff5ec4 70%,#c45aff);-webkit-background-clip:text;color:transparent;letter-spacing:2px;margin-bottom:12px;">Miss America California · June 15, 2026</div>
-<div style="font-size:48px;margin-bottom:8px;">👑</div>
-<div style="display:flex;gap:10px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;">
-<div style="background:rgba(255,255,255,0.75);border:1.5px solid rgba(255,130,210,0.4);border-radius:12px;padding:8px 12px;min-width:52px;"><span style="font-size:22px;background:linear-gradient(180deg,#ff5ec4,#c45aff);-webkit-background-clip:text;color:transparent;">${days}</span><span style="display:block;font-size:8px;font-weight:900;color:#c060a0;">Days</span></div>
-<div style="background:rgba(255,255,255,0.75);border:1.5px solid rgba(255,130,210,0.4);border-radius:12px;padding:8px 12px;min-width:52px;"><span style="font-size:22px;background:linear-gradient(180deg,#ff5ec4,#c45aff);-webkit-background-clip:text;color:transparent;">${hours}</span><span style="display:block;font-size:8px;font-weight:900;color:#c060a0;">Hours</span></div>
-<div style="background:rgba(255,255,255,0.75);border:1.5px solid rgba(255,130,210,0.4);border-radius:12px;padding:8px 12px;min-width:52px;"><span style="font-size:22px;background:linear-gradient(180deg,#ff5ec4,#c45aff);-webkit-background-clip:text;color:transparent;">${mins}</span><span style="display:block;font-size:8px;font-weight:900;color:#c060a0;">Mins</span></div>
-<div style="background:rgba(255,255,255,0.75);border:1.5px solid rgba(255,130,210,0.4);border-radius:12px;padding:8px 12px;min-width:52px;"><span style="font-size:22px;background:linear-gradient(180deg,#ff5ec4,#c45aff);-webkit-background-clip:text;color:transparent;">${secs}</span><span style="display:block;font-size:8px;font-weight:900;color:#c060a0;">Secs</span></div>
-</div>
-<div style="font-size:13px;color:#ff1493;letter-spacing:1px;margin-bottom:6px;">Marissa is competing for Miss America California 👑</div>
-<div style="font-size:9px;color:#c45aff;letter-spacing:2px;">marissaspageantlife · 2026</div>
-<div style="font-size:8px;color:rgba(196,90,255,0.65);margin-top:4px;">#MissAmericaCalifornia #PageantLife #MarissaQueenEra</div>
-</div>
-<script>window.onload=function(){window.print();}<\/script></body></html>`;
-  const w = window.open('', '_blank', 'width=500,height=700');
-  if (w) {
-    w.document.write(html);
-    w.document.close();
-  }
-}
+        // Preload action animation
+        loader.load('/Meshy_AI_Animation_air_squat_withSkin.glb', function (actionGltf) {
+          if (actionGltf.animations && actionGltf.animations.length > 0) {
+            actionClip = actionGltf.animations[0];
+          }
+        });
 
-function copyCdCaption() {
-  const dEl = document.getElementById('previewDays');
-  const hEl = document.getElementById('previewHours');
-  const mEl = document.getElementById('previewMins');
-  const sEl = document.getElementById('previewSecs');
-  const days = dEl ? dEl.textContent : '--';
-  const caption = `👑 ${days} DAYS until Marissa competes for Miss America California!! ✨ June 15, 2026 — mark your calendars bestie!! 💋🦋\n\n#MissAmericaCalifornia #PageantLife #MarissaQueenEra #PageantQueen`;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(caption).then(function() {
-      const success = document.getElementById('cdCopySuccess');
-      if (success) {
-        success.classList.add('visible');
-        setTimeout(function() { success.classList.remove('visible'); }, 4000);
+      },
+        undefined,
+        function (error) {
+          console.error('Error loading model:', error);
+        });
+
+      // Play action animation then return to idle
+      window.playActionAnim = function () {
+        if (!mixer || !model || !actionClip || !idleAction) return;
+        if (window.burstParticles) window.burstParticles();
+        const action = mixer.clipAction(actionClip);
+        action.reset();
+        action.setLoop(THREE.LoopRepeat, 2);
+        action.clampWhenFinished = true;
+
+        // Crossfade: idle stays running, action blends in on top
+        idleAction.enabled = true;
+        idleAction.setEffectiveWeight(1);
+        action.enabled = true;
+        action.setEffectiveWeight(1);
+        action.setEffectiveTimeScale(1);
+        action.play();
+        idleAction.crossFadeTo(action, 0.6, true);
+
+        // When action finishes, blend back to idle
+        mixer.addEventListener('finished', function onFinished(e) {
+          if (e.action === action) {
+            mixer.removeEventListener('finished', onFinished);
+            // Crossfade back — keep idle running so no T-pose gap
+            action.crossFadeTo(idleAction, 0.8, true);
+            idleAction.enabled = true;
+            idleAction.setEffectiveWeight(1);
+            idleAction.play();
+          }
+        });
+      };
+
+      // Rotation disabled
+
+      // ===== Pixelated particle system =====
+      const PARTICLE_COUNT = 40;
+      const particleColors = [0x4cd964, 0xffd700, 0xff5ec4, 0x6ec6ff, 0xc45aff, 0xff6b6b];
+      const particles = [];
+
+      // Create reusable pixel particle meshes
+      const pxGeo = new THREE.BoxGeometry(0.04, 0.04, 0.04);
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const mat = new THREE.MeshBasicMaterial({
+          color: particleColors[i % particleColors.length],
+          transparent: true, opacity: 0
+        });
+        const mesh = new THREE.Mesh(pxGeo, mat);
+        mesh.visible = false;
+        scene.add(mesh);
+        particles.push({
+          mesh, vx: 0, vy: 0, vz: 0, life: 0, maxLife: 0
+        });
       }
-    }).catch(function() {
-      fallbackCopyCd(caption);
-    });
-  } else {
-    fallbackCopyCd(caption);
-  }
-}
 
-function fallbackCopyCd(caption) {
-  var copied = prompt('Copy this caption:', caption);
-  if (copied !== null) {
-    const success = document.getElementById('cdCopySuccess');
-    if (success) {
-      success.classList.add('visible');
-      setTimeout(function() { success.classList.remove('visible'); }, 4000);
+      let particlesActive = false;
+
+      window.burstParticles = function () {
+        particlesActive = true;
+        const centerY = modelTop * 0.5;
+        particles.forEach(p => {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 0.8 + Math.random() * 1.5;
+          const upSpeed = 1.0 + Math.random() * 2.0;
+          p.mesh.position.set(
+            (Math.random() - 0.5) * 0.3,
+            centerY + (Math.random() - 0.5) * 0.4,
+            (Math.random() - 0.5) * 0.3
+          );
+          p.vx = Math.cos(angle) * speed;
+          p.vy = upSpeed;
+          p.vz = Math.sin(angle) * speed;
+          p.life = 0;
+          p.maxLife = 0.8 + Math.random() * 0.6;
+          p.mesh.visible = true;
+          p.mesh.material.opacity = 1;
+          // Random pixel size
+          const s = 0.03 + Math.random() * 0.04;
+          p.mesh.scale.setScalar(s / 0.04);
+          // Random color
+          p.mesh.material.color.setHex(particleColors[Math.floor(Math.random() * particleColors.length)]);
+        });
+      };
+
+      // Animate
+      function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        const t = clock.elapsedTime;
+
+        // Update animation mixer
+        if (mixer) mixer.update(delta);
+
+        // Update particles
+        if (particlesActive) {
+          let anyAlive = false;
+          particles.forEach(p => {
+            if (p.life < p.maxLife) {
+              anyAlive = true;
+              p.life += delta;
+              const progress = p.life / p.maxLife;
+              p.mesh.position.x += p.vx * delta;
+              p.mesh.position.y += p.vy * delta;
+              p.mesh.position.z += p.vz * delta;
+              p.vy -= 4.0 * delta; // gravity
+              p.mesh.material.opacity = 1 - progress;
+              p.mesh.rotation.x += delta * 8;
+              p.mesh.rotation.y += delta * 6;
+            } else {
+              p.mesh.visible = false;
+            }
+          });
+          if (!anyAlive) particlesActive = false;
+        }
+
+        // Plumbob spin + float
+        plumbob.rotation.y = t * 2;
+        plumbob.position.y = modelTop * 0.6 + 2.047 + Math.sin(t * 2) * 0.03;
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // Resize
+      window.addEventListener('resize', () => {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(
+          Math.floor(w * PS1_SCALE),
+          Math.floor(h * PS1_SCALE),
+          false
+        );
+      });
+
+    })();
+  </script>
+
+  <script>
+    // ========== COUNTDOWN ==========
+    const PAGEANT_DATE = new Date('2026-06-15T00:00:00');
+
+    function updateCountdown() {
+      const now = new Date();
+      let diff = PAGEANT_DATE.getTime() - now.getTime();
+      const unitsEl = document.getElementById('countdownUnits');
+      const doneEl = document.getElementById('cdDone');
+      if (diff <= 0) {
+        if (unitsEl) unitsEl.style.display = 'none';
+        if (doneEl) doneEl.style.display = 'block';
+        ['cdDays', 'cdHours', 'cdMins', 'cdSecs', 'previewDays', 'previewHours', 'previewMins', 'previewSecs'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.textContent = '00';
+        });
+        return;
+      }
+      const totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      const secs = totalSeconds % 60;
+      const vals = [days, hours, mins, secs];
+      ['cdDays', 'cdHours', 'cdMins', 'cdSecs'].forEach((id, i) => {
+        const el = document.getElementById(id); if (el) el.textContent = String(vals[i]).padStart(2, '0');
+      });
+      ['previewDays', 'previewHours', 'previewMins', 'previewSecs'].forEach((id, i) => {
+        const el = document.getElementById(id); if (el) el.textContent = String(vals[i]).padStart(2, '0');
+      });
     }
-  }
-}
-</script>
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
 
+    // ========== PIXEL ICON SYSTEM ==========
+    // 8x8 pixel art icons - each row is 8 pixels, 1=filled, 0=empty
+    const PIXEL_ICONS = {
+      star:     { color: '#ffd700', grid: '00111100,01111110,11111111,01111110,00111100,01100110,11000011,10000001' },
+      heart:    { color: '#ff5ec4', grid: '01101100,11111110,11111111,11111111,01111110,00111100,00011000,00000000' },
+      crown:    { color: '#ffd700', grid: '10000001,11000011,11100111,11111111,11111111,01111110,01111110,00000000' },
+      book:     { color: '#6ec6ff', grid: '01111100,01000010,01011010,01000010,01011010,01000010,01111100,00000000' },
+      sparkle:  { color: '#c45aff', grid: '00010000,00010000,01010100,00111000,01010100,00010000,00010000,00000000' },
+      fire:     { color: '#ff6b6b', grid: '00010000,00110000,01110100,01111100,11111110,11111110,01111100,00111000' },
+      music:    { color: '#a878d4', grid: '00011100,00010010,00010010,00010010,01110010,11110010,11110000,01100000' },
+      globe:    { color: '#5ab87a', grid: '00111100,01101110,11101111,11011111,11111011,11110111,01101110,00111100' },
+      bolt:     { color: '#d4a85a', grid: '00001100,00011000,00110000,01111110,00001100,00011000,00110000,01000000' },
+      trophy:   { color: '#ffd700', grid: '11111111,01111110,01111110,00111100,00011000,00011000,00111100,01111110' },
+      diamond:  { color: '#6ec6ff', grid: '00011000,00111100,01111110,11111111,01111110,00111100,00011000,00000000' },
+      flower:   { color: '#ff5ec4', grid: '00010000,01010100,00111000,11111110,00111000,01010100,00010000,00000000' },
+      shield:   { color: '#5a9ad4', grid: '01111110,11111111,11111111,11111111,11111111,01111110,00111100,00011000' },
+      wave:     { color: '#5ab87a', grid: '00000000,00000000,01100110,10011001,10011001,01100110,00000000,00000000' },
+      mic:      { color: '#a878d4', grid: '00111100,01111110,01111110,00111100,00011000,00011000,00011000,01111110' },
+      medal:    { color: '#ffd700', grid: '11000011,01100110,00111100,00011000,00111100,01111110,01111110,00111100' },
+      run:      { color: '#e87aac', grid: '00110000,00110000,01110000,11111100,01100000,01010000,10010000,10001000' },
+      mirror:   { color: '#c45aff', grid: '00111100,01111110,11111111,11111111,11111111,01111110,00111100,00011000' },
+      chat:     { color: '#5a9ad4', grid: '01111110,11111111,11111111,11111111,01111110,00110000,01000000,00000000' },
+      target:   { color: '#ff6b6b', grid: '00111100,01111110,11100111,11010111,11100111,01111110,00111100,00000000' },
+      dress:    { color: '#e87aac', grid: '00011000,00111100,00111100,00011000,00111100,01111110,11111111,11111111' },
+      palette:  { color: '#a878d4', grid: '00111100,01111110,11101111,11001111,11101111,11111111,01111110,00111100' },
+      brain:    { color: '#e87aac', grid: '00111100,01111110,11011011,11011011,11101111,11111111,01111110,00111100' },
+      leaf:     { color: '#5ab87a', grid: '00000010,00000110,00001110,00011110,00111100,01111000,11110000,01100000' },
+      butterfly:{ color: '#c45aff', grid: '11000011,11100111,11111111,01111110,01111110,11111111,11100111,11000011' },
+      handshake:{ color: '#5ab87a', grid: '00000000,01100110,11111111,11111111,01111110,00111100,00011000,00000000' },
+    };
 
-<!-- COUNTDOWN SHARE MODAL -->
-<div class="cd-share-overlay" id="cdShareOverlay" onclick="if(event.target===this) closeCdShare();">
-  <div class="cd-share-modal" onclick="event.stopPropagation();">
-    <button type="button" class="cd-share-close" onclick="window.closeCdShare && window.closeCdShare();">✕</button>
-    <div class="cd-share-title">✨ share the countdown ✨</div>
-    <div class="cd-card-preview">
-      <span class="cd-card-deco">💋 ✨ 🦋 👑 🦋 ✨ 💋</span>
-      <div class="cd-card-heading">Miss America California · June 15, 2026</div>
-      <span class="cd-card-crown">👑</span>
-      <div class="cd-card-countdown">
-        <div class="cd-card-unit"><span class="cd-card-num" id="previewDays">--</span><span class="cd-card-unit-label">Days</span></div>
-        <div class="cd-card-unit"><span class="cd-card-num" id="previewHours">--</span><span class="cd-card-unit-label">Hours</span></div>
-        <div class="cd-card-unit"><span class="cd-card-num" id="previewMins">--</span><span class="cd-card-unit-label">Mins</span></div>
-        <div class="cd-card-unit"><span class="cd-card-num" id="previewSecs">--</span><span class="cd-card-unit-label">Secs</span></div>
-      </div>
-      <div class="cd-card-event">Marissa is competing for Miss America California 👑</div>
-      <div class="cd-card-footer">marissaspageantlife · 2026</div>
-      <div class="cd-card-hashtag">#MissAmericaCalifornia #PageantLife #MarissaQueenEra</div>
-    </div>
-    <div class="cd-share-btns">
-      <button class="share-btn share-btn-main" onclick="saveCdCard()">📸 Save Card to Camera Roll</button>
-      <button class="share-btn share-btn-copy" onclick="copyCdCaption()">📋 Copy Caption for Stories</button>
-      <div class="cd-copy-success" id="cdCopySuccess">✅ Caption copied! Paste into your story 🩷</div>
-    </div>
-  </div>
-</div>
+    // emoji -> pixel icon key mapping
+    const EMOJI_MAP = {
+      '💅': 'sparkle', '👗': 'dress', '💛': 'heart', '🎯': 'target', '🎤': 'mic',
+      '🥇': 'medal', '🌟': 'star', '👑': 'crown',
+      '🏃‍♀️': 'run', '📚': 'book', '🎭': 'palette', '🧘‍♀️': 'sparkle',
+      '🤍': 'diamond', '💜': 'heart', '✨': 'sparkle', '🔴': 'fire',
+      '💬': 'chat', '📰': 'book', '🪞': 'mirror', '❤️': 'heart',
+      '🌍': 'globe', '🌊': 'wave', '🎓': 'book',
+      '😊': 'heart', '🔥': 'fire', '🤝': 'handshake',
+      '🦋': 'butterfly', '📣': 'mic', '💖': 'heart', '💪': 'bolt',
+      '🌅': 'star', '📖': 'book', '🎪': 'trophy', '🧠': 'brain',
+      '🌱': 'leaf', '🛡️': 'shield', '🫶': 'heart', '🌸': 'flower',
+      '💫': 'sparkle', '⭐': 'star', '📡': 'bolt', '🏅': 'medal', '🏆': 'trophy',
+    };
 
-<!-- SHARE CARD OVERLAY -->
-<div class="share-overlay" id="shareOverlay">
-  <div class="share-modal">
-    <button class="share-close" onclick="closeShare()">✕</button>
-    <div class="share-modal-title">✨ your pageant destiny card ✨</div>
-    <div class="card-inner" id="shareCard">
-      <span class="card-deco">💋 ✨ 🦋 👑 🦋 ✨ 💋</span>
-      <div class="card-title">Marissa's Pageant Life · Miss America California</div>
-      <span class="card-outcome-emoji" id="cardEmoji">👑</span>
-      <div class="card-outcome-title" id="cardTitle">Queen!</div>
-      <div class="card-outcome-text" id="cardText"></div>
-      <div class="card-stats-row" id="cardStats"></div>
-      <div class="card-footer">marissaspageantlife.com</div>
-      <div class="card-hashtag">#MissAmericaCalifornia #PageantLife #MarissaQueenEra</div>
-    </div>
-    <div class="share-btns">
-      <button class="share-btn share-btn-main" onclick="downloadCard()">📸 Save Card to Camera Roll</button>
-      <button class="share-btn share-btn-copy" onclick="copyCaption()">📋 Copy Caption for Stories</button>
-      <div class="copy-success" id="copySuccess">✅ Caption copied! Paste into your story 🩷</div>
-    </div>
-  </div>
-</div>
+    function renderPixelIcon(emojiOrKey, size = 24) {
+      const key = EMOJI_MAP[emojiOrKey] || emojiOrKey;
+      const icon = PIXEL_ICONS[key] || PIXEL_ICONS['star'];
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      canvas.style.imageRendering = 'pixelated';
+      canvas.style.width = size + 'px';
+      canvas.style.height = size + 'px';
+      const ctx = canvas.getContext('2d');
+      const rows = icon.grid.split(',');
+      const px = size / 8;
+      ctx.fillStyle = icon.color;
+      rows.forEach((row, y) => {
+        for (let x = 0; x < 8; x++) {
+          if (row[x] === '1') ctx.fillRect(x * px, y * px, px, px);
+        }
+      });
+      // Add highlight pixels for 3D effect
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      rows.forEach((row, y) => {
+        for (let x = 0; x < 8; x++) {
+          if (row[x] === '1' && y === 0 || (row[x] === '1' && rows[y-1] && rows[y-1][x] === '0')) {
+            ctx.fillRect(x * px, y * px, px, px * 0.4);
+          }
+        }
+      });
+      ctx.fillStyle = 'rgba(0,0,0,0.2)';
+      rows.forEach((row, y) => {
+        for (let x = 0; x < 8; x++) {
+          if (row[x] === '1' && (y === 7 || (rows[y+1] && rows[y+1][x] === '0'))) {
+            ctx.fillRect(x * px, (y + 1) * px - px * 0.4, px, px * 0.4);
+          }
+        }
+      });
+      return canvas;
+    }
+
+    function pixelIconHTML(emojiOrKey, size = 24) {
+      const canvas = renderPixelIcon(emojiOrKey, size);
+      return canvas.outerHTML;
+    }
+
+    // ========== GAME LOGIC ==========
+    const NODES = {
+      practice: {
+        icon: '💅', title: 'Practice & Prep', desc: "It's crunch time, Marissa! How do you spend your prep week before the local pageant?", choices: [
+          { emoji: '🏃‍♀️', text: '5AM Runway Drills', effect: '+Glam, +Charm', stats: { glam: 15, charm: 10 }, result: 'You hit the runway at sunrise every morning. Your walk becomes ICONIC — judges notice the confidence radiating off you!', icon: '🌅', title: 'Sunrise Grind!' },
+          { emoji: '📚', text: 'Study Past Winners', effect: '+Charm, +Impact', stats: { charm: 12, impact: 12 }, result: 'You research every Miss America California winner since 2010. You know exactly what judges love and you deliver it flawlessly!', icon: '📖', title: 'Homework Pays Off!' },
+          { emoji: '🎭', text: 'Hire a Coach', effect: '+Talent, +Glam', stats: { talent: 18, glam: 8 }, result: "Your vocal coach and movement trainer transform your stage presence. You walk in owning every inch of that stage!", icon: '🎪', title: 'Level Up!' },
+          { emoji: '🧘‍♀️', text: 'Self-Care & Confidence', effect: '+All Stats', stats: { glam: 7, talent: 7, charm: 7, impact: 7 }, result: "You focus on your mental game. You remember why you started — and that inner fire? The judges literally cannot look away.", icon: '✨', title: 'Inner Glow!' },
+        ], unlocks: ['outfit']
+      },
+      outfit: {
+        icon: '👗', title: 'Outfit & Crown Choices', desc: "Time to pick your look! Your style statement tells the judges who Marissa really is.", choices: [
+          { emoji: '🤍', text: 'Classic Ball Gown', effect: '+Glam', stats: { glam: 20 }, result: 'You glide out in a sweeping ivory ball gown. The audience gasps. The judges scribble furiously. TIMELESS.', icon: '🤍', title: 'Timeless Elegance!' },
+          { emoji: '💜', text: 'Bold California Colors', effect: '+Charm, +Impact', stats: { charm: 15, impact: 10 }, result: 'You rock a California sunset palette — deep gold and ocean blue. "She IS California," a judge whispers.', icon: '🌅', title: 'California Queen!' },
+          { emoji: '✨', text: 'Sparkle Everything', effect: '+Glam, +Talent', stats: { glam: 15, talent: 10 }, result: "Every light in the venue hits your gown and EXPLODES into sparkles. You are literally a disco ball of royalty.", icon: '💫', title: 'Dazzling!' },
+          { emoji: '🔴', text: 'Power Red Statement', effect: '+Charm, +Impact', stats: { charm: 18, impact: 12 }, result: 'You walk out in a sleek red gown that says "I came to WIN." The crowd erupts before you even open your mouth.', icon: '🔥', title: 'Power Move!' },
+        ], unlocks: ['platform']
+      },
+      platform: {
+        icon: '💛', title: 'Platform & Cause', desc: "Miss America is built on service. What cause does Marissa champion to make California better?", choices: [
+          { emoji: '💜', text: 'Mental Health Awareness', effect: '+Impact, +Charm', stats: { impact: 18, charm: 12 }, result: "You speak about mental health with raw honesty. The audience goes silent... then ERUPTS. You've changed minds today.", icon: '🧠', title: 'Breaking Stigma!' },
+          { emoji: '🌍', text: 'Youth Empowerment', effect: '+Impact, +Talent', stats: { impact: 15, talent: 10 }, result: 'You launch a program connecting California teens with mentors. Real kids show up at the pageant to cheer you on.', icon: '🌱', title: 'Next Gen Leader!' },
+          { emoji: '🌊', text: 'Ocean Conservation', effect: '+Impact, +Glam', stats: { impact: 18, glam: 8 }, result: "California's coast is your classroom. You partner with marine researchers. Your platform is specific, passionate, and powerful.", icon: '🌊', title: 'Coastal Champion!' },
+          { emoji: '🎓', text: 'Education Access', effect: '+Impact, +Charm', stats: { impact: 16, charm: 14 }, result: "You advocate for first-generation college students — just like kids in your own community. It's personal, and they feel it.", icon: '📚', title: 'Opening Doors!' },
+        ], unlocks: ['strategy']
+      },
+      strategy: {
+        icon: '🎯', title: 'Competition Strategy', desc: "The local pageant is HERE!! How does Marissa show up on competition day?", choices: [
+          { emoji: '😊', text: 'Be Genuine & Warm', effect: '+Charm, +Impact', stats: { charm: 16, impact: 10 }, result: 'You make eye contact with every judge. You smile at your competitors. Everyone thinks: "I want HER to win."', icon: '💖', title: 'Authentic Queen!' },
+          { emoji: '🔥', text: 'Go All Out on Stage', effect: '+Glam, +Talent', stats: { glam: 12, talent: 16 }, result: "You save your biggest performance for the final walk. SHOWSTOPPER. Someone drops their scoring sheet.", icon: '🎪', title: 'Showstopper!' },
+          { emoji: '🤝', text: 'Support Your Sisters', effect: '+Charm', stats: { charm: 20 }, result: "You cheer for your fellow contestants backstage. The energy shifts. You become everyone's favorite.", icon: '🌸', title: 'Sisterhood Wins!' },
+          { emoji: '🎯', text: 'Focus on Your Strengths', effect: '+All Stats', stats: { glam: 8, talent: 8, charm: 8, impact: 8 }, result: 'You block out the noise and compete as yourself. Every choice, every answer, every step — pure Marissa.', icon: '⭐', title: 'Staying in Your Lane!' },
+        ], unlocks: ['interview']
+      },
+      interview: {
+        icon: '🎤', title: 'Interview Prep', desc: "The judges interview is where Miss America is truly won. How does Marissa prepare?", choices: [
+          { emoji: '📰', text: 'Study Current Events', effect: '+Charm, +Impact', stats: { charm: 12, impact: 16 }, result: "A judge asks about California's water crisis. You answer with specific data AND personal passion. Jaws drop.", icon: '📡', title: 'Informed & Impressive!' },
+          { emoji: '🪞', text: 'Mirror Practice Daily', effect: '+Glam, +Charm', stats: { glam: 10, charm: 18 }, result: 'You rehearse in front of every mirror in your house. On stage, the lights feel like coming home.', icon: '🌟', title: 'Camera Ready!' },
+          { emoji: '💬', text: 'Mock Interviews', effect: '+Charm, +Talent', stats: { charm: 14, talent: 14 }, result: 'Your older sister grills you with impossible questions every night. Nothing surprises you. UNSHAKEABLE.', icon: '🛡️', title: 'Battle Tested!' },
+          { emoji: '❤️', text: 'Speak from the Heart', effect: '+Impact, +Charm', stats: { impact: 20, charm: 10 }, result: '"Why do you want this title?" "Because I believe I can truly serve California." No notes. Just truth.', icon: '🫶', title: 'Heart of Gold!' },
+        ], unlocks: ['locals']
+      },
+      locals: {
+        icon: '🥇', title: 'Local Title Win!', desc: "THE MOMENT OF TRUTH. Marissa has competed at the local/regional level! The envelope is being opened...", choices: [
+          { emoji: '🥇', text: 'Win the Local Crown!', effect: '+ALL Stats Big!', stats: { glam: 20, talent: 20, charm: 20, impact: 20 }, result: "MARISSA WINS HER LOCAL TITLE!! The crown is placed on her head and the room erupts. One step closer to Miss America California!!", icon: '👑', title: 'Local Queen Marissa!!' },
+          { emoji: '💪', text: 'Learn & Grow', effect: '+Talent, +Impact', stats: { talent: 18, impact: 18 }, result: "Not a win this round — but Marissa leaves with feedback GOLD. She knows exactly what to improve. Coming back stronger.", icon: '🌱', title: 'Growth Mode!' },
+          { emoji: '🌟', text: 'Win a Special Award', effect: '+Charm, +Impact', stats: { charm: 15, impact: 20 }, result: "Marissa wins Best Platform Presentation! The judges are clearly impressed. She's building her name in the circuit.", icon: '🏅', title: 'Award Winner!' },
+          { emoji: '🎯', text: 'Make the Finals!', effect: '+Glam, +Charm', stats: { glam: 15, charm: 15 }, result: "TOP 5 at locals! Marissa's name is called and she stands under the spotlight. Eyes on California.", icon: '✨', title: 'Finalist Marissa!' },
+        ], unlocks: ['state']
+      },
+      state: {
+        icon: '🌟', title: 'State Competition', desc: "Marissa is competing at the STATE LEVEL!! The biggest stage yet — how does she show up?", choices: [
+          { emoji: '🦋', text: 'Reinvent Your Look', effect: '+Glam, +Charm', stats: { glam: 22, charm: 15 }, result: "New gown, new hair, new energy. Marissa walks into state and everyone whispers: 'Who IS that?'", icon: '🦋', title: 'Transformation!' },
+          { emoji: '📣', text: 'Go Harder on Platform', effect: '+Impact, +Charm', stats: { impact: 25, charm: 12 }, result: 'You bring community leaders to speak alongside your platform. Judges have never seen this level of commitment.', icon: '🏆', title: 'Platform Powerhouse!' },
+          { emoji: '🌊', text: 'Ride the Momentum', effect: '+All Stats', stats: { glam: 12, talent: 12, charm: 12, impact: 12 }, result: "You trust your journey. Everything clicks. Every part of you is aligned. California, Marissa is HERE.", icon: '🌊', title: 'In the Zone!' },
+          { emoji: '🎤', text: 'Nail the Onstage Q&A', effect: '+Charm, +Impact, +Talent', stats: { charm: 18, impact: 15, talent: 10 }, result: "The hardest question of the night. Silence. Then Marissa speaks and the whole room leans IN.", icon: '🎤', title: 'Mic Drop Moment!' },
+        ], unlocks: ['crown']
+      },
+      crown: {
+        icon: '👑', title: 'Miss America California Finals!!', desc: "THIS IS IT!! The Miss America California crown is RIGHT THERE. Marissa, this is YOUR moment!", choices: [
+          { emoji: '👑', text: 'Crown Moment!!', effect: '+EVERYTHING!!', stats: { glam: 30, talent: 30, charm: 30, impact: 30 }, result: "MARISSA IS CROWNED MISS AMERICA CALIFORNIA!! The crown is placed on her head. Confetti falls. Tears flow. California has its queen.", icon: '👑', title: 'Miss America California!!' },
+          { emoji: '🌟', text: 'Top 5 Finalist!', effect: '+Huge Stats', stats: { glam: 20, talent: 25, charm: 25, impact: 20 }, result: "TOP 5 at Miss America California!! Marissa stands under the spotlight in front of thousands. Her journey isn't over.", icon: '🌟', title: 'Top 5 Queen!' },
+          { emoji: '💖', text: 'Best Platform Award!', effect: '+Impact Max', stats: { impact: 35, charm: 15 }, result: "Marissa wins the Miss America Community Service Award! Her platform changed real lives. The crown may come next year.", icon: '💖', title: 'Service Queen!' },
+          { emoji: '🔥', text: 'Talent Competition Win!', effect: '+Talent Max', stats: { talent: 35, glam: 15 }, result: "Marissa WINS the Miss America California Talent Competition! The performance of the entire NIGHT.", icon: '🔥', title: 'Talent Queen!' },
+        ], unlocks: []
+      },
+    };
+
+    let stats = { glam: 40, talent: 50, charm: 45, impact: 35 };
+    let completedNodes = [];
+    let currentNode = null;
+
+    function openNode(nodeId) {
+      const btn = document.querySelector(`.action-btn[data-node="${nodeId}"]`);
+      if (btn.classList.contains('locked')) { showNotif('Complete previous stages first!'); return; }
+      currentNode = nodeId;
+      const data = NODES[nodeId];
+      document.getElementById('panelIcon').innerHTML = '';
+      document.getElementById('panelIcon').appendChild(renderPixelIcon(data.icon, 28));
+      document.getElementById('panelTitle').textContent = data.title;
+      document.getElementById('panelDesc').textContent = data.desc;
+      const grid = document.getElementById('choicesGrid');
+      grid.innerHTML = '';
+      data.choices.forEach((choice, i) => {
+        const el = document.createElement('button');
+        el.className = 'choice-btn';
+        el.innerHTML = `<span class="choice-emoji"></span><span class="choice-text">${choice.text}</span><span class="choice-effect">${choice.effect}</span>`;
+        el.querySelector('.choice-emoji').appendChild(renderPixelIcon(choice.emoji, 22));
+        el.onclick = () => makeChoice(i);
+        grid.appendChild(el);
+      });
+      document.getElementById('choicePanel').classList.add('visible');
+      document.getElementById('resultPopup').classList.remove('visible');
+    }
+
+    function closeChoicePanel() { document.getElementById('choicePanel').classList.remove('visible'); }
+
+    function makeChoice(i) {
+      const data = NODES[currentNode];
+      const choice = data.choices[i];
+      const changes = [];
+      Object.entries(choice.stats).forEach(([stat, val]) => {
+        stats[stat] = Math.min(100, stats[stat] + val);
+        changes.push({ stat, val });
+      });
+      updateStatBars();
+      const resultEmojiEl = document.getElementById('resultEmoji');
+      resultEmojiEl.innerHTML = '';
+      resultEmojiEl.appendChild(renderPixelIcon(choice.icon, 40));
+      document.getElementById('resultTitle').textContent = choice.title;
+      document.getElementById('resultText').textContent = choice.result;
+      document.getElementById('statChanges').innerHTML = changes.map(c =>
+        `<span class="stat-change up">+${c.val} ${c.stat.charAt(0).toUpperCase() + c.stat.slice(1)}</span>`
+      ).join('');
+      document.getElementById('choicePanel').classList.remove('visible');
+      document.getElementById('resultPopup').classList.add('visible');
+      document.getElementById('shareResultBtn').style.display = 'inline-flex';
+      const nodeBtn = document.querySelector(`.action-btn[data-node="${currentNode}"]`);
+      nodeBtn.classList.add('completed'); nodeBtn.classList.remove('active-node');
+      completedNodes.push(currentNode);
+      data.unlocks.forEach(id => {
+        const el = document.querySelector(`.action-btn[data-node="${id}"]`);
+        if (el) { el.classList.remove('locked'); el.classList.add('active-node'); }
+      });
+      const progress = (completedNodes.length / Object.keys(NODES).length) * 100;
+      document.getElementById('crownBar').style.width = progress + '%';
+      const msgs = ["let's gooo!", "getting warmed up", "she's THAT girl", "looking like royalty", "almost there", "California is WATCHING", "THIS IS YOUR MOMENT", "MISS AMERICA CALIFORNIA!!"];
+      document.getElementById('crownPct').textContent = Math.round(progress) + '% — ' + (msgs[completedNodes.length] || 'keep going!');
+      addLog(choice.icon, `${data.title}: "${choice.text}" — ${choice.title}`);
+      if (currentNode === 'crown') { launchConfetti(); setTimeout(() => showShareCard(choice.icon, choice.title, choice.result), 2000); }
+      else if (data.unlocks.length > 0) showNotif('New stage unlocked!');
+    }
+
+    function closeResult() {
+      document.getElementById('resultPopup').classList.remove('visible');
+      if (window.playActionAnim) window.playActionAnim();
+    }
+
+    function getSimsBarColor(val) {
+      if (val >= 60) return 'linear-gradient(90deg,#4db84d,#6dd66d)';
+      if (val >= 30) return 'linear-gradient(90deg,#c8a020,#e0c040)';
+      return 'linear-gradient(90deg,#c03030,#d05050)';
+    }
+
+    function updateStatBars() {
+      Object.entries(stats).forEach(([stat, val]) => {
+        const bar = document.getElementById(`bar-${stat}`);
+        if (bar) {
+          bar.style.width = val + '%';
+          bar.style.background = getSimsBarColor(val);
+        }
+      });
+    }
+
+    function addLog(icon, text) {
+      const entries = document.getElementById('logEntries');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `${icon} ${text}`;
+      entries.insertBefore(entry, entries.firstChild);
+    }
+
+    function showNotif(msg) {
+      const el = document.getElementById('notif');
+      el.textContent = msg; el.classList.add('visible');
+      setTimeout(() => el.classList.remove('visible'), 3000);
+    }
+
+    function launchConfetti() {
+      const c = document.getElementById('confetti');
+      c.style.display = 'block'; c.innerHTML = '';
+      const colors = ['#4cd964', '#6ec6ff', '#ffd700', '#ff5ec4', '#c45aff', '#ff6b6b', '#fff'];
+      for (let i = 0; i < 120; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        const size = 8 + Math.floor(Math.random() * 6) * 2; // pixel-snapped sizes
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100;
+        const delay = Math.random() * 2.5;
+        const duration = 2.5 + Math.random() * 2;
+        const drift = (Math.random() - 0.5) * 200;
+        const rotX = Math.random() * 1080;
+        const rotY = Math.random() * 1080;
+        const rotZ = Math.random() * 720;
+        const animName = `cf_${i}`;
+        const keyframes = `@keyframes ${animName} {
+          0% { transform: translate3d(0, -20px, 0) rotateX(0) rotateY(0) rotateZ(0); opacity: 1; }
+          100% { transform: translate3d(${drift}px, 100vh, ${(Math.random()-0.5)*100}px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg); opacity: 0; }
+        }`;
+        const style = document.createElement('style');
+        style.textContent = keyframes;
+        document.head.appendChild(style);
+        p.style.cssText = `left:${left}%;top:-10px;width:${size}px;height:${size}px;background:${color};animation:${animName} ${duration}s ${delay}s ease-in forwards;`;
+        c.appendChild(p);
+        setTimeout(() => style.remove(), (delay + duration) * 1000 + 100);
+      }
+      setTimeout(() => { c.style.display = 'none'; c.innerHTML = ''; }, 6000);
+    }
+
+    function showShareCard(emoji, title, text) {
+      document.getElementById('cardEmoji').textContent = emoji;
+      document.getElementById('cardTitle').textContent = title;
+      document.getElementById('cardText').textContent = text;
+      document.getElementById('cardStats').innerHTML = Object.entries(stats).map(([k, v]) => `<span class="card-stat">${k.charAt(0).toUpperCase() + k.slice(1)}: ${v}</span>`).join('');
+      document.getElementById('shareOverlay').classList.add('visible');
+    }
+    function closeShare() { document.getElementById('shareOverlay').classList.remove('visible'); }
+
+    function downloadCard() {
+      const emoji = document.getElementById('cardEmoji').textContent;
+      const title = document.getElementById('cardTitle').textContent;
+      const text = document.getElementById('cardText').textContent;
+      const statsHtml = Object.entries(stats).map(([k, v]) => `<span style="background:rgba(76,217,100,0.2);border:1.5px solid rgba(76,217,100,0.4);border-radius:50px;padding:3px 10px;font-size:10px;font-weight:900;color:#4cd964;">${k.charAt(0).toUpperCase() + k.slice(1)}: ${v}</span>`).join(' ');
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e4d7a,#1a3a5c);font-family:sans-serif;"><div style="background:linear-gradient(135deg,#1e4d7a,#1a3a5c);border-radius:14px;border:2px solid rgba(100,180,255,0.3);padding:24px 20px;text-align:center;max-width:360px;color:#fff;"><div style="font-size:14px;letter-spacing:4px;margin-bottom:6px;">👑 ✨ 🎮 ✨ 👑</div><div style="font-size:11px;color:#8ec8ff;letter-spacing:1.5px;margin-bottom:8px;">MARISSA'S PAGEANT LIFE</div><div style="font-size:48px;margin:8px 0;">${emoji}</div><div style="font-size:20px;font-weight:900;color:#4cd964;margin-bottom:6px;">${title}</div><div style="font-size:11px;color:#a0d0ff;line-height:1.5;margin-bottom:12px;">${text}</div><div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;">${statsHtml}</div><div style="font-size:10px;color:#6ec6ff;letter-spacing:2px;">marissaspageantlife.com</div></div><script>window.onload=function(){window.print();}<\/script></body></html>`;
+      const w = window.open('', '_blank', 'width=500,height=700');
+      if (w) { w.document.write(html); w.document.close(); }
+    }
+
+    function copyCaption() {
+      const title = document.getElementById('cardTitle').textContent;
+      const caption = `👑 ${title} — Marissa's Pageant Life!\nStats: Glam ${stats.glam} | Talent ${stats.talent} | Charm ${stats.charm} | Impact ${stats.impact}\n#MissAmericaCalifornia #PageantLife`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(caption).then(() => {
+          const s = document.getElementById('copySuccess');
+          if (s) { s.classList.add('visible'); setTimeout(() => s.classList.remove('visible'), 4000); }
+        }).catch(() => prompt('Copy:', caption));
+      } else { prompt('Copy:', caption); }
+    }
+
+    window.openCdShare = function () { updateCountdown(); var el = document.getElementById('cdShareOverlay'); if (el) el.classList.add('visible'); };
+    window.closeCdShare = function () { var el = document.getElementById('cdShareOverlay'); if (el) el.classList.remove('visible'); };
+
+    function saveCdCard() {
+      const d = document.getElementById('previewDays'), h = document.getElementById('previewHours'), m = document.getElementById('previewMins'), s = document.getElementById('previewSecs');
+      const days = d ? d.textContent : '--', hours = h ? h.textContent : '--', mins = m ? m.textContent : '--', secs = s ? s.textContent : '--';
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e4d7a,#1a3a5c);font-family:sans-serif;"><div style="background:linear-gradient(135deg,#1e4d7a,#1a3a5c);border-radius:14px;border:2px solid rgba(100,180,255,0.3);padding:24px 20px;text-align:center;max-width:360px;color:#fff;"><div style="font-size:14px;letter-spacing:4px;margin-bottom:8px;">👑 ✨ 🎮 ✨ 👑</div><div style="font-size:11px;color:#8ec8ff;margin-bottom:12px;">MISS AMERICA CALIFORNIA · JUNE 15, 2026</div><div style="font-size:48px;margin-bottom:8px;">👑</div><div style="display:flex;gap:10px;justify-content:center;margin-bottom:12px;">${[['Days', days], ['Hours', hours], ['Mins', mins], ['Secs', secs]].map(([l, v]) => `<div style="background:rgba(0,0,0,0.3);border:1.5px solid rgba(100,180,255,0.3);border-radius:10px;padding:8px 12px;min-width:52px;"><span style="font-size:22px;font-weight:900;color:#4cd964;">${v}</span><span style="display:block;font-size:8px;font-weight:900;color:#6ec6ff;">${l}</span></div>`).join('')}</div><div style="font-size:13px;font-weight:900;color:#ffd700;margin-bottom:6px;">Marissa is competing for Miss America California 👑</div><div style="font-size:10px;color:#6ec6ff;letter-spacing:2px;">marissaspageantlife · 2026</div></div><script>window.onload=function(){window.print();}<\/script></body></html>`;
+      const w = window.open('', '_blank', 'width=500,height=700');
+      if (w) { w.document.write(html); w.document.close(); }
+    }
+
+    function copyCdCaption() {
+      const days = (document.getElementById('previewDays') || {}).textContent || '--';
+      const caption = `👑 ${days} DAYS until Marissa competes for Miss America California!! June 15, 2026\n#MissAmericaCalifornia #PageantLife`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(caption).then(() => {
+          const s = document.getElementById('cdCopySuccess');
+          if (s) { s.classList.add('visible'); setTimeout(() => s.classList.remove('visible'), 4000); }
+        }).catch(() => prompt('Copy:', caption));
+      } else { prompt('Copy:', caption); }
+    }
+
+    function openLog() { document.getElementById('logOverlay').classList.add('visible'); }
+    function closeLog() { document.getElementById('logOverlay').classList.remove('visible'); }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { closeChoicePanel(); closeResult(); closeShare(); closeLog(); window.closeCdShare(); }
+    });
+  </script>
 
 </body>
+
 </html>
