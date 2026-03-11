@@ -112,16 +112,31 @@ export function initPageant3D() {
       // Safari safety: ensure meshes render even if glTF materials are picky
       model.traverse((obj) => {
         if (!obj.isMesh) return;
+        obj.frustumCulled = false;
         if (obj.material) {
           const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
           mats.forEach((m) => {
             m.side = THREE.DoubleSide;
             m.transparent = false;
+            m.opacity = 1;
             m.depthWrite = true;
+            // If a material has weird settings, give it a visible baseline
+            if (m.color) m.color.setHex(0xffb3e0);
+            if ('emissive' in m && m.emissive) {
+              m.emissive.setHex(0x552255);
+              m.emissiveIntensity = 0.6;
+            }
             m.needsUpdate = true;
           });
         }
       });
+
+      // Debug helpers: show where the model is
+      const boxHelper = new THREE.Box3Helper(finalBox, 0xff1493);
+      scene.add(boxHelper);
+      const axes2 = new THREE.AxesHelper(Math.max(0.6, modelSize.y * 0.5));
+      axes2.position.copy(modelCenter);
+      scene.add(axes2);
 
       // Plumbob above head
       plumbob.position.set(modelCenter.x, modelTop + 0.25, modelCenter.z);

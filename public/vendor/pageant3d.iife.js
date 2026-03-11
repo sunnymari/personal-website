@@ -22182,6 +22182,31 @@ var Pageant3D = (() => {
       }
     }
   };
+  var Box3Helper = class extends LineSegments {
+    constructor(box, color = 16776960) {
+      const indices = new Uint16Array([0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7]);
+      const positions = [1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1];
+      const geometry = new BufferGeometry();
+      geometry.setIndex(new BufferAttribute(indices, 1));
+      geometry.setAttribute("position", new Float32BufferAttribute(positions, 3));
+      super(geometry, new LineBasicMaterial({ color, toneMapped: false }));
+      this.box = box;
+      this.type = "Box3Helper";
+      this.geometry.computeBoundingSphere();
+    }
+    updateMatrixWorld(force) {
+      const box = this.box;
+      if (box.isEmpty()) return;
+      box.getCenter(this.position);
+      box.getSize(this.scale);
+      this.scale.multiplyScalar(0.5);
+      super.updateMatrixWorld(force);
+    }
+    dispose() {
+      this.geometry.dispose();
+      this.material.dispose();
+    }
+  };
   var AxesHelper = class extends LineSegments {
     constructor(size = 1) {
       const vertices = [
@@ -24860,16 +24885,28 @@ var Pageant3D = (() => {
         modelTop = modelSize.y;
         model.traverse((obj) => {
           if (!obj.isMesh) return;
+          obj.frustumCulled = false;
           if (obj.material) {
             const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
             mats.forEach((m) => {
               m.side = DoubleSide;
               m.transparent = false;
+              m.opacity = 1;
               m.depthWrite = true;
+              if (m.color) m.color.setHex(16757728);
+              if ("emissive" in m && m.emissive) {
+                m.emissive.setHex(5579349);
+                m.emissiveIntensity = 0.6;
+              }
               m.needsUpdate = true;
             });
           }
         });
+        const boxHelper = new Box3Helper(finalBox, 16716947);
+        scene.add(boxHelper);
+        const axes2 = new AxesHelper(Math.max(0.6, modelSize.y * 0.5));
+        axes2.position.copy(modelCenter);
+        scene.add(axes2);
         plumbob.position.set(modelCenter.x, modelTop + 0.25, modelCenter.z);
         const fov2 = camera.fov * Math.PI / 180;
         const margin = 1.55;
