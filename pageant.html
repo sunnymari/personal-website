@@ -1550,7 +1550,7 @@
     })();
   </script>
 
-  <script src="/vendor/pageant3d.iife.js?v=3"></script>
+  <script src="/vendor/pageant3d.iife.js?v=33"></script>
   <script>
     // The bundle auto-invokes initPageant3D(), no need to call again.
     console.log('[pageant] Pageant3D loaded:', !!window.Pageant3D);
@@ -1813,6 +1813,7 @@
     function closeResult() {
       document.getElementById('resultPopup').classList.remove('visible');
       if (window.playActionAnim) window.playActionAnim();
+      if (window.burstParticles) window.burstParticles();
     }
 
     function getSimsBarColor(val) {

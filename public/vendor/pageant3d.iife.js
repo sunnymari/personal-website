@@ -24737,19 +24737,59 @@ var Pageant3D = (() => {
     fillLight.position.set(-2, 1, 3);
     scene.add(fillLight);
     const plumbob = new Mesh(
-      new OctahedronGeometry(0.06, 0),
+      new OctahedronGeometry(0.18, 0),
       new MeshLambertMaterial({ color: 5036388, flatShading: true, emissive: 2787898, emissiveIntensity: 0.4 })
     );
     plumbob.scale.set(1, 1.5, 1);
     scene.add(plumbob);
     const shadow = new Mesh(
-      new CircleGeometry(0.94, 16),
+      new CircleGeometry(1.8, 32),
       new MeshBasicMaterial({ color: 0, transparent: true, opacity: 0.1, depthWrite: false })
     );
     shadow.renderOrder = -1;
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.set(0, 0.25, 0);
     scene.add(shadow);
+    const PARTICLE_COUNT = 40;
+    const particleColors = [5036388, 16766720, 16735940, 7259903, 12868351, 16739179];
+    const particles = [];
+    const pxGeo = new BoxGeometry(0.04, 0.04, 0.04);
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const mat = new MeshBasicMaterial({
+        color: particleColors[i % particleColors.length],
+        transparent: true,
+        opacity: 0
+      });
+      const mesh = new Mesh(pxGeo, mat);
+      mesh.visible = false;
+      scene.add(mesh);
+      particles.push({ mesh, vx: 0, vy: 0, vz: 0, life: 0, maxLife: 0 });
+    }
+    let particlesActive = false;
+    window.burstParticles = function() {
+      particlesActive = true;
+      const centerY = modelTop * 0.5;
+      particles.forEach((p) => {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 0.8 + Math.random() * 1.5;
+        const upSpeed = 1 + Math.random() * 2;
+        p.mesh.position.set(
+          (Math.random() - 0.5) * 0.3,
+          centerY + (Math.random() - 0.5) * 0.4,
+          (Math.random() - 0.5) * 0.3
+        );
+        p.vx = Math.cos(angle) * speed;
+        p.vy = upSpeed;
+        p.vz = Math.sin(angle) * speed;
+        p.life = 0;
+        p.maxLife = 0.8 + Math.random() * 0.6;
+        p.mesh.visible = true;
+        p.mesh.material.opacity = 1;
+        const s = 0.03 + Math.random() * 0.04;
+        p.mesh.scale.setScalar(s / 0.04);
+        p.mesh.material.color.setHex(particleColors[Math.floor(Math.random() * particleColors.length)]);
+      });
+    };
     let model = null;
     let mixer = null;
     let idleAction = null;
@@ -24788,15 +24828,16 @@ var Pageant3D = (() => {
           obj.visible = true;
           obj.frustumCulled = false;
         });
-        plumbob.position.set(modelCenter.x, modelTop + 0.25, modelCenter.z);
+        plumbob.position.set(modelCenter.x, modelTop + 6.2, modelCenter.z);
+        shadow.position.set(modelCenter.x, 0.01, modelCenter.z);
         const fov2 = camera.fov * Math.PI / 180;
-        const margin = 1.55;
+        const margin = 3.9;
         const fitHeight = modelSize.y * margin / 2;
         const fitWidth = modelSize.x * margin / 2;
         const distanceForHeight = fitHeight / Math.tan(fov2 / 2);
         const distanceForWidth = fitWidth / (Math.tan(fov2 / 2) * camera.aspect);
         const distance = Math.max(distanceForHeight, distanceForWidth) + modelSize.z * 0.5;
-        const lookAt = new Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.1, modelCenter.z);
+        const lookAt = new Vector3(modelCenter.x, modelCenter.y + modelSize.y * 1.712, modelCenter.z);
         camera.position.set(lookAt.x, lookAt.y, lookAt.z + distance);
         camera.near = Math.max(0.01, distance / 100);
         camera.far = Math.max(1e3, distance * 10);
@@ -24847,7 +24888,28 @@ var Pageant3D = (() => {
       requestAnimationFrame(animate);
       const delta = clock.getDelta();
       if (mixer) mixer.update(delta);
-      plumbob.position.y = modelTop + 0.25 + Math.sin(Date.now() * 4e-3) * 0.03;
+      plumbob.position.y = modelTop + 6.2 + Math.sin(Date.now() * 4e-3) * 0.03;
+      plumbob.rotation.y = clock.elapsedTime * 2;
+      if (particlesActive) {
+        let anyAlive = false;
+        particles.forEach((p) => {
+          if (p.life < p.maxLife) {
+            anyAlive = true;
+            p.life += delta;
+            const progress = p.life / p.maxLife;
+            p.mesh.position.x += p.vx * delta;
+            p.mesh.position.y += p.vy * delta;
+            p.mesh.position.z += p.vz * delta;
+            p.vy -= 4 * delta;
+            p.mesh.material.opacity = 1 - progress;
+            p.mesh.rotation.x += delta * 8;
+            p.mesh.rotation.y += delta * 6;
+          } else {
+            p.mesh.visible = false;
+          }
+        });
+        if (!anyAlive) particlesActive = false;
+      }
       renderer.render(scene, camera);
     }
     animate();
@@ -24859,13 +24921,13 @@ var Pageant3D = (() => {
       camera.aspect = w / h;
       if (model) {
         const fov2 = camera.fov * Math.PI / 180;
-        const margin = 1.25;
+        const margin = 3.9;
         const fitHeight = modelSize.y * margin / 2;
         const fitWidth = modelSize.x * margin / 2;
         const distanceForHeight = fitHeight / Math.tan(fov2 / 2);
         const distanceForWidth = fitWidth / (Math.tan(fov2 / 2) * camera.aspect);
         const distance = Math.max(distanceForHeight, distanceForWidth) + modelSize.z * 0.5;
-        const lookAt = new Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.15, modelCenter.z);
+        const lookAt = new Vector3(modelCenter.x, modelCenter.y + modelSize.y * 1.712, modelCenter.z);
         camera.position.set(lookAt.x, lookAt.y, lookAt.z + distance);
         camera.near = Math.max(0.01, distance / 100);
         camera.far = Math.max(1e3, distance * 10);
