@@ -1544,7 +1544,19 @@
 
       setTimeout(function () {
         if (!window.__threeModuleStarted) {
-          setBootStatus('3D failed to start (module import blocked). Try hard refresh.');
+          // Attempt a dynamic import to get a concrete error message in Safari.
+          if (typeof import === 'function') {
+            Promise.all([
+              import('/vendor/three.module.js'),
+              import('/vendor/GLTFLoader.js')
+            ]).then(function () {
+              setBootStatus('3D modules loaded, but startup still failed (check WebGL).');
+            }).catch(function (err) {
+              setBootStatus('3D module import failed: ' + String(err && (err.message || err)));
+            });
+          } else {
+            setBootStatus('3D failed to start (no module support). Update Safari or disable content blockers.');
+          }
         }
       }, 2000);
     })();
