@@ -11,13 +11,6 @@ export function initPageant3D() {
   const setStatus = typeof window.__setBoot3dStatus === 'function' ? window.__setBoot3dStatus : null;
   if (setStatus) setStatus('Loading 3D…');
 
-  // WebGL sanity check
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  if (!gl) {
-    if (setStatus) setStatus('3D disabled: WebGL not available in this browser.');
-    return;
-  }
-
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
 
@@ -64,11 +57,6 @@ export function initPageant3D() {
   shadow.position.set(0, 0.25, 0);
   scene.add(shadow);
 
-  // Debug: confirm render loop is alive (remove later)
-  const axes = new THREE.AxesHelper(0.6);
-  axes.position.set(0, 0.02, 0);
-  scene.add(axes);
-
   let model = null;
   let mixer = null;
   let idleAction = null;
@@ -86,23 +74,23 @@ export function initPageant3D() {
     IDLE_URL,
     (gltf) => {
       model = gltf.scene;
-      if (setStatus) setStatus('3D loaded.');
       model.visible = true;
+
+      // Hide boot status banner on success
+      const bootEl = document.getElementById('threeBootStatus');
+      if (bootEl) bootEl.remove();
 
       // Normalize model to a predictable size and frame camera to it.
       const preBox = new THREE.Box3().setFromObject(model);
       const preSize = preBox.getSize(new THREE.Vector3());
       const preMaxDim = Math.max(preSize.x, preSize.y, preSize.z) || 1;
       const targetHeight = 2.15; // larger so it reads clearly on mobile
-      let meshCount = 0;
-      model.traverse((obj) => { if (obj && obj.isMesh) meshCount++; });
       const safeY = (preSize.y && preSize.y > 1e-6) ? preSize.y : preMaxDim;
       const scale = targetHeight / safeY;
       model.scale.setScalar(scale);
 
       // Recompute bounds after scaling, then center at origin and place feet on y=0
       const box = new THREE.Box3().setFromObject(model);
-      const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
       model.position.sub(center);
       model.position.y -= box.min.y;
@@ -113,53 +101,12 @@ export function initPageant3D() {
       modelCenter = finalBox.getCenter(new THREE.Vector3());
       modelTop = modelSize.y;
 
-      if (setStatus) {
-        setStatus(`3D loaded • meshes:${meshCount} • size:${modelSize.x.toFixed(2)},${modelSize.y.toFixed(2)},${modelSize.z.toFixed(2)}`);
-      }
-
-      // Visible placeholder at computed center for debugging
-      const placeholder = new THREE.Mesh(
-        new THREE.CapsuleGeometry(0.12, 0.35, 4, 10),
-        new THREE.MeshBasicMaterial({ color: 0xff1493 })
-      );
-      placeholder.position.copy(modelCenter);
-      scene.add(placeholder);
-
-      // Force-visibility pass: use a simple material that doesn't depend on textures/lights.
-      // If the model appears with this, the issue is glTF materials/texture pipeline on Safari.
-      let firstMesh = null;
+      // Ensure meshes are visible and not frustum-culled
       model.traverse((obj) => {
         if (!obj.isMesh) return;
-        if (!firstMesh) firstMesh = obj;
         obj.visible = true;
         obj.frustumCulled = false;
-        obj.material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
-        obj.material.needsUpdate = true;
       });
-
-      // If we still can't see it, draw an edges/wireframe overlay from geometry.
-      if (firstMesh && firstMesh.geometry) {
-        try {
-          const edges = new THREE.EdgesGeometry(firstMesh.geometry, 10);
-          const line = new THREE.LineSegments(
-            edges,
-            new THREE.LineBasicMaterial({ color: 0x00ff9d, transparent: true, opacity: 0.95 })
-          );
-          // Attach to mesh so transforms always match (Safari-safe)
-          line.position.set(0, 0, 0);
-          line.rotation.set(0, 0, 0);
-          line.scale.set(1, 1, 1);
-          line.frustumCulled = false;
-          firstMesh.add(line);
-        } catch (_) { }
-      }
-
-      // Debug helpers: show where the model is
-      const boxHelper = new THREE.Box3Helper(finalBox, 0xff1493);
-      scene.add(boxHelper);
-      const axes2 = new THREE.AxesHelper(Math.max(0.6, modelSize.y * 0.5));
-      axes2.position.copy(modelCenter);
-      scene.add(axes2);
 
       // Plumbob above head
       plumbob.position.set(modelCenter.x, modelTop + 0.25, modelCenter.z);

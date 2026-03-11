@@ -1550,18 +1550,10 @@
     })();
   </script>
 
-  <script src="/vendor/pageant3d.iife.js"></script>
+  <script src="/vendor/pageant3d.iife.js?v=3"></script>
   <script>
-    // Start bundled 3D (classic script to avoid module blocking)
-    try {
-      if (window.Pageant3D && typeof window.Pageant3D.initPageant3D === 'function') {
-        window.Pageant3D.initPageant3D();
-      } else if (window.__setBoot3dStatus) {
-        window.__setBoot3dStatus('3D bundle missing: /vendor/pageant3d.iife.js');
-      }
-    } catch (e) {
-      if (window.__setBoot3dStatus) window.__setBoot3dStatus('3D failed: ' + String(e && (e.message || e)));
-    }
+    // The bundle auto-invokes initPageant3D(), no need to call again.
+    console.log('[pageant] Pageant3D loaded:', !!window.Pageant3D);
   </script>
   <script>
     // ========== COUNTDOWN ==========
