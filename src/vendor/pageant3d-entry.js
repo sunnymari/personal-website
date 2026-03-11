@@ -87,13 +87,17 @@ export function initPageant3D() {
     (gltf) => {
       model = gltf.scene;
       if (setStatus) setStatus('3D loaded.');
+      model.visible = true;
 
       // Normalize model to a predictable size and frame camera to it.
       const preBox = new THREE.Box3().setFromObject(model);
       const preSize = preBox.getSize(new THREE.Vector3());
       const preMaxDim = Math.max(preSize.x, preSize.y, preSize.z) || 1;
       const targetHeight = 2.15; // larger so it reads clearly on mobile
-      const scale = targetHeight / (preSize.y || preMaxDim);
+      let meshCount = 0;
+      model.traverse((obj) => { if (obj && obj.isMesh) meshCount++; });
+      const safeY = (preSize.y && preSize.y > 1e-6) ? preSize.y : preMaxDim;
+      const scale = targetHeight / safeY;
       model.scale.setScalar(scale);
 
       // Recompute bounds after scaling, then center at origin and place feet on y=0
@@ -108,6 +112,18 @@ export function initPageant3D() {
       modelSize = finalBox.getSize(new THREE.Vector3());
       modelCenter = finalBox.getCenter(new THREE.Vector3());
       modelTop = modelSize.y;
+
+      if (setStatus) {
+        setStatus(`3D loaded • meshes:${meshCount} • size:${modelSize.x.toFixed(2)},${modelSize.y.toFixed(2)},${modelSize.z.toFixed(2)}`);
+      }
+
+      // Visible placeholder at computed center for debugging
+      const placeholder = new THREE.Mesh(
+        new THREE.CapsuleGeometry(0.12, 0.35, 4, 10),
+        new THREE.MeshBasicMaterial({ color: 0xff1493 })
+      );
+      placeholder.position.copy(modelCenter);
+      scene.add(placeholder);
 
       // Safari safety: ensure meshes render even if glTF materials are picky
       model.traverse((obj) => {
