@@ -68,6 +68,8 @@ export function initPageant3D() {
   let idleAction = null;
   let actionClip = null;
   let modelTop = 2.0;
+  let modelCenter = new THREE.Vector3(0, 1, 0);
+  let modelSize = new THREE.Vector3(1, 2, 1);
   const clock = new THREE.Clock();
 
   const loader = new GLTFLoader();
@@ -80,27 +82,46 @@ export function initPageant3D() {
       model = gltf.scene;
       if (setStatus) setStatus('3D loaded.');
 
-      const box = new THREE.Box3().setFromObject(model);
-      const size = box.getSize(new THREE.Vector3());
-
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const scale = 0.78 / maxDim;
+      // Normalize model to a predictable size and frame camera to it.
+      const preBox = new THREE.Box3().setFromObject(model);
+      const preSize = preBox.getSize(new THREE.Vector3());
+      const preMaxDim = Math.max(preSize.x, preSize.y, preSize.z) || 1;
+      const targetHeight = 1.65; // a bit taller so it feels "full character"
+      const scale = targetHeight / (preSize.y || preMaxDim);
       model.scale.setScalar(scale);
 
-      const scaledBox = new THREE.Box3().setFromObject(model);
-      const scaledSize = scaledBox.getSize(new THREE.Vector3());
+      // Recompute bounds after scaling, then center at origin and place feet on y=0
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      model.position.sub(center);
+      model.position.y -= box.min.y;
 
-      model.position.x = -scaledBox.getCenter(new THREE.Vector3()).x;
-      model.position.z = -scaledBox.getCenter(new THREE.Vector3()).z;
-      model.position.y = -scaledBox.min.y;
+      // Final bounds used for camera fit
+      const finalBox = new THREE.Box3().setFromObject(model);
+      modelSize = finalBox.getSize(new THREE.Vector3());
+      modelCenter = finalBox.getCenter(new THREE.Vector3());
+      modelTop = modelSize.y;
 
-      modelTop = scaledSize.y;
+      // Plumbob above head
+      plumbob.position.set(modelCenter.x, modelTop + 0.25, modelCenter.z);
 
-      plumbob.position.set(0, modelTop * 0.6 + 2.047, 0);
+      // Fit camera to model bounds (with margin)
+      const fov = (camera.fov * Math.PI) / 180;
+      const margin = 1.25;
+      const fitHeight = (modelSize.y * margin) / 2;
+      const fitWidth = (modelSize.x * margin) / 2;
+      const distanceForHeight = fitHeight / Math.tan(fov / 2);
+      const distanceForWidth = fitWidth / (Math.tan(fov / 2) * camera.aspect);
+      const distance = Math.max(distanceForHeight, distanceForWidth) + (modelSize.z * 0.5);
 
-      const midY = modelTop * 2.2;
-      camera.position.set(0, midY, 5.0);
-      camera.lookAt(0, midY, 0);
+      // Slightly above center feels nicer for full-body framing
+      const lookAt = new THREE.Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.15, modelCenter.z);
+      camera.position.set(lookAt.x, lookAt.y, lookAt.z + distance);
+      camera.near = Math.max(0.01, distance / 100);
+      camera.far = Math.max(1000, distance * 10);
+      camera.updateProjectionMatrix();
+      camera.lookAt(lookAt);
 
       scene.add(model);
 
@@ -154,7 +175,7 @@ export function initPageant3D() {
     const delta = clock.getDelta();
     if (mixer) mixer.update(delta);
     // Float plumbob
-    plumbob.position.y += Math.sin(Date.now() * 0.004) * 0.00035;
+    plumbob.position.y = (modelTop + 0.25) + Math.sin(Date.now() * 0.004) * 0.03;
     renderer.render(scene, camera);
   }
   animate();
@@ -165,6 +186,20 @@ export function initPageant3D() {
     if (!w || !h) return;
     renderer.setSize(Math.floor(w * PS1_SCALE), Math.floor(h * PS1_SCALE), false);
     camera.aspect = w / h;
+    // Re-fit distance on resize if model is loaded
+    if (model) {
+      const fov = (camera.fov * Math.PI) / 180;
+      const margin = 1.25;
+      const fitHeight = (modelSize.y * margin) / 2;
+      const fitWidth = (modelSize.x * margin) / 2;
+      const distanceForHeight = fitHeight / Math.tan(fov / 2);
+      const distanceForWidth = fitWidth / (Math.tan(fov / 2) * camera.aspect);
+      const distance = Math.max(distanceForHeight, distanceForWidth) + (modelSize.z * 0.5);
+      const lookAt = new THREE.Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.15, modelCenter.z);
+      camera.position.set(lookAt.x, lookAt.y, lookAt.z + distance);
+      camera.near = Math.max(0.01, distance / 100);
+      camera.far = Math.max(1000, distance * 10);
+    }
     camera.updateProjectionMatrix();
   }
   window.addEventListener('resize', handleResize);

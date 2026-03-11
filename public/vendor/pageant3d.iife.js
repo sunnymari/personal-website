@@ -24759,6 +24759,8 @@ var Pageant3D = (() => {
     let idleAction = null;
     let actionClip = null;
     let modelTop = 2;
+    let modelCenter = new Vector3(0, 1, 0);
+    let modelSize = new Vector3(1, 2, 1);
     const clock = new Clock();
     const loader = new GLTFLoader();
     const IDLE_URL = "/Meshy_AI_Animation_Idle_11_withSkin.glb";
@@ -24768,21 +24770,35 @@ var Pageant3D = (() => {
       (gltf) => {
         model = gltf.scene;
         if (setStatus) setStatus("3D loaded.");
+        const preBox = new Box3().setFromObject(model);
+        const preSize = preBox.getSize(new Vector3());
+        const preMaxDim = Math.max(preSize.x, preSize.y, preSize.z) || 1;
+        const targetHeight = 1.65;
+        const scale = targetHeight / (preSize.y || preMaxDim);
+        model.scale.setScalar(scale);
         const box = new Box3().setFromObject(model);
         const size = box.getSize(new Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 0.78 / maxDim;
-        model.scale.setScalar(scale);
-        const scaledBox = new Box3().setFromObject(model);
-        const scaledSize = scaledBox.getSize(new Vector3());
-        model.position.x = -scaledBox.getCenter(new Vector3()).x;
-        model.position.z = -scaledBox.getCenter(new Vector3()).z;
-        model.position.y = -scaledBox.min.y;
-        modelTop = scaledSize.y;
-        plumbob.position.set(0, modelTop * 0.6 + 2.047, 0);
-        const midY = modelTop * 2.2;
-        camera.position.set(0, midY, 5);
-        camera.lookAt(0, midY, 0);
+        const center = box.getCenter(new Vector3());
+        model.position.sub(center);
+        model.position.y -= box.min.y;
+        const finalBox = new Box3().setFromObject(model);
+        modelSize = finalBox.getSize(new Vector3());
+        modelCenter = finalBox.getCenter(new Vector3());
+        modelTop = modelSize.y;
+        plumbob.position.set(modelCenter.x, modelTop + 0.25, modelCenter.z);
+        const fov2 = camera.fov * Math.PI / 180;
+        const margin = 1.25;
+        const fitHeight = modelSize.y * margin / 2;
+        const fitWidth = modelSize.x * margin / 2;
+        const distanceForHeight = fitHeight / Math.tan(fov2 / 2);
+        const distanceForWidth = fitWidth / (Math.tan(fov2 / 2) * camera.aspect);
+        const distance = Math.max(distanceForHeight, distanceForWidth) + modelSize.z * 0.5;
+        const lookAt = new Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.15, modelCenter.z);
+        camera.position.set(lookAt.x, lookAt.y, lookAt.z + distance);
+        camera.near = Math.max(0.01, distance / 100);
+        camera.far = Math.max(1e3, distance * 10);
+        camera.updateProjectionMatrix();
+        camera.lookAt(lookAt);
         scene.add(model);
         if (gltf.animations && gltf.animations.length > 0) {
           mixer = new AnimationMixer(model);
@@ -24828,7 +24844,7 @@ var Pageant3D = (() => {
       requestAnimationFrame(animate);
       const delta = clock.getDelta();
       if (mixer) mixer.update(delta);
-      plumbob.position.y += Math.sin(Date.now() * 4e-3) * 35e-5;
+      plumbob.position.y = modelTop + 0.25 + Math.sin(Date.now() * 4e-3) * 0.03;
       renderer.render(scene, camera);
     }
     animate();
@@ -24838,6 +24854,19 @@ var Pageant3D = (() => {
       if (!w || !h) return;
       renderer.setSize(Math.floor(w * PS1_SCALE), Math.floor(h * PS1_SCALE), false);
       camera.aspect = w / h;
+      if (model) {
+        const fov2 = camera.fov * Math.PI / 180;
+        const margin = 1.25;
+        const fitHeight = modelSize.y * margin / 2;
+        const fitWidth = modelSize.x * margin / 2;
+        const distanceForHeight = fitHeight / Math.tan(fov2 / 2);
+        const distanceForWidth = fitWidth / (Math.tan(fov2 / 2) * camera.aspect);
+        const distance = Math.max(distanceForHeight, distanceForWidth) + modelSize.z * 0.5;
+        const lookAt = new Vector3(modelCenter.x, modelCenter.y + modelSize.y * 0.15, modelCenter.z);
+        camera.position.set(lookAt.x, lookAt.y, lookAt.z + distance);
+        camera.near = Math.max(0.01, distance / 100);
+        camera.far = Math.max(1e3, distance * 10);
+      }
       camera.updateProjectionMatrix();
     }
     window.addEventListener("resize", handleResize);
