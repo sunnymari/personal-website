@@ -28,53 +28,59 @@
     </header>
 
     <section class="models-showcase" aria-label="3D Meshy models">
-      <div class="model-card">
-        <div class="model-card-head">
-          <span class="model-card-title">Chibi coder</span>
-          <label class="sr-only" for="chibiAnimSelect">Chibi animation</label>
-          <select id="chibiAnimSelect" class="anim-select" aria-label="Chibi animation">
-            <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb" selected>Walking</option>
-            <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Running_withSkin.glb">Running</option>
-            <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Wave_One_Hand_withSkin.glb">Wave</option>
-            <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Wave_for_Help_3_withSkin.glb">Wave for help</option>
-            <option value="/Meshy_AI_Chibi_Coder_with_Gala_0322190228_texture.glb">Gala portrait (spin)</option>
-          </select>
+      <div class="model-card meshy-room">
+        <p class="meshy-room-heading">💒 Chibi coder &amp; happy laptop — same room</p>
+        <div class="meshy-room-grid">
+          <div class="meshy-panel">
+            <div class="model-card-head">
+              <span class="model-card-title">Chibi coder</span>
+              <label class="sr-only" for="chibiAnimSelect">Chibi animation</label>
+              <select id="chibiAnimSelect" class="anim-select" aria-label="Chibi animation">
+                <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb" selected>Walking</option>
+                <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Running_withSkin.glb">Running</option>
+                <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Wave_One_Hand_withSkin.glb">Wave</option>
+                <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Wave_for_Help_3_withSkin.glb">Wave for help</option>
+                <option value="/Meshy_AI_Chibi_Coder_with_Gala_0322190228_texture.glb">Gala portrait (spin)</option>
+              </select>
+            </div>
+            <model-viewer
+              id="chibi-mv"
+              class="chibi-viewer"
+              src="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb"
+              alt="Chibi coder character in a gala dress"
+              camera-controls
+              touch-action="pan-y"
+              autoplay
+              loop
+              shadow-intensity="0.85"
+              environment-image="neutral"
+              exposure="1.1"
+              loading="eager"
+            ></model-viewer>
+            <p class="chibi-caption meshy-panel-caption">✨ animations &amp; gala portrait</p>
+          </div>
+          <div class="meshy-panel">
+            <div class="model-card-head">
+              <span class="model-card-title">Happy laptop</span>
+            </div>
+            <model-viewer
+              class="chibi-viewer laptop-viewer"
+              src="/Meshy_AI_Happy_Laptop_0322192107_texture.glb"
+              alt="Happy laptop character with a computer"
+              camera-controls
+              touch-action="pan-y"
+              auto-rotate
+              auto-rotate-delay="0"
+              rotation-per-second="20deg"
+              shadow-intensity="0.85"
+              environment-image="neutral"
+              exposure="1.1"
+              loading="lazy"
+            ></model-viewer>
+            <p class="chibi-caption meshy-panel-caption">💻 drag to spin</p>
+          </div>
         </div>
-        <model-viewer
-          id="chibi-mv"
-          class="chibi-viewer"
-          src="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb"
-          alt="Chibi coder character in a gala dress"
-          camera-controls
-          touch-action="pan-y"
-          autoplay
-          loop
-          shadow-intensity="0.85"
-          environment-image="neutral"
-          exposure="1.1"
-          loading="eager"
-        ></model-viewer>
-        <p class="chibi-caption">✨ biped animations + gala portrait — drag to orbit</p>
-      </div>
-      <div class="model-card">
-        <div class="model-card-head">
-          <span class="model-card-title">Happy laptop</span>
-        </div>
-        <model-viewer
-          class="chibi-viewer laptop-viewer"
-          src="/Meshy_AI_Happy_Laptop_0322192107_texture.glb"
-          alt="Happy laptop character with a computer"
-          camera-controls
-          touch-action="pan-y"
-          auto-rotate
-          auto-rotate-delay="0"
-          rotation-per-second="20deg"
-          shadow-intensity="0.85"
-          environment-image="neutral"
-          exposure="1.1"
-          loading="lazy"
-        ></model-viewer>
-        <p class="chibi-caption">💻 meshy happy laptop — drag to spin</p>
+        <p class="meshy-room-foot">One real 3D room with both (walk &amp; pickup): <a href="/chibi">Chibi scene</a></p>
       </div>
     </section>
     <script>

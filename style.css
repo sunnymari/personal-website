@@ -70,11 +70,58 @@ h1,
   gap: 1rem;
 }
 
+.meshy-room-heading {
+  margin: 0 0 0.85rem;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ad1457;
+  letter-spacing: 0.02em;
+}
+
+.meshy-room-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
 @media (min-width: 768px) {
-  .models-showcase {
+  .meshy-room-grid {
     grid-template-columns: 1fr 1fr;
     align-items: start;
   }
+}
+
+.meshy-panel {
+  padding: 0.65rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 182, 193, 0.45);
+}
+
+.meshy-panel .model-card-head {
+  margin-bottom: 0.5rem;
+}
+
+.meshy-panel-caption {
+  margin-top: 0.6rem;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+}
+
+.meshy-room-foot {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(173, 20, 87, 0.75);
+}
+
+.meshy-room-foot a {
+  color: #c2185b;
+  font-weight: 800;
 }
 
 .model-card {

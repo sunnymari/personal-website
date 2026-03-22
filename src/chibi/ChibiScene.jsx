@@ -318,38 +318,90 @@ function SceneController({ phase, setPhase }) {
   return null;
 }
 
-function Ground() {
+/** Cozy dev room: chibi and laptop share one enclosed space (floor + walls + ceiling). */
+function CoderRoom() {
+  const wall = '#251835';
+  const wallAccent = '#2f1f45';
+  const floor = '#1a0f28';
+  const rug = '#32204a';
+
   return (
-    <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
-      <planeGeometry args={[14, 8]} />
-      <meshStandardMaterial color="#1e0533" roughness={1} />
-    </mesh>
+    <group>
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+        <planeGeometry args={[8, 5]} />
+        <meshStandardMaterial color={floor} roughness={0.95} />
+      </mesh>
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, 0.2]}>
+        <planeGeometry args={[6.5, 3.2]} />
+        <meshStandardMaterial color={rug} roughness={1} />
+      </mesh>
+
+      <mesh receiveShadow position={[0, 1.65, -2.48]}>
+        <planeGeometry args={[8, 3.4]} />
+        <meshStandardMaterial color={wall} roughness={0.92} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[0, 2.15, -2.4]}>
+        <planeGeometry args={[2.2, 1.1]} />
+        <meshStandardMaterial
+          color="#4c1d95"
+          emissive="#7c3aed"
+          emissiveIntensity={0.35}
+          roughness={0.6}
+          transparent
+          opacity={0.92}
+        />
+      </mesh>
+
+      <mesh receiveShadow position={[-3.45, 1.65, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[5, 3.4]} />
+        <meshStandardMaterial color={wallAccent} roughness={0.92} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh receiveShadow position={[3.45, 1.65, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[5, 3.4]} />
+        <meshStandardMaterial color={wallAccent} roughness={0.92} side={THREE.DoubleSide} />
+      </mesh>
+
+      <mesh receiveShadow position={[0, 3.35, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[8, 5]} />
+        <meshStandardMaterial color="#140a1f" roughness={1} side={THREE.DoubleSide} />
+      </mesh>
+
+      <mesh position={[-3.42, 0.04, 0]}>
+        <boxGeometry args={[0.06, 0.06, 4.8]} />
+        <meshStandardMaterial color="#f472b6" roughness={0.5} metalness={0.2} />
+      </mesh>
+      <mesh position={[3.42, 0.04, 0]}>
+        <boxGeometry args={[0.06, 0.06, 4.8]} />
+        <meshStandardMaterial color="#f472b6" roughness={0.5} metalness={0.2} />
+      </mesh>
+    </group>
   );
 }
 
 const PHASE_LABELS = {
-  idle: '✨ Getting ready...',
-  walking: '🚶‍♀️ Walking to laptop...',
-  pickup: '🤏 Picking it up...',
-  holding: '💻 Waving laptop!',
+  idle: '✨ In the coder room...',
+  walking: '🚶‍♀️ Walking across the room...',
+  pickup: '🤏 Picking up the laptop...',
+  holding: '💻 Waving the laptop!',
 };
 
 function FloatParticle({ index }) {
   const mesh = useRef();
   const speed = 0.4 + (index % 5) * 0.2;
-  const xPos = -4 + index * 0.8;
+  const xPos = -2.2 + (index % 6) * 0.75;
+  const zBase = -1.85 + (index % 3) * 0.35;
   const phase = index * 0.9;
 
   useFrame(({ clock }) => {
     if (!mesh.current) return;
     const t = clock.elapsedTime * speed + phase;
-    mesh.current.position.y = 0.3 + Math.sin(t) * 0.6 + (index % 3) * 0.4;
+    mesh.current.position.y = 0.45 + Math.sin(t) * 0.35 + (index % 3) * 0.25;
     mesh.current.rotation.y = t;
     mesh.current.rotation.z = t * 0.5;
   });
 
   return (
-    <mesh ref={mesh} position={[xPos, 0.5, -1.5 + (index % 3) * 0.5]}>
+    <mesh ref={mesh} position={[xPos, 0.5, zBase]}>
       <octahedronGeometry args={[0.04, 0]} />
       <meshStandardMaterial
         color={index % 2 === 0 ? '#f0abfc' : '#f9a8d4'}
@@ -482,10 +534,11 @@ export default function ChibiScene() {
           color="#e9d5ff"
           shadow-mapSize={[2048, 2048]}
         />
-        <pointLight position={[1.2, 1.5, 1]} intensity={2} color="#a855f7" distance={5} />
-        <pointLight position={[-3, 1, 0]} intensity={0.8} color="#ec4899" distance={6} />
+        <pointLight position={[1.2, 1.5, 0.8]} intensity={1.6} color="#a855f7" distance={8} />
+        <pointLight position={[-2.2, 1.2, -1]} intensity={0.55} color="#ec4899" distance={7} />
+        <pointLight position={[0, 2.5, -1]} intensity={0.35} color="#c4b5fd" distance={6} />
 
-        <Ground />
+        <CoderRoom />
 
         <Chibi
           key={runId}
@@ -501,9 +554,11 @@ export default function ChibiScene() {
 
         <OrbitControls
           enablePan={false}
-          minDistance={3}
-          maxDistance={9}
-          maxPolarAngle={Math.PI / 2.1}
+          minDistance={3.2}
+          maxDistance={8}
+          minPolarAngle={0.35}
+          maxPolarAngle={Math.PI / 2.15}
+          target={[0, 0.6, 0]}
         />
       </Canvas>
     </div>
