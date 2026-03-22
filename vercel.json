@@ -1,11 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "**",
-      "use": "@vercel/static"
-    }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/about",
@@ -28,32 +23,8 @@
       "destination": "/pageant.html"
     },
     {
-      "source": "/vendor/(.*)",
-      "destination": "/public/vendor/$1"
-    },
-    {
-      "source": "/bookicon.png",
-      "destination": "/public/bookicon.png"
-    },
-    {
-      "source": "/cornerUI.png",
-      "destination": "/public/cornerUI.png"
-    },
-    {
-      "source": "/Meshy_AI_Animation_Idle_11_withSkin.glb",
-      "destination": "/public/Meshy_AI_Animation_Idle_11_withSkin.glb"
-    },
-    {
-      "source": "/Meshy_AI_Animation_air_squat_withSkin.glb",
-      "destination": "/public/Meshy_AI_Animation_air_squat_withSkin.glb"
-    },
-    {
-      "source": "/Meshy_AI_Chibi_Coder_with_Gala_0322190228_texture.glb",
-      "destination": "/public/Meshy_AI_Chibi_Coder_with_Gala_0322190228_texture.glb"
-    },
-    {
-      "source": "/pop.mp3",
-      "destination": "/public/pop.mp3"
+      "source": "/chibi",
+      "destination": "/chibi.html"
     }
   ],
   "headers": [
@@ -77,4 +48,3 @@
     }
   ]
 }
-

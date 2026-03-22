@@ -27,23 +27,80 @@
       </div>
     </header>
 
-    <section class="chibi-section" aria-label="3D chibi mascot">
-      <model-viewer
-        class="chibi-viewer"
-        src="/Meshy_AI_Chibi_Coder_with_Gala_0322190228_texture.glb"
-        alt="Animated chibi coder character in a gala dress"
-        camera-controls
-        touch-action="pan-y"
-        auto-rotate
-        auto-rotate-delay="0"
-        rotation-per-second="18deg"
-        shadow-intensity="0.85"
-        environment-image="neutral"
-        exposure="1.1"
-        loading="eager"
-      ></model-viewer>
-      <p class="chibi-caption">✨ my meshy AI chibi — drag to spin</p>
+    <section class="models-showcase" aria-label="3D Meshy models">
+      <div class="model-card">
+        <div class="model-card-head">
+          <span class="model-card-title">Chibi coder</span>
+          <label class="sr-only" for="chibiAnimSelect">Chibi animation</label>
+          <select id="chibiAnimSelect" class="anim-select" aria-label="Chibi animation">
+            <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb" selected>Walking</option>
+            <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Running_withSkin.glb">Running</option>
+            <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Wave_One_Hand_withSkin.glb">Wave</option>
+            <option value="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Wave_for_Help_3_withSkin.glb">Wave for help</option>
+            <option value="/Meshy_AI_Chibi_Coder_with_Gala_0322190228_texture.glb">Gala portrait (spin)</option>
+          </select>
+        </div>
+        <model-viewer
+          id="chibi-mv"
+          class="chibi-viewer"
+          src="/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb"
+          alt="Chibi coder character in a gala dress"
+          camera-controls
+          touch-action="pan-y"
+          autoplay
+          loop
+          shadow-intensity="0.85"
+          environment-image="neutral"
+          exposure="1.1"
+          loading="eager"
+        ></model-viewer>
+        <p class="chibi-caption">✨ biped animations + gala portrait — drag to orbit</p>
+      </div>
+      <div class="model-card">
+        <div class="model-card-head">
+          <span class="model-card-title">Happy laptop</span>
+        </div>
+        <model-viewer
+          class="chibi-viewer laptop-viewer"
+          src="/Meshy_AI_Happy_Laptop_0322192107_texture.glb"
+          alt="Happy laptop character with a computer"
+          camera-controls
+          touch-action="pan-y"
+          auto-rotate
+          auto-rotate-delay="0"
+          rotation-per-second="20deg"
+          shadow-intensity="0.85"
+          environment-image="neutral"
+          exposure="1.1"
+          loading="lazy"
+        ></model-viewer>
+        <p class="chibi-caption">💻 meshy happy laptop — drag to spin</p>
+      </div>
     </section>
+    <script>
+      (function () {
+        var mv = document.getElementById('chibi-mv');
+        var sel = document.getElementById('chibiAnimSelect');
+        if (!mv || !sel) return;
+        function applyMode(src) {
+          var isPortrait = src.indexOf('0322190228_texture') !== -1;
+          mv.src = src;
+          if (isPortrait) {
+            mv.removeAttribute('autoplay');
+            mv.removeAttribute('loop');
+            mv.setAttribute('auto-rotate', '');
+            mv.setAttribute('rotation-per-second', '18deg');
+          } else {
+            mv.removeAttribute('auto-rotate');
+            mv.setAttribute('autoplay', '');
+            mv.setAttribute('loop', '');
+          }
+        }
+        sel.addEventListener('change', function () {
+          applyMode(sel.value);
+        });
+      })();
+    </script>
 
     <section class="hero-section">
     <h1 class="hero-title">
@@ -57,6 +114,7 @@
       <a href="/reading" class="nav-link"><span>📚 Reading</span></a>
       <a href="/blog" class="nav-link"><span>📝 Blog</span></a>
       <a href="/pageant" class="nav-link"><span>🎮 Play Pageant Sim</span></a>
+      <a href="/chibi" class="nav-link"><span>🌙 Chibi scene</span></a>
     </nav>
 
     <h2 class="tagline">💕 A cozy corner of the internet 💕</h2>
