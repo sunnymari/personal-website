@@ -1,16 +1,17 @@
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useAnimations } from '@react-three/drei';
-import { CoderRoom } from '../components/CoderRoom.jsx';
+import { PinkRoom } from '../components/PinkRoom.jsx';
 import { normalizeModelToFloor } from './modelUtils.js';
 
 const LAPTOP_URL = '/Meshy_AI_Happy_Laptop_0322192107_texture.glb';
+const CHIBI_URL = '/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb';
 
-function ChibiMesh({ url, position, playClip }) {
+function ChibiMesh({ position }) {
   const pivot = useRef();
   const animRoot = useRef();
-  const { scene, animations } = useGLTF(url);
-  const clone = useMemo(() => scene.clone(true), [scene, url]);
+  const { scene, animations } = useGLTF(CHIBI_URL);
+  const clone = useMemo(() => scene.clone(true), [scene]);
 
   useLayoutEffect(() => {
     normalizeModelToFloor(clone, 1.85);
@@ -21,23 +22,17 @@ function ChibiMesh({ url, position, playClip }) {
   useEffect(() => {
     if (!actions) return;
     Object.values(actions).forEach((a) => a?.stop?.());
-    if (playClip) {
-      const list = Object.values(actions).filter(Boolean);
-      const a0 = list[0];
-      if (a0) {
-        a0.reset();
-        a0.fadeIn(0.25);
-        a0.play();
-      }
+    const list = Object.values(actions).filter(Boolean);
+    const a0 = list[0];
+    if (a0) {
+      a0.reset();
+      a0.fadeIn(0.25);
+      a0.play();
     }
     return () => {
       Object.values(actions).forEach((a) => a?.fadeOut?.(0.2));
     };
-  }, [actions, playClip, url]);
-
-  useFrame((_, d) => {
-    if (!playClip && pivot.current) pivot.current.rotation.y += d * 0.42;
-  });
+  }, [actions]);
 
   return (
     <group ref={pivot} position={position}>
@@ -66,31 +61,24 @@ function LaptopMesh({ position }) {
   );
 }
 
-function Scene({ chibiUrl }) {
-  const portrait = chibiUrl.includes('0322190228_texture');
-
+function Scene() {
   return (
     <>
-      <ambientLight intensity={0.48} color="#c084fc" />
+      <ambientLight intensity={0.78} color="#ffeef4" />
       <directionalLight
         castShadow
         position={[3.2, 5.2, 3.2]}
-        intensity={1.25}
-        color="#e9d5ff"
+        intensity={0.95}
+        color="#ffffff"
         shadow-mapSize={[1024, 1024]}
       />
-      <pointLight position={[0.8, 2.1, 0.6]} intensity={0.55} color="#a855f7" distance={9} />
-      <pointLight position={[-2, 1.2, -0.5]} intensity={0.35} color="#ec4899" distance={8} />
+      <pointLight position={[0.8, 2.1, 0.6]} intensity={0.4} color="#ffb7c5" distance={9} />
+      <pointLight position={[-2, 1.2, -0.5]} intensity={0.32} color="#ffc9d9" distance={8} />
 
-      <CoderRoom />
+      <PinkRoom />
 
       <Suspense fallback={null}>
-        <ChibiMesh
-          key={chibiUrl}
-          url={chibiUrl}
-          position={[-1.25, 0, 0.35]}
-          playClip={!portrait}
-        />
+        <ChibiMesh position={[-1.25, 0, 0.35]} />
         <LaptopMesh position={[1.12, 0, -0.42]} />
       </Suspense>
 
@@ -106,7 +94,7 @@ function Scene({ chibiUrl }) {
   );
 }
 
-export default function MeshyRoomCanvas({ chibiUrl }) {
+export default function MeshyRoomCanvas() {
   return (
     <Canvas
       shadows
@@ -114,10 +102,11 @@ export default function MeshyRoomCanvas({ chibiUrl }) {
       gl={{ alpha: false }}
       dpr={[1, 2]}
     >
-      <color attach="background" args={['#1a0f28']} />
-      <Scene chibiUrl={chibiUrl} />
+      <color attach="background" args={['#fff5f7']} />
+      <Scene />
     </Canvas>
   );
 }
 
 useGLTF.preload(LAPTOP_URL);
+useGLTF.preload(CHIBI_URL);

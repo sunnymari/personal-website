@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { CoderRoom } from '../components/CoderRoom.jsx';
+import { PinkRoom } from '../components/PinkRoom.jsx';
 
 // ─── PHASE CONSTANTS ───────────────────────────────────────────────────────────
 const CHIBI_START = [-2.5, 0, 0];
@@ -367,7 +367,7 @@ export default function ChibiScene() {
       style={{
         width: '100vw',
         height: '100vh',
-        background: 'linear-gradient(135deg, #0d0015 0%, #1a0533 50%, #0d0015 100%)',
+        background: 'linear-gradient(180deg, #fff5f7 0%, #ffe4ec 45%, #ffd6e0 100%)',
         fontFamily: "'Nunito', system-ui, sans-serif",
         position: 'relative',
         overflow: 'hidden',
@@ -381,12 +381,11 @@ export default function ChibiScene() {
           top: 20,
           left: 20,
           zIndex: 20,
-          color: '#e9d5ff',
+          color: '#c2185b',
           textDecoration: 'none',
           fontSize: 14,
           fontWeight: 800,
           letterSpacing: '0.04em',
-          textShadow: '0 0 12px rgba(168,85,247,0.6)',
         }}
       >
         ← marissa codes
@@ -398,7 +397,7 @@ export default function ChibiScene() {
           inset: 0,
           pointerEvents: 'none',
           background:
-            'radial-gradient(ellipse at 20% 30%, rgba(168,85,247,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, rgba(236,72,153,0.06) 0%, transparent 50%)',
+            'radial-gradient(ellipse at 25% 20%, rgba(255,182,193,0.35) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(255,192,203,0.25) 0%, transparent 50%)',
         }}
       />
 
@@ -408,12 +407,12 @@ export default function ChibiScene() {
           top: 28,
           left: '50%',
           transform: 'translateX(-50%)',
-          background: 'rgba(168,85,247,0.18)',
+          background: 'rgba(255,255,255,0.72)',
           backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(168,85,247,0.4)',
+          border: '1px solid rgba(255,182,193,0.65)',
           borderRadius: 999,
           padding: '10px 28px',
-          color: '#e9d5ff',
+          color: '#9d174d',
           fontSize: 16,
           fontWeight: 600,
           letterSpacing: '0.04em',
@@ -467,19 +466,19 @@ export default function ChibiScene() {
       >
         <SceneController phase={phase} setPhase={setPhase} />
 
-        <ambientLight intensity={0.4} color="#c084fc" />
+        <ambientLight intensity={0.72} color="#ffe4ec" />
         <directionalLight
           castShadow
           position={[4, 6, 4]}
-          intensity={1.5}
-          color="#e9d5ff"
+          intensity={1.05}
+          color="#fff8f8"
           shadow-mapSize={[2048, 2048]}
         />
-        <pointLight position={[1.2, 1.5, 0.8]} intensity={1.6} color="#a855f7" distance={8} />
-        <pointLight position={[-2.2, 1.2, -1]} intensity={0.55} color="#ec4899" distance={7} />
-        <pointLight position={[0, 2.5, -1]} intensity={0.35} color="#c4b5fd" distance={6} />
+        <pointLight position={[1.2, 1.5, 0.8]} intensity={0.45} color="#ffb7c5" distance={8} />
+        <pointLight position={[-2.2, 1.2, -1]} intensity={0.35} color="#ffc2d4" distance={7} />
+        <pointLight position={[0, 2.5, -1]} intensity={0.28} color="#ffffff" distance={6} />
 
-        <CoderRoom />
+        <PinkRoom />
 
         <Chibi
           key={runId}
