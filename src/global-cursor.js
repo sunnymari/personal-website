@@ -1,7 +1,5 @@
 const SPARKLE_COLORS = ["#FF2D78", "#FFB3CC", "#FF6FA8", "#ffffff", "#FFD6E7", "#FF90BB"];
-const CURSOR_SIZE = 70;
-const HOTSPOT_X = 14;
-const HOTSPOT_Y = 12;
+const CURSOR_SIZE = 72;
 
 function createSparkle(container, x, y) {
   const sparkle = document.createElement("div");
@@ -69,12 +67,12 @@ function initGlobalCursor() {
     width: ${CURSOR_SIZE}px;
     height: ${CURSOR_SIZE}px;
     border-radius: 999px;
-    background: #fff;
+    background-color: #fff;
     background-image: url('/kawaii-cursor.png');
     background-position: center;
     background-repeat: no-repeat;
-    background-size: contain;
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.95), 0 10px 26px rgba(255, 45, 120, 0.28);
+    background-size: 82%;
+    box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.98), 0 10px 26px rgba(255, 45, 120, 0.28);
     pointer-events: none;
     z-index: 2147483647;
     transform: translate(-20%, -14%) scale(1);
