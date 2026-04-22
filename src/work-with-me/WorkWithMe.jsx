@@ -258,7 +258,7 @@ export default function WorkWithMe() {
             </p>
           </div>
           <a
-            href="mailto:hello@marissacodes.com"
+            href="mailto:marissacurry809@gmail.com"
             style={{
               background: "#FF2D78", color: "#fff",
               padding: "0.85rem 2rem", borderRadius: "8px",
