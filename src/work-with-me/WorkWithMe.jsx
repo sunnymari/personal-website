@@ -51,7 +51,7 @@ export default function WorkWithMe() {
     <section
       ref={sectionRef}
       style={{
-        background: "#0A0A0A",
+        background: "linear-gradient(180deg, #fff8fb 0%, #ffeef6 45%, #ffe3f0 100%)",
         padding: "100px 0",
         fontFamily: "'DM Sans', sans-serif",
         overflow: "hidden",
@@ -61,13 +61,13 @@ export default function WorkWithMe() {
       <div style={{
         position: "absolute", top: "-200px", right: "-200px",
         width: "600px", height: "600px",
-        background: "radial-gradient(circle, rgba(255,45,120,0.08) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(255,45,120,0.14) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", bottom: "-100px", left: "-100px",
         width: "400px", height: "400px",
-        background: "radial-gradient(circle, rgba(255,45,120,0.05) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(255,45,120,0.10) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
 
@@ -88,13 +88,13 @@ export default function WorkWithMe() {
           <h2 style={{
             fontFamily: "'Playfair Display', serif",
             fontSize: "clamp(40px, 6vw, 72px)",
-            fontWeight: 700, color: "#FFFFFF",
+            fontWeight: 700, color: "#4a1630",
             lineHeight: 1.05, margin: 0,
           }}>
             Work <em style={{ fontStyle: "italic", color: "#FF2D78" }}>With Me</em>
           </h2>
           <p style={{
-            fontSize: "17px", color: "#888", lineHeight: 1.7,
+            fontSize: "17px", color: "#7a4a62", lineHeight: 1.7,
             maxWidth: "520px", marginTop: "20px",
           }}>
             Early-stage creator. Exceptional engagement. Credentials that outpace the follower count —
@@ -103,7 +103,7 @@ export default function WorkWithMe() {
         </div>
 
         <div style={{
-          display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
           gap: "16px", marginBottom: "72px",
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(24px)",
@@ -111,14 +111,28 @@ export default function WorkWithMe() {
         }}>
           {stats.map((s, i) => (
             <div key={i} style={{
-              background: "#111", border: "0.5px solid #222",
-              borderRadius: "12px", padding: "1.4rem 1.2rem",
-            }}>
+              background: "rgba(255,255,255,0.72)",
+              border: "1px solid rgba(255, 45, 120, 0.2)",
+              borderRadius: "14px", padding: "1.4rem 1.2rem",
+              boxShadow: "0 10px 24px rgba(255, 105, 150, 0.12)",
+              transition: "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
+            }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = "translateY(-6px) scale(1.01)";
+                e.currentTarget.style.boxShadow = "0 18px 30px rgba(255, 105, 150, 0.22)";
+                e.currentTarget.style.borderColor = "rgba(255, 45, 120, 0.45)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = "translateY(0) scale(1)";
+                e.currentTarget.style.boxShadow = "0 10px 24px rgba(255, 105, 150, 0.12)";
+                e.currentTarget.style.borderColor = "rgba(255, 45, 120, 0.2)";
+              }}
+            >
               <span style={{
                 fontFamily: "'Playfair Display', serif",
                 fontSize: "28px", fontWeight: 700, color: "#FF2D78", display: "block",
               }}>{s.num}</span>
-              <span style={{ fontSize: "12px", color: "#666", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              <span style={{ fontSize: "12px", color: "#915970", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 {s.label}
               </span>
             </div>
@@ -126,8 +140,8 @@ export default function WorkWithMe() {
         </div>
 
         <div style={{
-          background: "linear-gradient(135deg, #1a0008 0%, #110006 100%)",
-          border: "0.5px solid rgba(255,45,120,0.3)",
+          background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,232,243,0.95) 100%)",
+          border: "1px solid rgba(255,45,120,0.28)",
           borderRadius: "16px", padding: "1.5rem 2rem",
           marginBottom: "72px", display: "flex",
           alignItems: "center", justifyContent: "space-between", gap: "2rem",
@@ -139,7 +153,7 @@ export default function WorkWithMe() {
             <p style={{ fontSize: "13px", color: "#FF2D78", fontWeight: 500, marginBottom: "6px" }}>
               Why impression rate &gt; follower count
             </p>
-            <p style={{ fontSize: "14px", color: "#888", lineHeight: 1.6, maxWidth: "520px" }}>
+            <p style={{ fontSize: "14px", color: "#7a4a62", lineHeight: 1.6, maxWidth: "520px" }}>
               A 92.5% Instagram impression rate means nearly every follower sees every post.
               Most accounts with 10k+ followers sit at 20–30%. Brand messages actually land here.
             </p>
@@ -158,23 +172,31 @@ export default function WorkWithMe() {
         }}>
           <p style={{
             fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase",
-            color: "#444", fontWeight: 500, marginBottom: "20px",
+            color: "#9b6b80", fontWeight: 500, marginBottom: "20px",
           }}>Content pillars</p>
           <div style={{
-            display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px",
+            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px",
           }}>
             {pillars.map((p, i) => (
               <div key={i} style={{
-                background: "#111", border: "0.5px solid #1e1e1e",
+                background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255, 45, 120, 0.14)",
                 borderRadius: "12px", padding: "1.2rem",
-                transition: "border-color 0.2s",
+                transition: "border-color 0.2s, transform 0.2s, box-shadow 0.2s",
               }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,45,120,0.3)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "#1e1e1e"}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = "rgba(255,45,120,0.4)";
+                  e.currentTarget.style.transform = "translateY(-5px)";
+                  e.currentTarget.style.boxShadow = "0 14px 24px rgba(255, 105, 150, 0.18)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = "rgba(255, 45, 120, 0.14)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
               >
                 <span style={{ fontSize: "20px", display: "block", marginBottom: "8px" }}>{p.icon}</span>
-                <p style={{ fontSize: "13px", fontWeight: 500, color: "#fff", marginBottom: "4px" }}>{p.title}</p>
-                <p style={{ fontSize: "12px", color: "#666", lineHeight: 1.5 }}>{p.desc}</p>
+                <p style={{ fontSize: "13px", fontWeight: 600, color: "#4a1630", marginBottom: "4px" }}>{p.title}</p>
+                <p style={{ fontSize: "12px", color: "#7a4a62", lineHeight: 1.5 }}>{p.desc}</p>
               </div>
             ))}
           </div>
@@ -187,25 +209,26 @@ export default function WorkWithMe() {
         }}>
           <p style={{
             fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase",
-            color: "#444", fontWeight: 500, marginBottom: "20px",
+            color: "#9b6b80", fontWeight: 500, marginBottom: "20px",
           }}>Credentials</p>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {credentials.map((c, i) => (
               <div key={i} style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                background: "#111", borderLeft: "2px solid #FF2D78",
+                background: "rgba(255,255,255,0.72)", borderLeft: "3px solid #FF2D78",
                 borderRadius: "0 10px 10px 0", padding: "0.85rem 1.2rem",
                 gap: "1rem",
+                transition: "transform 0.2s ease, box-shadow 0.2s ease",
               }}>
-                <span style={{ fontSize: "13px", fontWeight: 500, color: "#fff" }}>{c.title}</span>
-                <span style={{ fontSize: "12px", color: "#555", textAlign: "right" }}>{c.sub}</span>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "#4a1630" }}>{c.title}</span>
+                <span style={{ fontSize: "12px", color: "#7a4a62", textAlign: "right" }}>{c.sub}</span>
               </div>
             ))}
           </div>
         </div>
 
         <div style={{
-          display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px",
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px",
           marginBottom: "72px",
           opacity: visible ? 1 : 0,
           transition: "opacity 0.7s ease 0.4s",
@@ -213,13 +236,13 @@ export default function WorkWithMe() {
           <div>
             <p style={{
               fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase",
-              color: "#444", fontWeight: 500, marginBottom: "16px",
+              color: "#9b6b80", fontWeight: 500, marginBottom: "16px",
             }}>Partnership formats</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {formats.map((f, i) => (
                 <span key={i} style={{
                   fontSize: "12px", padding: "6px 14px", borderRadius: "20px",
-                  background: "#111", border: "0.5px solid #222", color: "#888",
+                  background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255, 45, 120, 0.18)", color: "#7a4a62",
                 }}>{f}</span>
               ))}
             </div>
@@ -227,7 +250,7 @@ export default function WorkWithMe() {
           <div>
             <p style={{
               fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase",
-              color: "#444", fontWeight: 500, marginBottom: "16px",
+              color: "#9b6b80", fontWeight: 500, marginBottom: "16px",
             }}>Dream partners</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {targets.map((t, i) => (
@@ -242,7 +265,7 @@ export default function WorkWithMe() {
         </div>
 
         <div style={{
-          background: "#111", border: "0.5px solid #222",
+          background: "rgba(255,255,255,0.86)", border: "1px solid rgba(255, 45, 120, 0.22)",
           borderRadius: "16px", padding: "2rem 2.5rem",
           display: "flex", alignItems: "center",
           justifyContent: "space-between", gap: "2rem", flexWrap: "wrap",
@@ -250,10 +273,10 @@ export default function WorkWithMe() {
           transition: "opacity 0.7s ease 0.5s",
         }}>
           <div>
-            <p style={{ fontSize: "20px", fontWeight: 500, color: "#fff", marginBottom: "6px" }}>
+            <p style={{ fontSize: "20px", fontWeight: 600, color: "#4a1630", marginBottom: "6px" }}>
               Ready to work together?
             </p>
-            <p style={{ fontSize: "14px", color: "#666" }}>
+            <p style={{ fontSize: "14px", color: "#7a4a62" }}>
               marissacodes.com · @marisummerss · partnerships, speaking & collab inquiries welcome.
             </p>
           </div>
