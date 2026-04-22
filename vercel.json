@@ -49,6 +49,15 @@
           "value": "no-cache"
         }
       ]
+    },
+    {
+      "source": "/work-with-me.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
     }
   ]
 }
