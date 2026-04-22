@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import SparkleyCursor from "../components/SparkleyCursor.jsx";
 
 const stats = [
   { num: "1,512", label: "Instagram followers" },
@@ -58,6 +59,7 @@ export default function WorkWithMe() {
         position: "relative",
       }}
     >
+      <SparkleyCursor />
       <div style={{
         position: "absolute", top: "-200px", right: "-200px",
         width: "600px", height: "600px",
