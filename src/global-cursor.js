@@ -133,8 +133,9 @@ function initGlobalCursor() {
 
   const animateCursor = () => {
     const t = clock.getElapsedTime();
-    modelPivot.rotation.y = t * 1.6;
-    modelPivot.rotation.z = Math.sin(t * 2.2) * 0.12;
+    const halfTurn = (Math.sin(t * 1.6) * 0.5 + 0.5) * Math.PI;
+    modelPivot.rotation.y = 0;
+    modelPivot.rotation.z = halfTurn;
     renderer.render(scene, camera);
     requestAnimationFrame(animateCursor);
   };
