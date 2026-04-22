@@ -19,6 +19,10 @@
       "destination": "/blog.html"
     },
     {
+      "source": "/work-with-me",
+      "destination": "/work-with-me.html"
+    },
+    {
       "source": "/pageant",
       "destination": "/pageant.html"
     },

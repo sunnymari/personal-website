@@ -13,6 +13,7 @@ export default defineConfig({
         blog: resolve(__dirname, 'blog.html'),
         reading: resolve(__dirname, 'reading.html'),
         projects: resolve(__dirname, 'projects.html'),
+        workWithMe: resolve(__dirname, 'work-with-me.html'),
         pageant: resolve(__dirname, 'pageant.html'),
         chibi: resolve(__dirname, 'chibi.html'),
       },
