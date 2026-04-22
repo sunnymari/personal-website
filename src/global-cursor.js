@@ -69,10 +69,8 @@ function initGlobalCursor() {
     top: -100px;
     width: ${CURSOR_SIZE}px;
     height: ${CURSOR_SIZE}px;
-    border-radius: 999px;
-    background-color: #fff;
-    overflow: hidden;
-    box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.98), 0 10px 26px rgba(255, 45, 120, 0.28);
+    background: transparent;
+    overflow: visible;
     pointer-events: none;
     z-index: 2147483647;
     transform: translate(-20%, -14%) scale(1);
