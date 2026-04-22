@@ -37,25 +37,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        }
-      ]
-    },
-    {
-      "source": "/about.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache"
-        }
-      ]
-    },
-    {
-      "source": "/work-with-me.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache"
+          "value": "no-store, max-age=0, must-revalidate"
         }
       ]
     }
