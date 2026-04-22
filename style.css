@@ -13,17 +13,6 @@ body {
   position: relative;
   padding-top: 80px;
   padding-bottom: 60px;
-  cursor: url('/kawaii-cursor.png') 14 12, auto;
-}
-
-a,
-button,
-input,
-textarea,
-select,
-[role='button'],
-label[for] {
-  cursor: url('/kawaii-cursor.png') 14 12, pointer;
 }
 
 body::before {
