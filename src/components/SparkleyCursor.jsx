@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 const SPARKLE_COLORS = ["#FF2D78", "#FFB3CC", "#FF6FA8", "#fff", "#FFD6E7", "#FF90BB"];
 
@@ -94,7 +95,7 @@ export default function SparkleyCursor() {
     };
     animRef.current = requestAnimationFrame(tick);
 
-    document.addEventListener("mousemove", onMove);
+    document.addEventListener("pointermove", onMove);
 
     const clickables = document.querySelectorAll("a, button, [role='button'], input, textarea");
     clickables.forEach((el) => {
@@ -105,9 +106,10 @@ export default function SparkleyCursor() {
     document.body.style.cursor = "none";
 
     return () => {
-      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("pointermove", onMove);
       document.body.style.cursor = "";
       cancelAnimationFrame(animRef.current);
+      document.documentElement.style.cursor = "";
       clickables.forEach((el) => {
         el.removeEventListener("mouseenter", onEnterClickable);
         el.removeEventListener("mouseleave", onLeaveClickable);
@@ -115,7 +117,16 @@ export default function SparkleyCursor() {
     };
   }, [createSparkle]);
 
-  return (
+  useEffect(() => {
+    document.documentElement.style.cursor = "none";
+    return () => {
+      document.documentElement.style.cursor = "";
+    };
+  }, []);
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <>
       <div
         id="sparkle-container"
@@ -143,6 +154,7 @@ export default function SparkleyCursor() {
           boxShadow: "0 0 6px rgba(255,45,120,0.8)",
           left: "-100px",
           top: "-100px",
+          mixBlendMode: "normal",
         }}
       />
 
@@ -162,6 +174,7 @@ export default function SparkleyCursor() {
           top: "-100px",
         }}
       />
-    </>
+    </>,
+    document.body
   );
 }
