@@ -1,3 +1,6 @@
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+
 const SPARKLE_COLORS = ["#FF2D78", "#FFB3CC", "#FF6FA8", "#ffffff", "#FFD6E7", "#FF90BB"];
 const CURSOR_SIZE = 72;
 
@@ -68,10 +71,7 @@ function initGlobalCursor() {
     height: ${CURSOR_SIZE}px;
     border-radius: 999px;
     background-color: #fff;
-    background-image: url('/kawaii-cursor.png');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 82%;
+    overflow: hidden;
     box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.98), 0 10px 26px rgba(255, 45, 120, 0.28);
     pointer-events: none;
     z-index: 2147483647;
@@ -80,9 +80,47 @@ function initGlobalCursor() {
   `;
   document.body.appendChild(cursor);
 
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 20);
+  camera.position.set(0, 0.1, 2.2);
+  camera.lookAt(0, 0, 0);
+
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(CURSOR_SIZE, CURSOR_SIZE);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.domElement.style.width = "100%";
+  renderer.domElement.style.height = "100%";
+  renderer.domElement.style.display = "block";
+  cursor.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.95));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
+  keyLight.position.set(2, 2, 3);
+  scene.add(keyLight);
+
+  const modelPivot = new THREE.Group();
+  scene.add(modelPivot);
+
+  const loader = new GLTFLoader();
+  loader.load("/Meshy_AI_Kawaii_Neon_Sword_0422192103_texture.glb", (gltf) => {
+    const sword = gltf.scene;
+    const box = new THREE.Box3().setFromObject(sword);
+    const size = box.getSize(new THREE.Vector3());
+    const maxAxis = Math.max(size.x, size.y, size.z) || 1;
+    const scale = 1.2 / maxAxis;
+    sword.scale.setScalar(scale);
+    box.setFromObject(sword);
+    const center = box.getCenter(new THREE.Vector3());
+    sword.position.sub(center);
+    sword.rotation.set(-0.45, 0.65, 0.2);
+    modelPivot.add(sword);
+  });
+
   document.documentElement.style.cursor = "none";
   document.body.style.cursor = "none";
 
+  const clock = new THREE.Clock();
   let lastSparkle = 0;
   const onMove = (e) => {
     cursor.style.left = `${e.clientX}px`;
@@ -94,6 +132,15 @@ function initGlobalCursor() {
       lastSparkle = now;
     }
   };
+
+  const animateCursor = () => {
+    const t = clock.getElapsedTime();
+    modelPivot.rotation.y = t * 1.6;
+    modelPivot.rotation.z = Math.sin(t * 2.2) * 0.12;
+    renderer.render(scene, camera);
+    requestAnimationFrame(animateCursor);
+  };
+  requestAnimationFrame(animateCursor);
 
   const onDown = (e) => {
     for (let i = 0; i < 7; i += 1) {
