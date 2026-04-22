@@ -1,105 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>☁️ Work With Me ☁️</title>
-  <link href="/style.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Fredoka+One&family=Dancing+Script:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Roboto+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-</head>
-<body>
-  <header>
-    <div class="billboard-container">
-      <span class="header-text">marissa codes 🌸</span>
-      <span class="header-text">✨ cozy dev</span>
-      <span class="header-text">💻 building things</span>
-      <span class="header-text">🎀 kawaii coder</span>
-      <span class="header-text">marissa codes 🌸</span>
-      <span class="header-text">✨ cozy dev</span>
-      <span class="header-text">💻 building things</span>
-      <span class="header-text">🎀 kawaii coder</span>
-    </div>
-  </header>
-
-  <nav class="nav-buttons">
-    <a href="/about" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🌸 About</span></span></a>
-    <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🎀 Projects</span></span></a>
-    <a href="/reading" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">📚 Reading</span></span></a>
-    <a href="/work-with-me" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">☁️ Work With Me</span></span></a>
-    <a href="/blog" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">📝 Blog</span></span></a>
-    <a href="/pageant" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🎮 Play Pageant Sim</span></span></a>
-  </nav>
-
-  <nav class="nav-buttons" style="margin-bottom: 2rem;">
-    <a href="/" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🏠 Home</span></span></a>
-  </nav>
-
-  <audio id="pop-sound" src="/pop.mp3" preload="auto"></audio>
-  <script>
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('mouseenter', function () {
-        const audio = document.getElementById('pop-sound');
-        if (audio) {
-          audio.currentTime = 0;
-          audio.play().catch(() => {});
-        }
-      });
-
-      link.addEventListener('click', function (event) {
-        event.preventDefault();
-        const audio = document.getElementById('pop-sound');
-        if (audio) {
-          audio.currentTime = 0;
-          audio.play().catch(() => {});
-          setTimeout(() => { window.location.href = link.href; }, 450);
-        } else {
-          window.location.href = link.href;
-        }
-      });
-    });
-  </script>
-
-  <div class="container">
-    <h1 style="text-align: center;">☁️ Work With Me ☁️</h1>
-    <p style="text-align:center;">I build cozy, high-quality web experiences and practical software tools.</p>
-
-    <h2>What I Can Help With</h2>
-    <ul>
-      <li>Full-stack web development (React, APIs, backend services)</li>
-      <li>Frontend polish, accessibility, and performance improvements</li>
-      <li>Developer tooling, prototypes, and rapid MVP builds</li>
-      <li>Technical writing and content pages for personal brands</li>
-    </ul>
-
-    <h2>Ways to Collaborate</h2>
-    <ul>
-      <li>Short-term freelance projects</li>
-      <li>Feature implementation support for startups</li>
-      <li>Advisory sessions and engineering/code mentorship</li>
-    </ul>
-
-    <h2>Contact</h2>
-    <p>
-      Send a quick note with your goals, timeline, and budget:
-      <a href="mailto:marissacurry809@gmail.com">marissacurry809@gmail.com</a>
-    </p>
-    <p>
-      You can also reach out on
-      <a href="https://www.linkedin.com/in/marissa-curry-93674b33/" target="_blank" rel="noopener noreferrer">LinkedIn</a>.
-    </p>
-  </div>
-
-  <footer>
-    <div class="billboard-container-reverse">
-      <span class="footer-text">marissa codes 🌸</span>
-      <span class="footer-text">✨ cozy dev</span>
-      <span class="footer-text">💻 building things</span>
-      <span class="footer-text">🎀 kawaii coder</span>
-      <span class="footer-text">marissa codes 🌸</span>
-      <span class="footer-text">✨ cozy dev</span>
-      <span class="footer-text">💻 building things</span>
-      <span class="footer-text">🎀 kawaii coder</span>
-    </div>
-  </footer>
-</body>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>☁️ Work With Me ☁️</title>
+    <link href="/style.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Fredoka+One&family=Dancing+Script:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Roboto+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/work-with-me-main.jsx"></script>
+  </body>
 </html>
