@@ -79,6 +79,26 @@ export default function WorkWithMe() {
           transform: visible ? "translateY(0)" : "translateY(24px)",
           transition: "opacity 0.7s ease, transform 0.7s ease",
         }}>
+          <a
+            href="/"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              fontSize: "13px",
+              fontWeight: 600,
+              color: "#b8326f",
+              textDecoration: "none",
+              marginBottom: "18px",
+              background: "rgba(255,255,255,0.72)",
+              border: "1px solid rgba(255, 45, 120, 0.22)",
+              borderRadius: "999px",
+              padding: "0.45rem 0.9rem",
+              boxShadow: "0 6px 14px rgba(255, 105, 150, 0.12)",
+            }}
+          >
+            ← Back to Home
+          </a>
           <p style={{
             fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase",
             color: "#FF2D78", fontWeight: 500, marginBottom: "12px",
