@@ -1,16 +1,19 @@
-import { Canvas } from '@react-three/fiber';
-import { Float, Sparkles } from '@react-three/drei';
+import { useEffect, useMemo, useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, Sparkles, useAnimations, useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 const PALETTE = {
-  blush: '#f4b6d8',
-  sakura: '#ec8fc6',
-  peach: '#f6cda1',
-  cream: '#f3dfc4',
-  mint: '#97dcb7',
-  blue: '#90cfef',
-  lavender: '#c7a9ef',
-  moss: '#74c994',
-  trunk: '#a6796a',
+  blush: '#f7b7d5',
+  sakura: '#ee94c8',
+  peach: '#f6cda4',
+  cream: '#f6e4ca',
+  mint: '#96dbbb',
+  blue: '#8cc9eb',
+  lavender: '#c8afea',
+  moss: '#78cb98',
+  trunk: '#a97d6d',
 };
 
 function SkyLayer() {
@@ -54,6 +57,20 @@ function Tree({ position, scale = 1 }) {
         <sphereGeometry args={[0.32, 14, 14]} />
         <meshStandardMaterial color="#8bd5a8" />
       </mesh>
+    </group>
+  );
+}
+
+function FruitTree({ position, fruitColor = '#f7b7d5' }) {
+  return (
+    <group position={position}>
+      <Tree position={[0, 0, 0]} scale={1.05} />
+      {[-0.22, -0.05, 0.18].map((x, i) => (
+        <mesh key={i} castShadow position={[x, 1.74 + i * 0.03, i % 2 ? 0.16 : -0.12]}>
+          <sphereGeometry args={[0.07, 10, 10]} />
+          <meshStandardMaterial color={fruitColor} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -157,6 +174,25 @@ function DecorCluster({ position, variant = 'bench' }) {
     );
   }
 
+  if (variant === 'signpost') {
+    return (
+      <group position={position}>
+        <mesh castShadow position={[0, 0.55, 0]}>
+          <cylinderGeometry args={[0.08, 0.1, 1.1, 8]} />
+          <meshStandardMaterial color={PALETTE.trunk} />
+        </mesh>
+        <mesh castShadow position={[0.26, 0.9, 0]}>
+          <boxGeometry args={[0.62, 0.22, 0.1]} />
+          <meshStandardMaterial color="#f3dfc4" />
+        </mesh>
+        <mesh castShadow position={[0.26, 0.6, 0]}>
+          <boxGeometry args={[0.62, 0.22, 0.1]} />
+          <meshStandardMaterial color="#f7b7d5" />
+        </mesh>
+      </group>
+    );
+  }
+
   return (
     <group position={position}>
       <mesh castShadow receiveShadow position={[0, 0.3, 0]}>
@@ -166,6 +202,122 @@ function DecorCluster({ position, variant = 'bench' }) {
       <mesh castShadow receiveShadow position={[0, 0.58, 0]}>
         <boxGeometry args={[1.1, 0.08, 0.48]} />
         <meshStandardMaterial color="#d96da8" />
+      </mesh>
+    </group>
+  );
+}
+
+function PrincessChibi() {
+  const group = useRef();
+  const pathIndexRef = useRef(0);
+  const modeRef = useRef('walk');
+  const modeTimerRef = useRef(0);
+  const targetRef = useRef(new THREE.Vector3(-1.9, 0.08, 1.5));
+  const lastFacingRef = useRef(0);
+
+  const waveGltf = useGLTF('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Wave_One_Hand_withSkin.glb');
+  const walkGltf = useGLTF('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Walking_withSkin.glb');
+  const runGltf = useGLTF('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Running_withSkin.glb');
+
+  const princessModel = useMemo(() => {
+    const cloned = SkeletonUtils.clone(waveGltf.scene);
+    cloned.scale.setScalar(0.52);
+    const box = new THREE.Box3().setFromObject(cloned);
+    const center = box.getCenter(new THREE.Vector3());
+    const min = box.min.clone();
+    cloned.position.x -= center.x;
+    cloned.position.z -= center.z;
+    cloned.position.y -= min.y;
+    cloned.traverse((node) => {
+      if (node.isMesh) {
+        node.castShadow = true;
+        node.receiveShadow = true;
+      }
+    });
+    return cloned;
+  }, [waveGltf.scene]);
+
+  const animationClips = useMemo(
+    () => [...waveGltf.animations, ...walkGltf.animations, ...runGltf.animations],
+    [waveGltf.animations, walkGltf.animations, runGltf.animations]
+  );
+
+  const { actions, mixer } = useAnimations(animationClips, princessModel);
+
+  const actionNames = useMemo(() => Object.keys(actions ?? {}), [actions]);
+  const waveName = useMemo(
+    () => actionNames.find((name) => /wave|idle/i.test(name)) || actionNames[0],
+    [actionNames]
+  );
+  const walkName = useMemo(
+    () => actionNames.find((name) => /walk/i.test(name)) || actionNames.find((name) => /run/i.test(name)) || waveName,
+    [actionNames, waveName]
+  );
+
+  useEffect(() => {
+    if (!actions || !walkName) return;
+    actions[walkName]?.reset().fadeIn(0.25).play();
+    modeRef.current = 'walk';
+    modeTimerRef.current = 0;
+  }, [actions, walkName]);
+
+  useFrame((_, delta) => {
+    if (!group.current) return;
+    if (mixer) mixer.update(delta);
+
+    const route = [
+      new THREE.Vector3(-2.1, 0.08, 1.8),
+      new THREE.Vector3(1.6, 0.08, 1.4),
+      new THREE.Vector3(2.2, 0.08, 3.7),
+      new THREE.Vector3(-1.1, 0.08, 4.2),
+    ];
+
+    modeTimerRef.current += delta;
+
+    if (modeRef.current === 'walk') {
+      const current = group.current.position;
+      const target = targetRef.current;
+      current.lerp(target, Math.min(0.03 + delta * 1.4, 0.12));
+
+      const dx = target.x - current.x;
+      const dz = target.z - current.z;
+      const dist = Math.hypot(dx, dz);
+
+      if (dist > 0.02) {
+        const desiredRot = Math.atan2(dx, dz);
+        lastFacingRef.current = desiredRot;
+        group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, desiredRot, 0.16);
+      }
+
+      if (dist <= 0.24 && modeTimerRef.current > 2.2) {
+        modeRef.current = 'wave';
+        modeTimerRef.current = 0;
+        if (actions?.[walkName] && actions?.[waveName]) {
+          actions[walkName].fadeOut(0.25);
+          actions[waveName].reset().fadeIn(0.25).play();
+        }
+      }
+    } else {
+      group.current.rotation.y = lastFacingRef.current;
+      if (modeTimerRef.current > 2.8) {
+        modeRef.current = 'walk';
+        modeTimerRef.current = 0;
+        pathIndexRef.current = (pathIndexRef.current + 1) % route.length;
+        targetRef.current.copy(route[pathIndexRef.current]);
+        if (actions?.[walkName] && actions?.[waveName]) {
+          actions[waveName].fadeOut(0.2);
+          actions[walkName].reset().fadeIn(0.25).play();
+        }
+      }
+    }
+  });
+
+  return (
+    <group ref={group} position={[-2.1, 0.08, 1.8]}>
+      <primitive object={princessModel} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+        <ringGeometry args={[0.22, 0.3, 24]} />
+        <meshStandardMaterial color="#f3a5ce" transparent opacity={0.5} />
       </mesh>
     </group>
   );
@@ -181,10 +333,20 @@ function IslandWorld() {
 
   return (
     <>
-      <ambientLight intensity={0.8} color="#ffd5ea" />
+      <ambientLight intensity={0.58} color="#ffd5ea" />
+      <hemisphereLight args={['#b7e0ff', '#f6d5b2', 0.75]} />
       <directionalLight castShadow position={[8, 10, 6]} intensity={1.05} color="#ffe6c8" />
       <pointLight position={[-4, 4, 3]} intensity={0.45} color="#f49fd1" />
+      <pointLight position={[0, 3.6, 0.8]} intensity={0.22} color="#ffd8f0" />
 
+      <mesh receiveShadow position={[0, -0.26, 0]}>
+        <cylinderGeometry args={[15, 15, 0.34, 48]} />
+        <meshStandardMaterial color="#78bbe5" />
+      </mesh>
+      <mesh receiveShadow position={[0, -0.2, 0]}>
+        <cylinderGeometry args={[11.4, 12.2, 0.16, 46]} />
+        <meshStandardMaterial color="#f5ddb9" />
+      </mesh>
       <mesh receiveShadow position={[0, -0.12, 0]}>
         <cylinderGeometry args={[10, 11, 1.0, 42]} />
         <meshStandardMaterial color="#99deb9" />
@@ -213,6 +375,8 @@ function IslandWorld() {
       {treeData.map(([x, y, z, s]) => (
         <Tree key={`tree-${x}-${z}`} position={[x, y, z]} scale={s} />
       ))}
+      <FruitTree position={[-4.1, 0, 3.9]} fruitColor="#ffc173" />
+      <FruitTree position={[4.8, 0, 3.2]} fruitColor="#f29bcf" />
       {flowerData.map(([x, y, z]) => (
         <FlowerPatch key={`flowers-${x}-${z}`} position={[x, y, z]} />
       ))}
@@ -220,6 +384,8 @@ function IslandWorld() {
       <DecorCluster position={[-2.7, 0, 1.85]} variant="bench" />
       <DecorCluster position={[2.9, 0, 1.2]} variant="mailbox" />
       <DecorCluster position={[-1.2, 0, 4.1]} variant="mushrooms" />
+      <DecorCluster position={[-4.6, 0, 1.15]} variant="signpost" />
+      <PrincessChibi />
 
       <mesh castShadow receiveShadow position={[3.25, 0.6, 0.5]}>
         <cylinderGeometry args={[0.08, 0.08, 0.9, 8]} />
@@ -237,7 +403,8 @@ export default function IslandHomepageScene() {
   return (
     <Canvas
       shadows
-      camera={{ position: [12, 12, 12], fov: 34 }}
+      orthographic
+      camera={{ position: [12, 12, 12], zoom: 72, near: 0.1, far: 200 }}
       style={{ width: '100%', height: '100%' }}
     >
       <SkyLayer />
@@ -245,3 +412,7 @@ export default function IslandHomepageScene() {
     </Canvas>
   );
 }
+
+useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Wave_One_Hand_withSkin.glb');
+useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Walking_withSkin.glb');
+useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Running_withSkin.glb');
