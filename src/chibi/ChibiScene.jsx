@@ -134,6 +134,75 @@ function DividerWalls() {
   );
 }
 
+function DollhouseBackdrop() {
+  const treeX = [-7.2, -6.4, -5.6, 5.6, 6.4, 7.2];
+
+  return (
+    <group>
+      <mesh position={[0, 1.8, -6.5]} receiveShadow>
+        <boxGeometry args={[24, 11, 0.2]} />
+        <meshStandardMaterial color="#b9dcff" />
+      </mesh>
+
+      <mesh position={[0, -1.75, -3.8]} receiveShadow>
+        <boxGeometry args={[24, 0.25, 12]} />
+        <meshStandardMaterial color="#d7f1bf" />
+      </mesh>
+
+      <mesh position={[0, -0.2, -5.8]} receiveShadow>
+        <boxGeometry args={[14, 0.55, 0.35]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+      {[-6, -4.8, -3.6, -2.4, -1.2, 0, 1.2, 2.4, 3.6, 4.8, 6].map((x) => (
+        <mesh key={`fence-post-${x}`} position={[x, 0.05, -5.7]} receiveShadow>
+          <boxGeometry args={[0.12, 0.52, 0.18]} />
+          <meshStandardMaterial color="#ffffff" />
+        </mesh>
+      ))}
+
+      <mesh position={[0, -1.15, -2.35]} receiveShadow>
+        <boxGeometry args={[4.4, 0.08, 3.6]} />
+        <meshStandardMaterial color="#c48a74" />
+      </mesh>
+      {[-1.8, -0.9, 0, 0.9, 1.8].map((x) => (
+        <mesh key={`path-slab-${x}`} position={[x, -1.1, -2.35]} receiveShadow>
+          <boxGeometry args={[0.72, 0.1, 3.45]} />
+          <meshStandardMaterial color="#d39a84" />
+        </mesh>
+      ))}
+
+      <mesh position={[7.9, -0.5, -4.9]} receiveShadow castShadow>
+        <boxGeometry args={[1.5, 2.8, 0.2]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+      <mesh position={[7.9, 0.35, -4.78]} receiveShadow>
+        <boxGeometry args={[0.7, 0.7, 0.05]} />
+        <meshStandardMaterial color="#9fe59c" />
+      </mesh>
+
+      {treeX.map((x) => (
+        <group key={`tree-${x}`} position={[x, -0.35, -4.9]}>
+          <mesh position={[0, 0.32, 0]} castShadow>
+            <boxGeometry args={[0.22, 0.64, 0.22]} />
+            <meshStandardMaterial color="#8f6b4f" />
+          </mesh>
+          <mesh position={[0, 1.12, 0]} castShadow>
+            <boxGeometry args={[0.55, 1.1, 0.55]} />
+            <meshStandardMaterial color="#80bf7d" />
+          </mesh>
+        </group>
+      ))}
+
+      {[-8.4, -5.6, -2.8, 0, 2.8, 5.6, 8.4].map((x) => (
+        <mesh key={`cloud-${x}`} position={[x, 4.9, -6.35]}>
+          <boxGeometry args={[1.15, 0.45, 0.12]} />
+          <meshStandardMaterial color="#ffffff" />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 function BedroomFurniture({ showPopup }) {
   const [x, y, z] = ROOMS.bedroom.pos;
   return (
@@ -498,7 +567,7 @@ function Chibi({
   const chibiModel = useMemo(() => {
     const cloned = SkeletonUtils.clone(idleGltf.scene);
     // Use a fixed miniature scale for this rig to avoid oversized normalization.
-    cloned.scale.setScalar(0.12);
+    cloned.scale.setScalar(0.14);
     const box = new THREE.Box3().setFromObject(cloned);
     const center = box.getCenter(new THREE.Vector3());
     const min = box.min.clone();
@@ -911,6 +980,7 @@ export default function ChibiScene({ embedded = false }) {
         camera={{ position: [0, 2.6, 8.85], fov: 36 }}
         style={{ width: '100%', height: '100%' }}
       >
+        <DollhouseBackdrop />
         <ambientLight intensity={0.72} color="#ffe4ec" />
         <directionalLight
           castShadow
