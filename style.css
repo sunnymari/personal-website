@@ -583,3 +583,328 @@ footer {
 }
 
 /* Existing styles below */
+
+/* Homepage island world redesign */
+body.homepage {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: block;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 15%, #b9e8ff 0%, #99d6ff 40%, #82c7f4 100%);
+}
+
+html,
+body.homepage,
+body.homepage #root {
+  background-color: #8dc7eb;
+}
+
+body.homepage::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 12%, rgba(255, 176, 223, 0.28) 0, rgba(255, 176, 223, 0) 28%),
+    radial-gradient(circle at 82% 22%, rgba(255, 222, 170, 0.22) 0, rgba(255, 222, 170, 0) 32%),
+    radial-gradient(circle at 36% 80%, rgba(188, 236, 205, 0.18) 0, rgba(188, 236, 205, 0) 35%);
+  z-index: 0;
+}
+
+.homepage .island-home {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.homepage .sky-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.homepage .sky-cloud {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(0.3px);
+  background: linear-gradient(180deg, rgba(245, 188, 225, 0.45) 0%, rgba(191, 219, 255, 0.3) 100%);
+  box-shadow: 0 10px 28px rgba(130, 106, 187, 0.2);
+}
+
+.homepage .cloud-a {
+  width: 280px;
+  height: 92px;
+  top: 10%;
+  left: 8%;
+}
+
+.homepage .cloud-b {
+  width: 360px;
+  height: 110px;
+  top: 16%;
+  right: 7%;
+}
+
+.homepage .cloud-c {
+  width: 230px;
+  height: 80px;
+  top: 28%;
+  left: 42%;
+}
+
+.homepage .sky-hill {
+  position: absolute;
+  bottom: -65px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, rgba(196, 239, 212, 0.45) 0%, rgba(152, 214, 183, 0.22) 65%, rgba(152, 214, 183, 0) 100%);
+}
+
+.homepage .hill-a {
+  width: 520px;
+  height: 220px;
+  left: -100px;
+}
+
+.homepage .hill-b {
+  width: 620px;
+  height: 260px;
+  right: -120px;
+}
+
+.homepage .sky-spark {
+  position: absolute;
+  color: #f8c1df;
+  font-size: 1.2rem;
+  text-shadow: 0 0 14px rgba(248, 193, 223, 0.6);
+}
+
+.homepage .spark-a {
+  top: 18%;
+  left: 20%;
+}
+
+.homepage .spark-b {
+  top: 22%;
+  right: 24%;
+}
+
+.homepage .spark-c {
+  top: 30%;
+  left: 64%;
+}
+
+.homepage .island-world,
+.homepage #meshy-room-root,
+.homepage .meshy-room-inner,
+.homepage .meshy-three-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.homepage .island-world {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.homepage .meshy-three-canvas {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  min-height: 100vh;
+}
+
+.homepage .island-topbar {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: auto;
+  z-index: 30;
+  display: flex;
+  gap: 0.65rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(237, 156, 206, 0.55);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(191, 88, 150, 0.26);
+  overflow: visible;
+  white-space: normal;
+}
+
+.homepage .island-chip {
+  color: #8d2e69;
+  background: linear-gradient(180deg, #f3aad2 0%, #ec8fc5 100%);
+  border-radius: 999px;
+  padding: 0.4rem 0.82rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.homepage .island-hero-section {
+  position: fixed;
+  top: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 31;
+  text-align: center;
+  padding: 0.8rem 1.2rem 0.95rem;
+  border-radius: 28px;
+  background: rgba(252, 171, 218, 0.42);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 28px rgba(174, 88, 158, 0.28);
+}
+
+.homepage .island-title {
+  margin: 0;
+  font-size: clamp(2rem, 5.8vw, 4.1rem);
+  color: #d93888;
+  text-shadow: 0 2px 0 rgba(253, 198, 231, 0.7), 0 10px 20px rgba(175, 75, 141, 0.38);
+}
+
+.homepage .island-subtitle {
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.82rem, 1.8vw, 1rem);
+  color: #8f3a7b;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.homepage .island-nav {
+  position: fixed;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 32;
+  width: min(1200px, calc(100vw - 24px));
+  margin: 0;
+  gap: 0.4rem;
+}
+
+.homepage .nav-cloud-wrap {
+  min-height: 44px;
+  padding: 0.5em 1.1em 0.65em;
+  background: linear-gradient(180deg, #f7afd5 0%, #f39acb 40%, #eb82ba 100%);
+  border: 1px solid rgba(224, 123, 183, 0.9);
+  box-shadow:
+    0 8px 20px rgba(189, 78, 147, 0.32),
+    inset 0 1px 10px rgba(255, 193, 228, 0.5),
+    inset 0 -5px 12px rgba(198, 84, 150, 0.32);
+}
+
+.homepage .nav-cloud-wrap::before,
+.homepage .nav-cloud-wrap::after {
+  background: linear-gradient(180deg, #f8b4d8 0%, #ee8fc6 100%);
+  box-shadow: inset 0 1px 8px rgba(255, 195, 228, 0.45);
+}
+
+.homepage .nav-cloud-text {
+  color: #7e2d62;
+  text-shadow: 0 1px 0 rgba(251, 203, 233, 0.6);
+}
+
+.homepage .island-bottombar {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: auto;
+  z-index: 33;
+  padding: 0.62rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(236, 147, 199, 0.62);
+  color: #7f285f;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.76rem;
+  box-shadow: 0 8px 20px rgba(171, 78, 137, 0.32);
+  overflow: visible;
+  white-space: normal;
+}
+
+.homepage .hero-image,
+.homepage .tagline {
+  display: none;
+}
+
+.homepage .world-stickers {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+}
+
+.homepage .sticker {
+  position: absolute;
+  filter: drop-shadow(0 6px 10px rgba(144, 60, 122, 0.35));
+  font-size: 1.5rem;
+}
+
+.homepage .sticker-heart {
+  left: 8%;
+  bottom: 26%;
+}
+
+.homepage .sticker-fruit {
+  right: 10%;
+  bottom: 28%;
+}
+
+.homepage .sticker-star {
+  left: 50%;
+  bottom: 12%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 820px) {
+  .homepage .island-topbar {
+    gap: 0.4rem;
+    padding: 0.35rem 0.45rem;
+  }
+
+  .homepage .island-chip {
+    font-size: 0.7rem;
+    padding: 0.32rem 0.6rem;
+  }
+
+  .homepage .island-hero-section {
+    top: 74px;
+    width: min(92vw, 620px);
+  }
+
+  .homepage .island-nav {
+    bottom: 74px;
+  }
+
+  .homepage .cloud-a {
+    width: 180px;
+    height: 62px;
+  }
+
+  .homepage .cloud-b {
+    width: 220px;
+    height: 74px;
+  }
+
+  .homepage .cloud-c {
+    width: 150px;
+    height: 54px;
+  }
+
+  .homepage .nav-cloud-wrap {
+    min-height: 40px;
+    padding: 0.42em 0.82em 0.54em;
+  }
+
+  .homepage .nav-cloud-text {
+    font-size: 0.86rem;
+  }
+}

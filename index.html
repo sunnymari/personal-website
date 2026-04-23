@@ -13,45 +13,55 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Roboto+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Fredoka+One&display=swap" rel="stylesheet">
     <script type="module" src="/src/global-cursor.js"></script>
   </head>
-  <body>
-    <header>
-      <div class="billboard-container">
-        <span class="header-text">marissa codes 🌸</span>
-        <span class="header-text">✨ cozy dev</span>
-        <span class="header-text">💻 building things</span>
-        <span class="header-text">🎀 kawaii coder</span>
-        <span class="header-text">marissa codes 🌸</span>
-        <span class="header-text">✨ cozy dev</span>
-        <span class="header-text">💻 building things</span>
-        <span class="header-text">🎀 kawaii coder</span>
+  <body class="homepage">
+    <div class="island-home">
+      <div class="sky-layer" aria-hidden="true">
+        <span class="sky-cloud cloud-a"></span>
+        <span class="sky-cloud cloud-b"></span>
+        <span class="sky-cloud cloud-c"></span>
+        <span class="sky-hill hill-a"></span>
+        <span class="sky-hill hill-b"></span>
+        <span class="sky-spark spark-a">✦</span>
+        <span class="sky-spark spark-b">✧</span>
+        <span class="sky-spark spark-c">✦</span>
       </div>
-    </header>
+      <section class="island-world" aria-label="Dreamy kawaii island scene">
+        <div id="meshy-room-root"></div>
+        <script type="module" src="/src/meshy-room-main.jsx"></script>
+      </section>
 
-    <section class="hero-section">
-    <h1 class="hero-title">
-      <span class="char">W</span><span class="char">e</span><span class="char">l</span><span class="char">c</span><span class="char">o</span><span class="char">m</span><span class="char">e</span><span class="char"> </span><span class="char">T</span><span class="char">o</span><span class="char"> </span><span class="char">M</span><span class="char">y</span><span class="char"> </span><span class="char">W</span><span class="char">e</span><span class="char">b</span><span class="char">s</span><span class="char">i</span><span class="char">t</span><span class="char">e</span>
-    </h1>
-    </section>
+      <header class="island-topbar">
+        <span class="island-chip">marissa island</span>
+        <span class="island-chip">cozy dev life</span>
+        <span class="island-chip">kawaii world</span>
+      </header>
 
-    <section class="models-showcase meshy-home-wrap" aria-label="3D character scene">
-      <div id="meshy-room-root"></div>
-      <script type="module" src="/src/meshy-room-main.jsx"></script>
-    </section>
+      <section class="island-hero-section">
+        <h1 class="hero-title island-title">
+          <span class="char">W</span><span class="char">e</span><span class="char">l</span><span class="char">c</span><span class="char">o</span><span class="char">m</span><span class="char">e</span><span class="char"> </span><span class="char">T</span><span class="char">o</span><span class="char"> </span><span class="char">M</span><span class="char">y</span><span class="char"> </span><span class="char">I</span><span class="char">s</span><span class="char">l</span><span class="char">a</span><span class="char">n</span><span class="char">d</span>
+        </h1>
+        <p class="island-subtitle">Dreamy code, cozy stories, magical projects</p>
+      </section>
 
-    <nav class="nav-buttons">
-      <a href="/about" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🌸 About</span></span></a>
-      <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🎀 Projects</span></span></a>
-      <a href="/reading" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">📚 Reading</span></span></a>
-      <a href="/work-with-me" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">☁️ Work With Me</span></span></a>
-      <a href="/blog" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">📝 Blog</span></span></a>
-      <a href="/pageant" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🎮 Play Pageant Sim</span></span></a>
-      <a href="/chibi" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🌙 Chibi scene</span></span></a>
-    </nav>
+      <nav class="nav-buttons island-nav">
+        <a href="/about" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🌸 About</span></span></a>
+        <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🎀 Projects</span></span></a>
+        <a href="/reading" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">📚 Reading</span></span></a>
+        <a href="/work-with-me" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">☁️ Work With Me</span></span></a>
+        <a href="/blog" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">📝 Blog</span></span></a>
+        <a href="/pageant" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🎮 Pageant Sim</span></span></a>
+        <a href="/chibi" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🌙 Dollhouse</span></span></a>
+      </nav>
 
-    <h2 class="tagline">💕 A cozy corner of the internet 💕</h2>
-
-    <img src="images/mymelodyone.gif" class="hero-image" alt="My Melody">
-    <h3></h3>
+      <footer class="island-bottombar">
+        <span>marissa codes ✨ island edition</span>
+      </footer>
+      <div class="world-stickers" aria-hidden="true">
+        <span class="sticker sticker-heart">💗</span>
+        <span class="sticker sticker-fruit">🍓</span>
+        <span class="sticker sticker-star">⭐</span>
+      </div>
+    </div>
 
     <!-- Ko-fi floating chat -->
     <script src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
@@ -63,18 +73,6 @@
         'floating-chat.donateButton.text-color': '#fff'
       });
     </script>
-    <footer>
-      <div class="billboard-container-reverse">
-        <span class="footer-text">marissa codes 🌸</span>
-        <span class="footer-text">✨ cozy dev</span>
-        <span class="footer-text">💻 building things</span>
-        <span class="footer-text">🎀 kawaii coder</span>
-        <span class="footer-text">marissa codes 🌸</span>
-        <span class="footer-text">✨ cozy dev</span>
-        <span class="footer-text">💻 building things</span>
-        <span class="footer-text">🎀 kawaii coder</span>
-      </div>
-    </footer>
   </body>
 </html>
 
