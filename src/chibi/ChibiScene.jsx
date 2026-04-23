@@ -353,9 +353,185 @@ function FloatParticle({ index }) {
   );
 }
 
+function FurnitureItem({ position, rotation = [0, 0, 0], onClick, children }) {
+  const groupRef = useRef();
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    if (!onClick || !groupRef.current) return;
+    const hits = e.ray.intersectObject(groupRef.current, true);
+    if (hits.length > 0) onClick();
+  };
+
+  return (
+    <group
+      ref={groupRef}
+      position={position}
+      rotation={rotation}
+      onClick={handleClick}
+      onPointerOver={() => {
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = 'auto';
+      }}
+    >
+      {children}
+    </group>
+  );
+}
+
+function RoomFurniture({ onBedClick }) {
+  return (
+    <>
+      <FurnitureItem position={[-2.05, 0, -1.55]} onClick={onBedClick}>
+        <mesh position={[0, 0.2, 0]} castShadow receiveShadow>
+          <boxGeometry args={[1.4, 0.22, 0.72]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0, 0.33, 0]} castShadow receiveShadow>
+          <boxGeometry args={[1.26, 0.14, 0.6]} />
+          <meshStandardMaterial color="#ffb6c1" />
+        </mesh>
+        <mesh position={[0, 0.62, -0.31]} castShadow receiveShadow>
+          <boxGeometry args={[1.4, 0.62, 0.12]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[-0.34, 0.42, -0.15]} castShadow>
+          <boxGeometry args={[0.32, 0.08, 0.2]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+        <mesh position={[0.34, 0.42, -0.15]} castShadow>
+          <boxGeometry args={[0.32, 0.08, 0.2]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+      </FurnitureItem>
+
+      <FurnitureItem
+        position={[2.05, 0, -1.55]}
+        onClick={() => {
+          window.location.href = '/about';
+        }}
+      >
+        <mesh position={[0, 0.4, 0]} castShadow receiveShadow>
+          <boxGeometry args={[1.0, 0.12, 0.44]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+        <mesh position={[-0.36, 0.2, 0]} castShadow>
+          <boxGeometry args={[0.1, 0.4, 0.1]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+        <mesh position={[0.36, 0.2, 0]} castShadow>
+          <boxGeometry args={[0.1, 0.4, 0.1]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+        <mesh position={[0, 0.95, -0.14]} castShadow>
+          <boxGeometry args={[0.76, 0.92, 0.08]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0, 0.95, -0.09]} castShadow>
+          <boxGeometry args={[0.62, 0.78, 0.02]} />
+          <meshStandardMaterial
+            color="#e8d5f5"
+            transparent
+            opacity={0.6}
+            emissive="#ffffff"
+            emissiveIntensity={0.2}
+          />
+        </mesh>
+      </FurnitureItem>
+
+      <group position={[2.15, 0, 0.95]} rotation={[0, -Math.PI / 2, 0]}>
+        <mesh position={[0, 0.26, 0]} castShadow receiveShadow>
+          <boxGeometry args={[1.18, 0.3, 0.62]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[-0.32, 0.6, 0]} castShadow receiveShadow>
+          <boxGeometry args={[0.56, 0.4, 0.62]} />
+          <meshStandardMaterial color="#ff85c2" />
+        </mesh>
+        <mesh position={[0, 0.43, -0.32]} castShadow receiveShadow>
+          <boxGeometry args={[1.18, 0.36, 0.14]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0, 0.43, 0.32]} castShadow receiveShadow>
+          <boxGeometry args={[1.18, 0.36, 0.14]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+      </group>
+
+      <FurnitureItem
+        position={[-2.62, 0, 0.9]}
+        rotation={[0, Math.PI / 2, 0]}
+        onClick={() => {
+          window.location.href = '/reading';
+        }}
+      >
+        <mesh position={[0, 0.95, 0]} castShadow receiveShadow>
+          <boxGeometry args={[1.05, 1.9, 0.26]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0, 0.35, 0.01]} castShadow>
+          <boxGeometry args={[0.9, 0.06, 0.2]} />
+          <meshStandardMaterial color="#ffe3ee" />
+        </mesh>
+        <mesh position={[0, 0.9, 0.01]} castShadow>
+          <boxGeometry args={[0.9, 0.06, 0.2]} />
+          <meshStandardMaterial color="#ffe3ee" />
+        </mesh>
+        <mesh position={[0, 1.45, 0.01]} castShadow>
+          <boxGeometry args={[0.9, 0.06, 0.2]} />
+          <meshStandardMaterial color="#ffe3ee" />
+        </mesh>
+
+        <mesh position={[-0.3, 0.62, 0.04]} castShadow>
+          <boxGeometry args={[0.08, 0.3, 0.14]} />
+          <meshStandardMaterial color="#a78bfa" />
+        </mesh>
+        <mesh position={[-0.18, 0.63, 0.04]} castShadow>
+          <boxGeometry args={[0.08, 0.32, 0.14]} />
+          <meshStandardMaterial color="#f472b6" />
+        </mesh>
+        <mesh position={[-0.06, 0.6, 0.04]} castShadow>
+          <boxGeometry args={[0.08, 0.26, 0.14]} />
+          <meshStandardMaterial color="#ffffff" />
+        </mesh>
+        <mesh position={[0.08, 0.62, 0.04]} castShadow>
+          <boxGeometry args={[0.08, 0.3, 0.14]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+        <mesh position={[0.22, 0.61, 0.04]} castShadow>
+          <boxGeometry args={[0.08, 0.28, 0.14]} />
+          <meshStandardMaterial color="#34d399" />
+        </mesh>
+        <mesh position={[0.34, 0.59, 0.04]} castShadow>
+          <boxGeometry args={[0.08, 0.24, 0.14]} />
+          <meshStandardMaterial color="#fb923c" />
+        </mesh>
+        <mesh position={[-0.26, 1.17, 0.04]} castShadow>
+          <boxGeometry args={[0.08, 0.25, 0.14]} />
+          <meshStandardMaterial color="#f472b6" />
+        </mesh>
+        <mesh position={[-0.13, 1.17, 0.04]} castShadow>
+          <boxGeometry args={[0.08, 0.25, 0.14]} />
+          <meshStandardMaterial color="#a78bfa" />
+        </mesh>
+      </FurnitureItem>
+    </>
+  );
+}
+
 export default function ChibiScene() {
   const [phase, setPhase] = useState('idle');
   const [runId, setRunId] = useState(0);
+  const [bedMessage, setBedMessage] = useState(false);
+
+  useEffect(() => {
+    if (!bedMessage) return undefined;
+    const dismiss = () => setBedMessage(false);
+    window.addEventListener('pointerdown', dismiss);
+    return () => window.removeEventListener('pointerdown', dismiss);
+  }, [bedMessage]);
 
   const handleReplay = () => {
     setRunId((k) => k + 1);
@@ -459,6 +635,32 @@ export default function ChibiScene() {
         </button>
       )}
 
+      {bedMessage && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 25,
+            background: 'rgba(255, 255, 255, 0.88)',
+            border: '2px solid #ff69b4',
+            borderRadius: 18,
+            padding: '14px 22px',
+            color: '#9d174d',
+            fontSize: 18,
+            fontWeight: 700,
+            letterSpacing: '0.02em',
+            backdropFilter: 'blur(12px)',
+            boxShadow: '0 14px 28px rgba(255, 105, 180, 0.25)',
+            textAlign: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          ✨ shh i'm dreaming of shipping features 🌙
+        </div>
+      )}
+
       <Canvas
         shadows
         camera={{ position: [0, 1.8, 5.5], fov: 45 }}
@@ -479,6 +681,7 @@ export default function ChibiScene() {
         <pointLight position={[0, 2.5, -1]} intensity={0.28} color="#ffffff" distance={6} />
 
         <PinkRoom />
+        <RoomFurniture onBedClick={() => setBedMessage(true)} />
 
         <Chibi
           key={runId}
