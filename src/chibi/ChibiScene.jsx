@@ -1,7 +1,8 @@
 import { useRef, useEffect, useMemo, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Text } from '@react-three/drei';
+import { OrbitControls, Text, useAnimations, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 const ROOMS = {
   bedroom: { pos: [-1.85, 2.15, -0.35], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd6e0' },
@@ -487,17 +488,64 @@ function Chibi({
   setSelectedRoom,
 }) {
   const group = useRef();
-  const bodyRef = useRef();
-  const headRef = useRef();
-  const leftArmRef = useRef();
-  const rightArmRef = useRef();
-  const leftLegRef = useRef();
-  const rightLegRef = useRef();
   const movingRef = useRef(false);
+  const animRef = useRef('idle');
+
+  const idleGltf = useGLTF('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Idle_4_withSkin.glb');
+  const walkGltf = useGLTF('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb');
+  const runGltf = useGLTF('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Running_withSkin.glb');
+
+  const chibiModel = useMemo(() => {
+    const cloned = SkeletonUtils.clone(idleGltf.scene);
+    const box = new THREE.Box3().setFromObject(cloned);
+    const size = box.getSize(new THREE.Vector3());
+    const maxAxis = Math.max(size.x, size.y, size.z) || 1;
+    const scale = 1.1 / maxAxis;
+    cloned.scale.setScalar(scale);
+    box.setFromObject(cloned);
+    const center = box.getCenter(new THREE.Vector3());
+    const min = box.min.clone();
+    cloned.position.x -= center.x;
+    cloned.position.z -= center.z;
+    cloned.position.y -= min.y;
+    cloned.traverse((node) => {
+      if (node.isMesh) {
+        node.castShadow = true;
+        node.receiveShadow = true;
+      }
+    });
+    return cloned;
+  }, [idleGltf.scene]);
+
+  const clips = useMemo(
+    () => [...idleGltf.animations, ...walkGltf.animations, ...runGltf.animations],
+    [idleGltf.animations, walkGltf.animations, runGltf.animations]
+  );
+  const { actions, mixer } = useAnimations(clips, chibiModel);
+
+  const actionNames = useMemo(() => Object.keys(actions || {}), [actions]);
+  const idleActionName = useMemo(
+    () => actionNames.find((name) => /idle/i.test(name)) || actionNames[0],
+    [actionNames]
+  );
+  const walkActionName = useMemo(
+    () => actionNames.find((name) => /walk/i.test(name)) || actionNames.find((name) => /run/i.test(name)) || idleActionName,
+    [actionNames, idleActionName]
+  );
+
+  useEffect(() => {
+    if (!actions || !idleActionName) return;
+    const idleAction = actions[idleActionName];
+    if (!idleAction) return;
+    idleAction.reset().fadeIn(0.2).play();
+    animRef.current = 'idle';
+    return () => {
+      Object.values(actions).forEach((action) => action?.fadeOut(0.15));
+    };
+  }, [actions, idleActionName]);
 
   useFrame(({ clock }, delta) => {
     if (!group.current) return;
-    const t = clock.elapsedTime;
     let moving = false;
 
     if (chibiTarget) {
@@ -522,28 +570,22 @@ function Chibi({
     movingRef.current = moving;
     group.current.position.set(chibiPos[0], chibiPos[1], chibiPos[2]);
 
-    const swing = Math.sin(t * 9) * 0.55;
-    if (movingRef.current) {
-      if (leftLegRef.current) leftLegRef.current.rotation.x = swing;
-      if (rightLegRef.current) rightLegRef.current.rotation.x = -swing;
-      if (leftArmRef.current) leftArmRef.current.rotation.x = -swing * 0.6;
-      if (rightArmRef.current) rightArmRef.current.rotation.x = swing * 0.6;
-      if (bodyRef.current) bodyRef.current.position.y = Math.abs(Math.sin(t * 8)) * 0.03;
-      if (headRef.current) headRef.current.rotation.z = Math.sin(t * 4) * 0.04;
-    } else {
-      if (leftLegRef.current) leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0, 0.15);
-      if (rightLegRef.current) rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, 0, 0.15);
-      if (leftArmRef.current) leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, 0, 0.15);
-      if (rightArmRef.current) rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, 0, 0.15);
-      if (bodyRef.current) bodyRef.current.position.y = Math.sin(t * 1.5) * 0.02;
-      if (headRef.current) headRef.current.rotation.z = Math.sin(t * 0.8) * 0.04;
+    if (actions) {
+      const desiredAnim = movingRef.current ? 'walk' : 'idle';
+      if (animRef.current !== desiredAnim) {
+        const nextName = desiredAnim === 'walk' ? walkActionName : idleActionName;
+        const prevName = animRef.current === 'walk' ? walkActionName : idleActionName;
+        const nextAction = actions[nextName];
+        const prevAction = actions[prevName];
+        if (nextAction) {
+          prevAction?.fadeOut(0.2);
+          nextAction.reset().fadeIn(0.2).play();
+          animRef.current = desiredAnim;
+        }
+      }
+      mixer?.update(delta);
     }
   });
-
-  const skinColor = '#ffcba4';
-  const outfitColor = '#e879f9';
-  const hairColor = '#1a0533';
-  const eyeColor = '#7c3aed';
 
   return (
     <group
@@ -562,114 +604,7 @@ function Chibi({
           <meshStandardMaterial color="#ff69b4" emissive="#ff69b4" emissiveIntensity={0.35} transparent opacity={0.65} />
         </mesh>
       )}
-      <mesh ref={bodyRef} position={[0, 0.35, 0]} castShadow>
-        <boxGeometry args={[0.32, 0.38, 0.22]} />
-        <meshStandardMaterial color={outfitColor} roughness={0.7} />
-
-        <group ref={headRef} position={[0, 0.38, 0]}>
-          <mesh castShadow>
-            <boxGeometry args={[0.38, 0.38, 0.34]} />
-            <meshStandardMaterial color={skinColor} roughness={0.8} />
-          </mesh>
-          <mesh position={[0, 0.18, 0]}>
-            <boxGeometry args={[0.4, 0.1, 0.36]} />
-            <meshStandardMaterial color={hairColor} roughness={0.9} />
-          </mesh>
-          <mesh position={[0, 0.06, -0.2]}>
-            <boxGeometry args={[0.36, 0.28, 0.06]} />
-            <meshStandardMaterial color={hairColor} roughness={0.9} />
-          </mesh>
-          <mesh position={[-0.22, -0.02, 0]}>
-            <boxGeometry args={[0.06, 0.22, 0.3]} />
-            <meshStandardMaterial color={hairColor} roughness={0.9} />
-          </mesh>
-          <mesh position={[0.22, -0.02, 0]}>
-            <boxGeometry args={[0.06, 0.22, 0.3]} />
-            <meshStandardMaterial color={hairColor} roughness={0.9} />
-          </mesh>
-          <mesh position={[-0.1, 0.04, 0.18]}>
-            <boxGeometry args={[0.08, 0.1, 0.01]} />
-            <meshStandardMaterial color={eyeColor} emissive={eyeColor} emissiveIntensity={0.4} />
-          </mesh>
-          <mesh position={[0.1, 0.04, 0.18]}>
-            <boxGeometry args={[0.08, 0.1, 0.01]} />
-            <meshStandardMaterial color={eyeColor} emissive={eyeColor} emissiveIntensity={0.4} />
-          </mesh>
-          <mesh position={[-0.08, 0.07, 0.185]}>
-            <boxGeometry args={[0.025, 0.025, 0.001]} />
-            <meshStandardMaterial color="white" emissive="white" emissiveIntensity={1} />
-          </mesh>
-          <mesh position={[0.12, 0.07, 0.185]}>
-            <boxGeometry args={[0.025, 0.025, 0.001]} />
-            <meshStandardMaterial color="white" emissive="white" emissiveIntensity={1} />
-          </mesh>
-          <mesh position={[-0.16, -0.02, 0.175]}>
-            <boxGeometry args={[0.07, 0.04, 0.001]} />
-            <meshStandardMaterial color="#ff9fb3" transparent opacity={0.6} />
-          </mesh>
-          <mesh position={[0.16, -0.02, 0.175]}>
-            <boxGeometry args={[0.07, 0.04, 0.001]} />
-            <meshStandardMaterial color="#ff9fb3" transparent opacity={0.6} />
-          </mesh>
-          <mesh position={[0, -0.07, 0.175]}>
-            <boxGeometry args={[0.07, 0.025, 0.001]} />
-            <meshStandardMaterial color="#c0506e" />
-          </mesh>
-          <mesh position={[-0.18, 0.2, 0]} rotation={[0, 0, 0.3]}>
-            <boxGeometry args={[0.12, 0.07, 0.04]} />
-            <meshStandardMaterial color="#f472b6" />
-          </mesh>
-        </group>
-
-        <group ref={leftArmRef} position={[-0.22, 0.1, 0]}>
-          <mesh position={[0, -0.14, 0]} castShadow>
-            <boxGeometry args={[0.1, 0.28, 0.1]} />
-            <meshStandardMaterial color={outfitColor} roughness={0.7} />
-          </mesh>
-          <mesh position={[0, -0.3, 0]}>
-            <boxGeometry args={[0.11, 0.11, 0.11]} />
-            <meshStandardMaterial color={skinColor} roughness={0.8} />
-          </mesh>
-        </group>
-
-        <group ref={rightArmRef} position={[0.22, 0.1, 0]}>
-          <mesh position={[0, -0.14, 0]} castShadow>
-            <boxGeometry args={[0.1, 0.28, 0.1]} />
-            <meshStandardMaterial color={outfitColor} roughness={0.7} />
-          </mesh>
-          <mesh position={[0, -0.3, 0]}>
-            <boxGeometry args={[0.11, 0.11, 0.11]} />
-            <meshStandardMaterial color={skinColor} roughness={0.8} />
-          </mesh>
-        </group>
-      </mesh>
-
-      <mesh position={[0, 0.16, 0]}>
-        <boxGeometry args={[0.36, 0.12, 0.26]} />
-        <meshStandardMaterial color="#f9a8d4" roughness={0.8} />
-      </mesh>
-
-      <group ref={leftLegRef} position={[-0.1, 0.1, 0]}>
-        <mesh position={[0, -0.14, 0]} castShadow>
-          <boxGeometry args={[0.12, 0.28, 0.12]} />
-          <meshStandardMaterial color={skinColor} roughness={0.8} />
-        </mesh>
-        <mesh position={[0, -0.3, 0.02]}>
-          <boxGeometry args={[0.13, 0.09, 0.16]} />
-          <meshStandardMaterial color="#581c87" roughness={0.6} />
-        </mesh>
-      </group>
-
-      <group ref={rightLegRef} position={[0.1, 0.1, 0]}>
-        <mesh position={[0, -0.14, 0]} castShadow>
-          <boxGeometry args={[0.12, 0.28, 0.12]} />
-          <meshStandardMaterial color={skinColor} roughness={0.8} />
-        </mesh>
-        <mesh position={[0, -0.3, 0.02]}>
-          <boxGeometry args={[0.13, 0.09, 0.16]} />
-          <meshStandardMaterial color="#581c87" roughness={0.6} />
-        </mesh>
-      </group>
+      <primitive object={chibiModel} />
     </group>
   );
 }
@@ -1129,3 +1064,7 @@ export default function ChibiScene({ embedded = false }) {
     </div>
   );
 }
+
+useGLTF.preload('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Idle_4_withSkin.glb');
+useGLTF.preload('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb');
+useGLTF.preload('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Running_withSkin.glb');
