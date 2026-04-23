@@ -189,12 +189,6 @@ export default function KawaiiIslandLandingPage() {
         </div>
       </section>
 
-      <button
-        type="button"
-        className="fixed bottom-6 left-6 z-30 rounded-full border-[4px] border-[#ff71b8] bg-[linear-gradient(180deg,#ff6fbe_0%,#ff4ead_100%)] px-6 py-4 text-lg font-black text-white shadow-[0_16px_26px_rgba(255,90,170,0.32),inset_0_2px_0_rgba(255,255,255,0.25)] transition hover:-translate-y-1 sm:text-xl"
-      >
-        ☕ Support me
-      </button>
     </main>
   );
 }

@@ -942,6 +942,23 @@ body.homepage::before {
   transform: translateX(-50%);
 }
 
+/* Hide the retired static homepage overlay so it cannot duplicate the React UI. */
+.homepage .sky-layer,
+.homepage .island-topbar,
+.homepage .island-chip,
+.homepage .island-hero-section,
+.homepage .island-title,
+.homepage .island-subtitle,
+.homepage .island-nav,
+.homepage .nav-toy-card,
+.homepage .toy-icon,
+.homepage .toy-label,
+.homepage .island-bottombar,
+.homepage .world-stickers,
+.homepage .sticker {
+  display: none !important;
+}
+
 @media (max-width: 820px) {
   .homepage .island-scene-frame {
     transform: translateY(7vh) scale(0.92);
