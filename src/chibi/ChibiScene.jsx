@@ -497,12 +497,9 @@ function Chibi({
 
   const chibiModel = useMemo(() => {
     const cloned = SkeletonUtils.clone(idleGltf.scene);
+    // Use a fixed miniature scale for this rig to avoid oversized normalization.
+    cloned.scale.setScalar(0.12);
     const box = new THREE.Box3().setFromObject(cloned);
-    const size = box.getSize(new THREE.Vector3());
-    const maxAxis = Math.max(size.x, size.y, size.z) || 1;
-    const scale = 0.5 / maxAxis;
-    cloned.scale.setScalar(scale);
-    box.setFromObject(cloned);
     const center = box.getCenter(new THREE.Vector3());
     const min = box.min.clone();
     cloned.position.x -= center.x;
