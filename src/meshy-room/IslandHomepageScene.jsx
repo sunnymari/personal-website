@@ -104,36 +104,29 @@ function FlowerPatch({ position }) {
 }
 
 function Cottage() {
+  const gltf = useGLTF('/Meshy_AI_Sweetheart_Cottage_0423070410_texture.glb');
+
+  const cottageModel = useMemo(() => {
+    const cloned = SkeletonUtils.clone(gltf.scene);
+    cloned.scale.setScalar(0.7);
+    const box = new THREE.Box3().setFromObject(cloned);
+    const center = box.getCenter(new THREE.Vector3());
+    const min = box.min.clone();
+    cloned.position.x -= center.x;
+    cloned.position.z -= center.z;
+    cloned.position.y -= min.y;
+    cloned.traverse((node) => {
+      if (node.isMesh) {
+        node.castShadow = true;
+        node.receiveShadow = true;
+      }
+    });
+    return cloned;
+  }, [gltf.scene]);
+
   return (
     <group position={[0.15, 0.24, -0.25]}>
-      <mesh castShadow receiveShadow position={[0, 1.18, 0]}>
-        <boxGeometry args={[2.3, 1.95, 2.15]} />
-        <meshStandardMaterial color="#eeb6d3" />
-      </mesh>
-      <mesh castShadow receiveShadow position={[0, 2.48, 0]} rotation={[Math.PI / 2, 0, Math.PI / 4]}>
-        <cylinderGeometry args={[1.25, 1.25, 1.9, 4]} />
-        <meshStandardMaterial color={PALETTE.sakura} />
-      </mesh>
-      <mesh castShadow receiveShadow position={[0.02, 1.03, 1.12]}>
-        <boxGeometry args={[0.75, 1.08, 0.14]} />
-        <meshStandardMaterial color="#f0a6cc" />
-      </mesh>
-      <mesh castShadow position={[0.26, 0.95, 1.18]}>
-        <sphereGeometry args={[0.07, 10, 10]} />
-        <meshStandardMaterial color="#eac071" />
-      </mesh>
-      <mesh castShadow receiveShadow position={[-0.74, 1.36, 1.13]}>
-        <boxGeometry args={[0.54, 0.54, 0.1]} />
-        <meshStandardMaterial color="#f4b8d8" />
-      </mesh>
-      <mesh castShadow receiveShadow position={[0.78, 1.36, 1.13]}>
-        <boxGeometry args={[0.54, 0.54, 0.1]} />
-        <meshStandardMaterial color="#f4b8d8" />
-      </mesh>
-      <mesh castShadow position={[0.02, 3.16, 0.75]}>
-        <torusGeometry args={[0.2, 0.05, 12, 24]} />
-        <meshStandardMaterial color="#ef6eaf" />
-      </mesh>
+      <primitive object={cottageModel} />
     </group>
   );
 }
@@ -417,3 +410,4 @@ export default function IslandHomepageScene() {
 useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Wave_One_Hand_withSkin.glb');
 useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Walking_withSkin.glb');
 useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Running_withSkin.glb');
+useGLTF.preload('/Meshy_AI_Sweetheart_Cottage_0423070410_texture.glb');
