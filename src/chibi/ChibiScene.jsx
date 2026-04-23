@@ -5,11 +5,11 @@ import * as THREE from 'three';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 const ROOMS = {
-  bedroom: { pos: [-3.9, 1.55, -0.25], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd6e0' },
-  closet: { pos: [0, 1.55, -0.25], label: '🎀 Closet', emoji: '🎀', floor: '#fce7f3' },
-  library: { pos: [3.9, 1.55, -0.25], label: '📚 Library', emoji: '📚', floor: '#fef3c7' },
-  living: { pos: [-3.9, -1.55, -0.25], label: '🛋️ Living Room', emoji: '🛋️', floor: '#ffe4ec' },
-  office: { pos: [0, -1.55, -0.25], label: '💻 Office', emoji: '💻', floor: '#f3e8ff' },
+  bedroom: { pos: [-3.9, 0.55, -0.25], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd6e0' },
+  closet: { pos: [0, 0.55, -0.25], label: '🎀 Closet', emoji: '🎀', floor: '#fce7f3' },
+  library: { pos: [3.9, 0.55, -0.25], label: '📚 Library', emoji: '📚', floor: '#fef3c7' },
+  living: { pos: [-3.9, -2.55, -0.25], label: '🛋️ Living Room', emoji: '🛋️', floor: '#ffe4ec' },
+  office: { pos: [0, -2.55, -0.25], label: '💻 Office', emoji: '💻', floor: '#f3e8ff' },
 };
 
 function ClickableFurniture({ position, rotation = [0, 0, 0], onClick, children }) {
@@ -62,13 +62,57 @@ function ClickableFurniture({ position, rotation = [0, 0, 0], onClick, children 
 function RoomShell({ roomKey, onRoomClick }) {
   const room = ROOMS[roomKey];
   const [x, y, z] = room.pos;
+  const wallpaper = {
+    bedroom: '#ffe0ec',
+    library: '#fef9c3',
+    office: '#ede9fe',
+    living: '#fff0f5',
+    closet: '#f3e8ff',
+  }[roomKey];
+  const ceilingTint = new THREE.Color(room.floor).multiplyScalar(0.92).getStyle();
 
   return (
     <group position={[x, y, z]}>
       <mesh receiveShadow onClick={() => onRoomClick(roomKey)}>
-        <boxGeometry args={[3.8, 0.1, 3]} />
+        <boxGeometry args={[3.8, 0.1, 3.5]} />
         <meshStandardMaterial color={room.floor} />
       </mesh>
+      <mesh position={[0, 1.4, -0.06]} receiveShadow>
+        <boxGeometry args={[3.8, 0.08, 3.5]} />
+        <meshStandardMaterial color={ceilingTint} />
+      </mesh>
+      <mesh position={[0, 0.72, -1.75]} castShadow receiveShadow>
+        <boxGeometry args={[3.8, 1.45, 0.1]} />
+        <meshStandardMaterial color={wallpaper} />
+      </mesh>
+      {roomKey === 'bedroom' &&
+        Array.from({ length: 20 }).map((_, i) => (
+          <mesh key={`bed-dot-${i}`} position={[-1.5 + (i % 5) * 0.75, 0.25 + Math.floor(i / 5) * 0.32, -1.69]}>
+            <boxGeometry args={[0.05, 0.05, 0.02]} />
+            <meshStandardMaterial color="#ff9bc8" emissive="#ff9bc8" emissiveIntensity={0.12} />
+          </mesh>
+        ))}
+      {roomKey === 'library' &&
+        Array.from({ length: 10 }).map((_, i) => (
+          <mesh key={`lib-stripe-${i}`} position={[-1.65 + i * 0.37, 0.72, -1.69]}>
+            <boxGeometry args={[0.05, 1.2, 0.02]} />
+            <meshStandardMaterial color="#facc15" emissive="#fef08a" emissiveIntensity={0.08} />
+          </mesh>
+        ))}
+      {roomKey === 'office' &&
+        Array.from({ length: 15 }).map((_, i) => (
+          <mesh key={`off-grid-${i}`} position={[-1.3 + (i % 5) * 0.65, 0.35 + Math.floor(i / 5) * 0.35, -1.69]}>
+            <boxGeometry args={[0.2, 0.04, 0.02]} />
+            <meshStandardMaterial color="#a78bfa" emissive="#c4b5fd" emissiveIntensity={0.1} />
+          </mesh>
+        ))}
+      {roomKey === 'living' &&
+        Array.from({ length: 9 }).map((_, i) => (
+          <mesh key={`liv-stripe-${i}`} position={[-1.52 + i * 0.38, 0.72, -1.69]}>
+            <boxGeometry args={[0.08, 1.22, 0.02]} />
+            <meshStandardMaterial color="#f9a8d4" emissive="#fbcfe8" emissiveIntensity={0.09} />
+          </mesh>
+        ))}
       <Text
         position={[0, 1.52, 0.55]}
         fontSize={0.28}
@@ -88,7 +132,7 @@ function DividerWalls() {
   const houseHeight = 5.85;
 
   return (
-    <>
+    <group position={[0, -1, 0]}>
       <mesh position={[0, 1.38, -1.86]} castShadow receiveShadow>
         <boxGeometry args={[houseWidth, houseHeight, 0.14]} />
         <meshStandardMaterial color="#ffffff" />
@@ -121,7 +165,7 @@ function DividerWalls() {
       </mesh>
 
       <mesh position={[0, 0, -0.26]} castShadow receiveShadow>
-        <boxGeometry args={[houseWidth, 0.12, houseDepth]} />
+        <boxGeometry args={[houseWidth, 0.2, 3.7]} />
         <meshStandardMaterial color="#ffffff" />
       </mesh>
       <mesh position={[0, 0.0, 1.25]} castShadow receiveShadow>
@@ -130,7 +174,7 @@ function DividerWalls() {
       </mesh>
 
       <mesh position={[0, 2.82, -0.26]} castShadow receiveShadow>
-        <boxGeometry args={[houseWidth, 0.12, houseDepth]} />
+        <boxGeometry args={[houseWidth, 0.2, 3.7]} />
         <meshStandardMaterial color="#ffffff" />
       </mesh>
       <mesh position={[0, 2.82, 1.25]} castShadow receiveShadow>
@@ -138,28 +182,28 @@ function DividerWalls() {
         <meshStandardMaterial color="#ff69b4" />
       </mesh>
 
-      <mesh position={[0, 5.86, -0.26]} castShadow receiveShadow>
-        <boxGeometry args={[12.2, 0.14, 3.45]} />
+      <mesh position={[0, 4.8, -0.26]} castShadow receiveShadow>
+        <boxGeometry args={[12.2, 0.14, 3.7]} />
         <meshStandardMaterial color="#ffffff" />
       </mesh>
 
-      <mesh position={[0, 7.02, -0.26]} rotation={[0, 0, Math.PI / 5.2]} castShadow receiveShadow>
-        <boxGeometry args={[6.1, 0.2, 3.62]} />
+      <mesh position={[0, 5.2, -0.26]} rotation={[0, 0, Math.PI / 5.14]} castShadow receiveShadow>
+        <boxGeometry args={[5.4, 0.18, 3.78]} />
         <meshStandardMaterial color="#ff85c2" />
       </mesh>
-      <mesh position={[0, 7.02, -0.26]} rotation={[0, 0, -Math.PI / 5.2]} castShadow receiveShadow>
-        <boxGeometry args={[6.1, 0.2, 3.62]} />
+      <mesh position={[0, 5.2, -0.26]} rotation={[0, 0, -Math.PI / 5.14]} castShadow receiveShadow>
+        <boxGeometry args={[5.4, 0.18, 3.78]} />
         <meshStandardMaterial color="#ff85c2" />
       </mesh>
-      <mesh position={[0, 7.74, -0.26]} castShadow receiveShadow>
-        <boxGeometry args={[0.22, 0.32, 3.58]} />
+      <mesh position={[0, 6.0, -0.26]} castShadow receiveShadow>
+        <boxGeometry args={[0.2, 0.2, 3.7]} />
         <meshStandardMaterial color="#e75480" />
       </mesh>
-      <mesh position={[2.9, 7.84, -1.02]} castShadow receiveShadow>
+      <mesh position={[2.8, 5.95, -1.02]} castShadow receiveShadow>
         <boxGeometry args={[0.52, 0.9, 0.52]} />
         <meshStandardMaterial color="#ffffff" />
       </mesh>
-      <mesh position={[2.9, 8.34, -1.02]} castShadow receiveShadow>
+      <mesh position={[2.8, 6.45, -1.02]} castShadow receiveShadow>
         <boxGeometry args={[0.42, 0.24, 0.42]} />
         <meshStandardMaterial color="#f9a3ca" />
       </mesh>
@@ -169,18 +213,34 @@ function DividerWalls() {
         <meshStandardMaterial color="#f7e4ee" />
       </mesh>
 
-      <mesh position={[-5.24, 0.12, 1.08]} castShadow receiveShadow>
-        <boxGeometry args={[0.2, 6.0, 0.18]} />
+      <mesh position={[-5.7, 0.12, 1.08]} castShadow receiveShadow>
+        <boxGeometry args={[0.15, 6.0, 0.15]} />
         <meshStandardMaterial color="#ffffff" />
       </mesh>
-      <mesh position={[5.24, 0.12, 1.08]} castShadow receiveShadow>
-        <boxGeometry args={[0.2, 6.0, 0.18]} />
+      <mesh position={[5.7, 0.12, 1.08]} castShadow receiveShadow>
+        <boxGeometry args={[0.15, 6.0, 0.15]} />
         <meshStandardMaterial color="#ffffff" />
+      </mesh>
+      <mesh position={[-5.7, 3.0, 1.08]} castShadow receiveShadow>
+        <boxGeometry args={[0.28, 0.14, 0.18]} />
+        <meshStandardMaterial color="#ff69b4" />
+      </mesh>
+      <mesh position={[-5.7, -2.7, 1.08]} castShadow receiveShadow>
+        <boxGeometry args={[0.28, 0.14, 0.18]} />
+        <meshStandardMaterial color="#ff69b4" />
+      </mesh>
+      <mesh position={[5.7, 3.0, 1.08]} castShadow receiveShadow>
+        <boxGeometry args={[0.28, 0.14, 0.18]} />
+        <meshStandardMaterial color="#ff69b4" />
+      </mesh>
+      <mesh position={[5.7, -2.7, 1.08]} castShadow receiveShadow>
+        <boxGeometry args={[0.28, 0.14, 0.18]} />
+        <meshStandardMaterial color="#ff69b4" />
       </mesh>
 
-      {[-2.6, -1.8, -1.0, -0.2, 0.6, 1.4, 2.2].map((x) => (
-        <mesh key={`lace-top-${x}`} position={[x, 2.94, 1.1]} castShadow receiveShadow>
-          <boxGeometry args={[0.34, 0.08, 0.08]} />
+      {Array.from({ length: 32 }).map((_, i) => (
+        <mesh key={`cornice-${i}`} position={[-4.65 + i * 0.3, 4.82, 1.08]} castShadow receiveShadow>
+          <boxGeometry args={[0.15, 0.15, 0.15]} />
           <meshStandardMaterial color="#ffffff" />
         </mesh>
       ))}
@@ -218,15 +278,48 @@ function DividerWalls() {
             <boxGeometry args={[0.03, 0.84, 0.68]} />
             <meshStandardMaterial color="#fffde7" emissive="#fffde7" emissiveIntensity={0.16} />
           </mesh>
+          <mesh position={[x < 0 ? 0.03 : -0.03, -0.6, 0]} castShadow receiveShadow>
+            <boxGeometry args={[0.26, 0.08, 0.78]} />
+            <meshStandardMaterial color="#ff69b4" />
+          </mesh>
+          {[-0.08, 0, 0.08].map((fx) => (
+            <mesh key={`flower-${fx}`} position={[x < 0 ? 0.03 : -0.03, -0.54, fx]} castShadow>
+              <boxGeometry args={[0.08, 0.08, 0.08]} />
+              <meshStandardMaterial color="#f472b6" />
+            </mesh>
+          ))}
         </group>
       ))}
-    </>
+      <group position={[3.9, -1.5, 1.08]}>
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[0.6, 1.0, 0.05]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0, 0, 0.01]} castShadow receiveShadow>
+          <boxGeometry args={[0.5, 0.9, 0.04]} />
+          <meshStandardMaterial color="#ffffff" />
+        </mesh>
+        <mesh position={[0.18, -0.04, 0.04]} castShadow>
+          <boxGeometry args={[0.04, 0.04, 0.06]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+        {[-0.18, 0, 0.18].map((dx, i) => (
+          <mesh key={`door-arch-${i}`} position={[dx, 0.56 + Math.abs(dx) * 0.3, 0]} castShadow>
+            <boxGeometry args={[0.14, 0.08, 0.05]} />
+            <meshStandardMaterial color="#ff69b4" />
+          </mesh>
+        ))}
+      </group>
+    </group>
   );
 }
 
 function DollhouseBackdrop() {
   const fenceXs = [-7.2, -6.4, -5.6, -4.8, -4.0, -3.2, -2.4, -1.6, -0.8, 0, 0.8, 1.6, 2.4, 3.2, 4.0, 4.8, 5.6, 6.4, 7.2];
-  const treeX = [-8.1, -7.0, -5.9, 5.9, 7.0, 8.1];
+  const sideTrees = [
+    [-8, -1], [-9, 0], [-10, 1],
+    [8, -1], [9, 0], [10, 1],
+  ];
 
   return (
     <group>
@@ -240,7 +333,7 @@ function DollhouseBackdrop() {
       </mesh>
 
       <mesh position={[0, -3.08, -0.9]} receiveShadow>
-        <boxGeometry args={[28, 0.28, 16]} />
+        <boxGeometry args={[20, 0.1, 14]} />
         <meshStandardMaterial color="#c8e6c9" />
       </mesh>
 
@@ -273,14 +366,10 @@ function DollhouseBackdrop() {
         </mesh>
       ))}
 
-      <mesh position={[0, -3.0, 3.1]} receiveShadow>
-        <boxGeometry args={[2.6, 0.1, 7.6]} />
-        <meshStandardMaterial color="#f5deb3" />
-      </mesh>
-      {[-2.6, -1.3, 0, 1.3, 2.6].map((z) => (
-        <mesh key={`path-slab-${z}`} position={[0, -2.96, z + 3.1]} receiveShadow>
-          <boxGeometry args={[2.28, 0.11, 0.95]} />
-          <meshStandardMaterial color="#f2d5a8" />
+      {[-0.4, 0.35, 1.1, 1.85, 2.6, 3.35].map((z, i) => (
+        <mesh key={`path-slab-${i}`} position={[3.9, -3.0, z]} receiveShadow>
+          <boxGeometry args={[0.5, 0.05, 0.4]} />
+          <meshStandardMaterial color="#f5deb3" />
         </mesh>
       ))}
 
@@ -293,18 +382,18 @@ function DollhouseBackdrop() {
         <meshStandardMaterial color="#adeca8" />
       </mesh>
 
-      {treeX.map((x) => (
-        <group key={`tree-${x}`} position={[x, -0.35, -5.1]}>
+      {sideTrees.map(([x, z]) => (
+        <group key={`tree-${x}-${z}`} position={[x, -1.6, z]}>
           <mesh position={[0, 0.32, 0]} castShadow>
-            <boxGeometry args={[0.22, 0.64, 0.22]} />
+            <boxGeometry args={[0.24, 1.2, 0.24]} />
             <meshStandardMaterial color="#9a7254" />
           </mesh>
-          <mesh position={[0, 1.02, 0]} castShadow>
-            <boxGeometry args={[0.66, 1.22, 0.66]} />
+          <mesh position={[0, 1.35, 0]} castShadow>
+            <boxGeometry args={[0.9, 1.5, 0.9]} />
             <meshStandardMaterial color="#8dcd8a" />
           </mesh>
-          <mesh position={[0, 1.52, 0]} castShadow>
-            <boxGeometry args={[0.42, 0.5, 0.42]} />
+          <mesh position={[0, 2.1, 0]} castShadow>
+            <boxGeometry args={[0.6, 0.6, 0.6]} />
             <meshStandardMaterial color="#9ad892" />
           </mesh>
         </group>
@@ -333,7 +422,7 @@ function DollhouseBackdrop() {
 function BedroomFurniture({ showPopup }) {
   const [x, y, z] = ROOMS.bedroom.pos;
   return (
-    <group position={[x, y, z]}>
+    <group position={[x, y, z]} scale={[1.3, 1.3, 1.3]}>
       <ClickableFurniture position={[-1.0, 0, -1.2]} onClick={() => showPopup("✨ shh i'm dreaming of shipping features 🌙")}>
         <mesh position={[0, 0.2, 0]} castShadow receiveShadow>
           <boxGeometry args={[1.3, 0.2, 0.7]} />
@@ -414,7 +503,7 @@ function BedroomFurniture({ showPopup }) {
 function LivingFurniture({ showPopup }) {
   const [x, y, z] = ROOMS.living.pos;
   return (
-    <group position={[x, y, z]}>
+    <group position={[x, y, z]} scale={[1.3, 1.3, 1.3]}>
       <ClickableFurniture position={[0, 0, -1.2]} onClick={() => showPopup('🌸 come hang out with me')}>
         <mesh position={[0, 0.25, 0]} castShadow>
           <boxGeometry args={[1.3, 0.28, 0.62]} />
@@ -461,7 +550,7 @@ function LivingFurniture({ showPopup }) {
 function OfficeFurniture({ showPopup }) {
   const [x, y, z] = ROOMS.office.pos;
   return (
-    <group position={[x, y, z]}>
+    <group position={[x, y, z]} scale={[1.3, 1.3, 1.3]}>
       <ClickableFurniture
         position={[0, 0, -1.2]}
         onClick={() => {
@@ -528,7 +617,7 @@ function LibraryFurniture({ showPopup }) {
   const bookColors = ['#a78bfa', '#f472b6', '#ffffff', '#fbbf24', '#34d399', '#fb923c', '#f472b6', '#a78bfa'];
 
   return (
-    <group position={[x, y, z]}>
+    <group position={[x, y, z]} scale={[1.3, 1.3, 1.3]}>
       <ClickableFurniture
         position={[-1.6, 0, 0]}
         onClick={() => {
@@ -601,7 +690,7 @@ function ClosetFurniture({ showPopup }) {
   const clothingColors = ['#f472b6', '#a78bfa', '#fbbf24', '#ffffff', '#fb7185'];
 
   return (
-    <group position={[x, y, z]}>
+    <group position={[x, y, z]} scale={[1.3, 1.3, 1.3]}>
       <ClickableFurniture position={[0, 0, -1.45]} onClick={() => showPopup('🎀 outfit of the day')}>
         <mesh position={[0, 1.78, 0]} castShadow>
           <boxGeometry args={[1.3, 0.06, 0.06]} />
@@ -1007,8 +1096,8 @@ function CameraRig({ focusRoom, controlsRef }) {
 
   useEffect(() => {
     const roomPos = ROOMS[focusRoom]?.pos ?? [0, 0, 0];
-    rigRef.current.desiredTarget.set(roomPos[0], roomPos[1] + 0.2, roomPos[2] - 0.45);
-    rigRef.current.desiredCam.set(roomPos[0], roomPos[1] + 2.8, roomPos[2] + 9.8);
+    rigRef.current.desiredTarget.set(roomPos[0], 1.5, roomPos[2]);
+    rigRef.current.desiredCam.set(roomPos[0], 6, roomPos[2] + 18);
     rigRef.current.active = true;
   }, [focusRoom]);
 
@@ -1104,7 +1193,7 @@ export default function ChibiScene({ embedded = false }) {
 
       <Canvas
         shadows
-        camera={{ position: [0, 3.1, 11.2], fov: 35 }}
+        camera={{ position: [0, 6, 18], fov: 38 }}
         style={{ width: '100%', height: '100%' }}
       >
         <DollhouseBackdrop />
@@ -1151,14 +1240,16 @@ export default function ChibiScene({ embedded = false }) {
         <CameraRig focusRoom={focusRoom} controlsRef={controlsRef} />
         <OrbitControls
           ref={controlsRef}
-          enablePan
+          enablePan={false}
           enableRotate
           enableZoom
-          minDistance={7.5}
-          maxDistance={20}
-          minPolarAngle={0.35}
-          maxPolarAngle={Math.PI / 2.02}
-          target={[0, 0.2, -0.45]}
+          minAzimuthAngle={-0.4}
+          maxAzimuthAngle={0.4}
+          minDistance={10}
+          maxDistance={24}
+          minPolarAngle={0.6}
+          maxPolarAngle={1.2}
+          target={[0, 1.5, 0]}
         />
       </Canvas>
 
