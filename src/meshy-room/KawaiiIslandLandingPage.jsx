@@ -11,7 +11,7 @@ const MENU_ITEMS = [
   { emoji: '🏠', label: 'Dollhouse' },
 ];
 
-const TOP_TABS = ['MARISSA ISLAND', 'COZY DEV LIFE', 'KAWAII WORLD'];
+
 
 const PATH_STONES = [
   'left-[40%] top-[60%]',
@@ -79,12 +79,27 @@ export default function KawaiiIslandLandingPage() {
           0%, 100% { opacity: 0.45; transform: scaleX(1); }
           50% { opacity: 0.75; transform: scaleX(1.04); }
         }
+        @keyframes gameZoomIn {
+          0% { transform: scale(0.4); opacity: 0; filter: blur(10px); }
+          100% { transform: scale(1); opacity: 1; filter: blur(0px); }
+        }
+        @keyframes uiFadeIn {
+          0% { opacity: 0; transform: translateY(30px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-game-zoom {
+          animation: gameZoomIn 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-ui-fade {
+          animation: uiFadeIn 2s ease-out 0.8s forwards;
+          opacity: 0;
+        }
       `}</style>
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.55),_transparent_30%),linear-gradient(to_bottom,_#9ed8ff_0%,_#aee5ff_35%,_#76d7f6_100%)]" />
       <div className="absolute inset-x-0 top-0 h-[42vh] bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.36),transparent_55%)]" />
       <div className="absolute inset-x-0 bottom-0 h-[30vh] bg-[linear-gradient(to_top,rgba(88,199,236,0.28),transparent)]" />
-      <div className="absolute inset-0 z-[1] island-scene-frame">
+      <div className="absolute inset-0 z-[1] island-scene-frame animate-game-zoom">
         <IslandHomepageScene />
       </div>
 
@@ -92,48 +107,8 @@ export default function KawaiiIslandLandingPage() {
       <Cloud className="right-[8%] top-[12%] scale-110" />
       <Cloud className="left-[26%] top-[18%] scale-75" />
 
-      <div className="hidden absolute inset-0 transition-transform duration-500 ease-out" style={islandStyle}>
-        <IslandBackdrop />
-        <ShoreWaves />
-        <Path />
-        <ShoreDecor />
 
-        <Tree className="left-[10%] top-[28%] scale-[1.06]" fruit />
-        <Tree className="left-[20%] top-[29%] scale-[0.94]" sakura />
-        <Tree className="left-[28%] top-[21%] scale-[1.02]" sakura />
-        <Tree className="left-[57%] top-[19%] scale-[0.98]" palm />
-        <Tree className="right-[16%] top-[26%] scale-[1.06]" fruit />
-        <Tree className="right-[25%] top-[17%] scale-[0.98]" palm />
-        <Tree className="right-[9%] top-[22%] scale-[0.9]" pine />
-
-        <House />
-        <HelloShop />
-        <SignPost />
-        <Bench />
-        <Mailbox />
-        <Dock />
-        <Boat />
-        <UmbrellaSeat />
-        <Character />
-        <PalmLeaves />
-
-        {FLOWER_PATCHES.map((className) => (
-          <FlowerPatch key={className} className={className} />
-        ))}
-      </div>
-
-      <section className="relative z-20 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center px-4 pb-14 pt-7 sm:px-6">
-        <div className="mb-5 flex flex-wrap justify-center gap-3 sm:gap-4">
-          {TOP_TABS.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              className="rounded-full border-[3px] border-[#f2b7d0] bg-[linear-gradient(180deg,#ffe8f2_0%,#ffd9ea_100%)] px-5 py-3 text-xs font-black tracking-wide text-[#b5588b] shadow-[0_8px_18px_rgba(226,126,175,0.18),inset_0_2px_0_rgba(255,255,255,0.88)] transition hover:-translate-y-0.5 sm:px-8 sm:text-sm"
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+      <section className="relative z-20 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center px-4 pb-14 pt-7 sm:px-6 animate-ui-fade">
 
         <div
           className="relative mb-6 w-full max-w-[620px] transition-transform duration-500 ease-out md:mb-4"
@@ -518,11 +493,9 @@ export function runSmokeTests() {
   }
 
   assert(MENU_ITEMS.length === 7, 'renders 7 menu items');
-  assert(TOP_TABS.length === 3, 'renders 3 top tabs');
   assert(PATH_STONES.length === 6, 'renders 6 path stones');
   assert(FLOWER_PATCHES.length === 6, 'renders 6 flower patches');
   assert(MENU_ITEMS.some((item) => item.label === 'Projects'), 'includes a "Projects" menu item');
-  assert(TOP_TABS.includes('KAWAII WORLD'), 'includes the "KAWAII WORLD" tab');
   assert(MENU_ITEMS[0].label === 'About', 'starts menu with "About"');
 
   return results;
