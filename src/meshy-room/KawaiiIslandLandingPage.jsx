@@ -139,7 +139,7 @@ export default function KawaiiIslandLandingPage() {
           className="relative mb-6 w-full max-w-[620px] transition-transform duration-500 ease-out md:mb-4"
           style={heroStyle}
         >
-          <div className="relative rounded-[34px] border-[5px] border-[#f0bfd4] bg-[linear-gradient(180deg,#fffaf4_0%,#fff2f8_100%)] px-5 py-5 text-center shadow-[0_18px_32px_rgba(212,130,170,0.14),inset_0_2px_0_rgba(255,255,255,0.95)] sm:px-8 md:mt-0 md:max-w-[620px] md:px-10 md:py-6">
+          <div className="relative rounded-[34px] border-[5px] border-[#f0bfd4] bg-[linear-gradient(180deg,#ffeaf7_0%,#ffd9ef_100%)] px-5 py-5 text-center shadow-[0_18px_32px_rgba(212,130,170,0.14),inset_0_2px_0_rgba(255,255,255,0.95)] sm:px-8 md:mt-0 md:max-w-[620px] md:px-10 md:py-6">
             <div className="absolute -right-1 top-3 text-4xl sm:top-4 sm:text-5xl" style={{ animation: 'floaty 3s ease-in-out infinite' }}>
               🎀
             </div>
@@ -202,7 +202,7 @@ export default function KawaiiIslandLandingPage() {
 function IslandBackdrop() {
   return (
     <>
-      <div className="absolute left-1/2 top-[14%] h-[62rem] w-[86rem] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(circle_at_50%_48%,_#bce39d_0%,_#acd78c_48%,_#8fd06f_62%,_#f8e3b0_63%,_#f8e3b0_73%,_#77d9f5_74%,_#53c7ed_100%)] shadow-[0_40px_80px_rgba(44,122,146,0.18)]" />
+      <div className="absolute left-1/2 top-[14%] h-[62rem] w-[86rem] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(circle_at_50%_48%,_#bce39d_0%,_#acd78c_48%,_#8fd06f_62%,_#f4cce4_63%,_#f4cce4_73%,_#77d9f5_74%,_#53c7ed_100%)] shadow-[0_40px_80px_rgba(44,122,146,0.18)]" />
       <div className="absolute left-1/2 top-[22%] h-[48rem] w-[72rem] -translate-x-1/2 rounded-[48%] bg-[radial-gradient(circle_at_50%_46%,rgba(255,255,255,0.18),transparent_58%)]" />
       <div className="absolute left-[6%] bottom-[8%] h-[18rem] w-[20rem] rounded-[50%] bg-[radial-gradient(circle,_rgba(255,255,255,0.22),_transparent_70%)]" />
       <div className="absolute right-[7%] bottom-[9%] h-[18rem] w-[22rem] rounded-[50%] bg-[radial-gradient(circle,_rgba(255,255,255,0.18),_transparent_70%)]" />
@@ -237,11 +237,11 @@ function House() {
   return (
     <div className="absolute right-[12%] top-[19%] z-10">
       <div className="relative h-[290px] w-[260px]">
-        <div className="absolute left-8 top-16 h-[178px] w-[188px] rounded-[36px] border-[5px] border-[#ecd7cf] bg-[linear-gradient(180deg,#fffaf1_0%,#fff0e3_100%)] shadow-[0_18px_28px_rgba(143,95,121,0.12)]" />
+        <div className="absolute left-8 top-16 h-[178px] w-[188px] rounded-[36px] border-[5px] border-[#ecd7cf] bg-[linear-gradient(180deg,#ffeefa_0%,#ffdff1_100%)] shadow-[0_18px_28px_rgba(143,95,121,0.12)]" />
         <div className="absolute left-3 top-2 h-[104px] w-[224px] rounded-[40px] border-[5px] border-[#edb8ca] bg-[linear-gradient(180deg,#ffbfd5_0%,#f79ec0_100%)] [clip-path:polygon(8%_100%,50%_0%,92%_100%)] shadow-[0_14px_22px_rgba(221,126,168,0.2)]" />
         <div className="absolute left-[95px] top-[92px] h-[96px] w-[74px] rounded-[30px] border-[4px] border-[#e5a7bd] bg-[linear-gradient(180deg,#ffb5cb_0%,#f68bb3_100%)] shadow-[inset_0_2px_0_rgba(255,255,255,0.45)]">
           <div className="absolute left-1/2 top-4 h-7 w-7 -translate-x-1/2 rounded-full border-[4px] border-[#ffe3a6] bg-[#8dc9ff]" />
-          <div className="absolute right-2 top-1/2 h-3 w-3 rounded-full bg-[#ffe39f]" />
+          <div className="absolute right-2 top-1/2 h-3 w-3 rounded-full bg-[#f7b6dd]" />
         </div>
         <div className="absolute left-[40px] top-[102px] h-[58px] w-[44px] rounded-[16px] border-[4px] border-[#e7c6c9] bg-[#b6e1ff]" />
         <div className="absolute right-[48px] top-[102px] h-[58px] w-[44px] rounded-[16px] border-[4px] border-[#e7c6c9] bg-[#b6e1ff]" />
@@ -330,9 +330,9 @@ function Tree({
         />
         {fruit && (
           <>
-            <div className="absolute left-5 top-[66px] h-8 w-8 rounded-full border-[3px] border-[#d77a5b] bg-[#ffa851]" />
-            <div className="absolute right-7 top-[78px] h-8 w-8 rounded-full border-[3px] border-[#d77a5b] bg-[#ffa851]" />
-            <div className="absolute left-1/2 top-[32px] h-8 w-8 -translate-x-1/2 rounded-full border-[3px] border-[#d77a5b] bg-[#ffa851]" />
+            <div className="absolute left-5 top-[66px] h-8 w-8 rounded-full border-[3px] border-[#d272aa] bg-[#f49bcb]" />
+            <div className="absolute right-7 top-[78px] h-8 w-8 rounded-full border-[3px] border-[#d272aa] bg-[#f49bcb]" />
+            <div className="absolute left-1/2 top-[32px] h-8 w-8 -translate-x-1/2 rounded-full border-[3px] border-[#d272aa] bg-[#f49bcb]" />
           </>
         )}
         {sakura && (
@@ -361,7 +361,7 @@ function FlowerPatch({ className = '' }) {
 
 function SignPost() {
   const signs = ['ABOUT', 'PROJECTS', 'READING', 'BLOG'];
-  const colors = ['#ffb7cb', '#ffd58d', '#d7f3a5', '#cfb6ff'];
+  const colors = ['#ffb7cb', '#cda7ff', '#d3f2d5', '#cfb6ff'];
 
   return (
     <div className="absolute left-[7%] top-[49%] z-20">
@@ -476,8 +476,8 @@ function ShoreDecor() {
     <>
       <div className="absolute bottom-[8%] left-[8%] z-10 text-3xl">🐚</div>
       <div className="absolute bottom-[10%] left-[28%] z-10 text-3xl">🌸</div>
-      <div className="absolute bottom-[7%] left-[58%] z-10 text-3xl">⭐</div>
-      <div className="absolute bottom-[11%] right-[30%] z-10 text-3xl">🌟</div>
+      <div className="absolute bottom-[7%] left-[58%] z-10 text-3xl">💖</div>
+      <div className="absolute bottom-[11%] right-[30%] z-10 text-3xl">💗</div>
       <div className="absolute bottom-[13%] right-[9%] z-10 text-3xl">🐚</div>
       <div className="absolute bottom-[14%] left-[70%] z-10 text-2xl">🪸</div>
       <div className="absolute left-[60%] bottom-[16%] z-10 text-3xl">🦀</div>
@@ -495,7 +495,7 @@ function Character() {
         <div className="absolute right-[22px] top-[6px] text-4xl">🎀</div>
         <div className="absolute left-[44px] top-[42px] h-2 w-2 rounded-full bg-[#4d4051]" />
         <div className="absolute right-[44px] top-[42px] h-2 w-2 rounded-full bg-[#4d4051]" />
-        <div className="absolute left-1/2 top-[50px] h-3 w-4 -translate-x-1/2 rounded-full bg-[#ffd870]" />
+        <div className="absolute left-1/2 top-[50px] h-3 w-4 -translate-x-1/2 rounded-full bg-[#f4a6d1]" />
         <div className="absolute left-[20px] top-[42px] h-[2px] w-5 bg-[#4d4051]" />
         <div className="absolute left-[16px] top-[52px] h-[2px] w-6 bg-[#4d4051]" />
         <div className="absolute left-[20px] top-[62px] h-[2px] w-5 bg-[#4d4051]" />
