@@ -133,7 +133,7 @@ export default function KawaiiIslandLandingPage() {
 
             <div>
               <h1
-                className={`text-xl font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-2xl md:text-3xl ${
+                className={`text-xl font-black whitespace-nowrap leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-2xl md:text-3xl ${
                   titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3'
                 }`}
               >
