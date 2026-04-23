@@ -4,11 +4,11 @@ import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
 const ROOMS = {
-  bedroom: { pos: [-4.2, 0, 2.2], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd6e0' },
-  living: { pos: [0, 0, 2.2], label: '🛋️ Living Room', emoji: '🛋️', floor: '#ffe4ec' },
-  office: { pos: [4.2, 0, 2.2], label: '💻 Office', emoji: '💻', floor: '#f3e8ff' },
-  library: { pos: [-4.2, 0, -2.2], label: '📚 Library', emoji: '📚', floor: '#fef3c7' },
-  closet: { pos: [0, 0, -2.2], label: '🎀 Closet', emoji: '🎀', floor: '#fce7f3' },
+  bedroom: { pos: [-2.2, 2.6, 0], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd6e0' },
+  closet: { pos: [2.2, 2.6, 0], label: '🎀 Closet', emoji: '🎀', floor: '#fce7f3' },
+  living: { pos: [-2.2, 0, 0], label: '🛋️ Living Room', emoji: '🛋️', floor: '#ffe4ec' },
+  office: { pos: [2.2, 0, 0], label: '💻 Office', emoji: '💻', floor: '#f3e8ff' },
+  library: { pos: [-2.2, -2.6, 0], label: '📚 Library', emoji: '📚', floor: '#fef3c7' },
 };
 
 function ClickableFurniture({ position, rotation = [0, 0, 0], onClick, children }) {
@@ -60,10 +60,10 @@ function ClickableFurniture({ position, rotation = [0, 0, 0], onClick, children 
 
 function RoomShell({ roomKey, onRoomClick }) {
   const room = ROOMS[roomKey];
-  const [x, , z] = room.pos;
+  const [x, y, z] = room.pos;
 
   return (
-    <group position={[x, 0, z]}>
+    <group position={[x, y, z]}>
       <mesh receiveShadow onClick={() => onRoomClick(roomKey)}>
         <boxGeometry args={[4, 0.1, 4]} />
         <meshStandardMaterial color={room.floor} />
@@ -96,24 +96,36 @@ function RoomShell({ roomKey, onRoomClick }) {
 function DividerWalls() {
   return (
     <>
-      <mesh position={[-2.1, 1.5, 2.2]} castShadow receiveShadow>
+      <mesh position={[0, 4.1, 0]} castShadow receiveShadow>
+        <boxGeometry args={[8.6, 0.1, 4]} />
+        <meshStandardMaterial color="#ffd2e5" />
+      </mesh>
+      <mesh position={[0, 1.3, 0]} castShadow receiveShadow>
+        <boxGeometry args={[8.6, 0.1, 4]} />
+        <meshStandardMaterial color="#ffd2e5" />
+      </mesh>
+      <mesh position={[0, -1.3, 0]} castShadow receiveShadow>
+        <boxGeometry args={[8.6, 0.1, 4]} />
+        <meshStandardMaterial color="#ffd2e5" />
+      </mesh>
+      <mesh position={[0, 2.6, 0]} castShadow receiveShadow>
         <boxGeometry args={[0.1, 3, 4]} />
         <meshStandardMaterial color="#ffd2e5" />
       </mesh>
-      <mesh position={[2.1, 1.5, 2.2]} castShadow receiveShadow>
+      <mesh position={[0, 0, 0]} castShadow receiveShadow>
         <boxGeometry args={[0.1, 3, 4]} />
         <meshStandardMaterial color="#ffd2e5" />
       </mesh>
-      <mesh position={[-2.1, 1.5, -2.2]} castShadow receiveShadow>
-        <boxGeometry args={[0.1, 3, 4]} />
-        <meshStandardMaterial color="#ffd2e5" />
+      <mesh position={[-4.25, 0.75, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.12, 9, 4]} />
+        <meshStandardMaterial color="#f8d6e5" />
       </mesh>
-      <mesh position={[-4.2, 1.5, 0]} castShadow receiveShadow>
-        <boxGeometry args={[4, 3, 0.1]} />
-        <meshStandardMaterial color="#ffd2e5" />
+      <mesh position={[4.25, 0.75, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.12, 9, 4]} />
+        <meshStandardMaterial color="#f8d6e5" />
       </mesh>
-      <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
-        <boxGeometry args={[4, 3, 0.1]} />
+      <mesh position={[0, 0.75, -2.05]} castShadow receiveShadow>
+        <boxGeometry args={[8.6, 9, 0.12]} />
         <meshStandardMaterial color="#ffd2e5" />
       </mesh>
     </>
@@ -121,9 +133,9 @@ function DividerWalls() {
 }
 
 function BedroomFurniture({ showPopup }) {
-  const [x, , z] = ROOMS.bedroom.pos;
+  const [x, y, z] = ROOMS.bedroom.pos;
   return (
-    <group position={[x, 0, z]}>
+    <group position={[x, y, z]}>
       <ClickableFurniture position={[-1.0, 0, -1.2]} onClick={() => showPopup("✨ shh i'm dreaming of shipping features 🌙")}>
         <mesh position={[0, 0.2, 0]} castShadow receiveShadow>
           <boxGeometry args={[1.3, 0.2, 0.7]} />
@@ -202,9 +214,9 @@ function BedroomFurniture({ showPopup }) {
 }
 
 function LivingFurniture({ showPopup }) {
-  const [x, , z] = ROOMS.living.pos;
+  const [x, y, z] = ROOMS.living.pos;
   return (
-    <group position={[x, 0, z]}>
+    <group position={[x, y, z]}>
       <ClickableFurniture position={[0, 0, -1.2]} onClick={() => showPopup('🌸 come hang out with me')}>
         <mesh position={[0, 0.25, 0]} castShadow>
           <boxGeometry args={[1.3, 0.28, 0.62]} />
@@ -249,9 +261,9 @@ function LivingFurniture({ showPopup }) {
 }
 
 function OfficeFurniture({ showPopup }) {
-  const [x, , z] = ROOMS.office.pos;
+  const [x, y, z] = ROOMS.office.pos;
   return (
-    <group position={[x, 0, z]}>
+    <group position={[x, y, z]}>
       <ClickableFurniture
         position={[0, 0, -1.2]}
         onClick={() => {
@@ -314,11 +326,11 @@ function OfficeFurniture({ showPopup }) {
 }
 
 function LibraryFurniture({ showPopup }) {
-  const [x, , z] = ROOMS.library.pos;
+  const [x, y, z] = ROOMS.library.pos;
   const bookColors = ['#a78bfa', '#f472b6', '#ffffff', '#fbbf24', '#34d399', '#fb923c', '#f472b6', '#a78bfa'];
 
   return (
-    <group position={[x, 0, z]}>
+    <group position={[x, y, z]}>
       <ClickableFurniture
         position={[-1.6, 0, 0]}
         onClick={() => {
@@ -387,11 +399,11 @@ function LibraryFurniture({ showPopup }) {
 }
 
 function ClosetFurniture({ showPopup }) {
-  const [x, , z] = ROOMS.closet.pos;
+  const [x, y, z] = ROOMS.closet.pos;
   const clothingColors = ['#f472b6', '#a78bfa', '#fbbf24', '#ffffff', '#fb7185'];
 
   return (
-    <group position={[x, 0, z]}>
+    <group position={[x, y, z]}>
       <ClickableFurniture position={[0, 0, -1.45]} onClick={() => showPopup('🎀 outfit of the day')}>
         <mesh position={[0, 1.78, 0]} castShadow>
           <boxGeometry args={[1.3, 0.06, 0.06]} />
@@ -495,19 +507,19 @@ function Chibi({
       if (dist > 0.07) {
         moving = true;
         dir.normalize();
-        const speed = 2.1;
+        const speed = 2.4;
         const next = current.add(dir.multiplyScalar(speed * delta));
-        setChibiPos([next.x, 0, next.z]);
+        setChibiPos([next.x, next.y, next.z]);
         const yaw = Math.atan2(next.x - chibiPos[0], next.z - chibiPos[2]);
         group.current.rotation.y = yaw;
       } else {
-        setChibiPos([chibiTarget[0], 0, chibiTarget[2]]);
+        setChibiPos([chibiTarget[0], chibiTarget[1], chibiTarget[2]]);
         setChibiTarget(null);
       }
     }
 
     movingRef.current = moving;
-    group.current.position.set(chibiPos[0], 0, chibiPos[2]);
+    group.current.position.set(chibiPos[0], chibiPos[1], chibiPos[2]);
 
     const swing = Math.sin(t * 9) * 0.55;
     if (movingRef.current) {
@@ -861,8 +873,8 @@ function CameraRig({ focusRoom, controlsRef }) {
 
   useFrame(() => {
     const roomPos = ROOMS[focusRoom]?.pos ?? [0, 0, 0];
-    const target = new THREE.Vector3(roomPos[0], 0.2, roomPos[2]);
-    const desiredCam = new THREE.Vector3(roomPos[0], 14, roomPos[2] + 10);
+    const target = new THREE.Vector3(roomPos[0], roomPos[1] + 0.65, roomPos[2] - 0.25);
+    const desiredCam = new THREE.Vector3(roomPos[0], roomPos[1] + 3.8, roomPos[2] + 11.2);
     camera.position.lerp(desiredCam, 0.08);
     if (controlsRef.current) {
       controlsRef.current.target.lerp(target, 0.08);
@@ -874,7 +886,7 @@ function CameraRig({ focusRoom, controlsRef }) {
 }
 
 export default function ChibiScene({ embedded = false }) {
-  const [chibiPos, setChibiPos] = useState([-4.2, 0, 2.2]);
+  const [chibiPos, setChibiPos] = useState(ROOMS.bedroom.pos);
   const [chibiSelected, setChibiSelected] = useState(false);
   const [chibiTarget, setChibiTarget] = useState(null);
   const [popup, setPopup] = useState({ visible: false, message: '' });
@@ -949,7 +961,7 @@ export default function ChibiScene({ embedded = false }) {
 
       <Canvas
         shadows
-        camera={{ position: [0, 14, 10], fov: 40 }}
+        camera={{ position: [0, 3.8, 11.2], fov: 35 }}
         style={{ width: '100%', height: '100%' }}
       >
         <ambientLight intensity={0.72} color="#ffe4ec" />
@@ -964,7 +976,7 @@ export default function ChibiScene({ embedded = false }) {
         <pointLight position={[-2.2, 1.2, -1]} intensity={0.35} color="#ffc2d4" distance={7} />
         <pointLight position={[0, 2.5, -1]} intensity={0.28} color="#ffffff" distance={6} />
         {roomKeys.map((k) => (
-          <pointLight key={`room-light-${k}`} position={[ROOMS[k].pos[0], 2, ROOMS[k].pos[2]]} intensity={0.3} color="#ffb7c5" distance={6} />
+          <pointLight key={`room-light-${k}`} position={[ROOMS[k].pos[0], ROOMS[k].pos[1] + 2, ROOMS[k].pos[2] + 0.2]} intensity={0.3} color="#ffb7c5" distance={6} />
         ))}
 
         {roomKeys.map((k) => (
@@ -998,9 +1010,9 @@ export default function ChibiScene({ embedded = false }) {
           enablePan={false}
           enableRotate={false}
           enableZoom
-          minDistance={8}
-          maxDistance={22}
-          target={[0, 0, 0]}
+          minDistance={9}
+          maxDistance={18}
+          target={[0, 0.8, 0]}
         />
       </Canvas>
 
