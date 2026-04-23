@@ -104,7 +104,7 @@ function FlowerPatch({ position }) {
 }
 
 function Cottage() {
-  const gltf = useGLTF('/Meshy_AI_Sweetheart_Cottage_0423070410_texture_patched.glb');
+  const gltf = useGLTF('/Meshy_AI_Sweetheart_Cottage_0423083144_texture.glb');
 
   const cottageModel = useMemo(() => {
     const cloned = SkeletonUtils.clone(gltf.scene);
@@ -112,13 +112,29 @@ function Cottage() {
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const min = box.min.clone();
-    const maxAxis = Math.max(size.x, size.y, size.z) || 1;
-    const targetSpan = 3.1;
-    const scale = targetSpan / maxAxis;
-    cloned.scale.setScalar(scale);
-    cloned.position.x -= center.x * scale;
-    cloned.position.z -= center.z * scale;
-    cloned.position.y -= min.y * scale;
+    const boundsAreValid =
+      Number.isFinite(size.x) &&
+      Number.isFinite(size.y) &&
+      Number.isFinite(size.z) &&
+      Number.isFinite(center.x) &&
+      Number.isFinite(center.y) &&
+      Number.isFinite(center.z) &&
+      Number.isFinite(min.y) &&
+      Math.max(size.x, size.y, size.z) > 0;
+
+    if (boundsAreValid) {
+      const maxAxis = Math.max(size.x, size.y, size.z);
+      const targetSpan = 6.4;
+      const scale = targetSpan / maxAxis;
+      cloned.scale.setScalar(scale);
+      cloned.position.x -= center.x * scale;
+      cloned.position.z -= center.z * scale;
+      cloned.position.y -= min.y * scale;
+    } else {
+      // Fallback keeps the cottage visible even when GLB bounds are malformed.
+      cloned.scale.setScalar(0.85);
+      cloned.position.set(0, 0, 0);
+    }
     cloned.traverse((node) => {
       if (node.isMesh) {
         node.castShadow = true;
@@ -129,8 +145,16 @@ function Cottage() {
   }, [gltf.scene]);
 
   return (
-    <group position={[1.15, 0.06, -1.2]} rotation={[0, -Math.PI / 11, 0]}>
+    <group position={[0.1, 0.06, -0.15]} rotation={[0, -Math.PI / 12, 0]}>
       <primitive object={cottageModel} />
+      <mesh receiveShadow position={[0, 0.02, 0]}>
+        <cylinderGeometry args={[3.3, 3.8, 0.05, 24]} />
+        <meshStandardMaterial color="#f7d5e9" transparent opacity={0.42} />
+      </mesh>
+      <mesh position={[0, 0.95, 0]}>
+        <boxGeometry args={[7.8, 1.9, 7.2]} />
+        <meshBasicMaterial color="#ff9cd4" wireframe transparent opacity={0.08} />
+      </mesh>
     </group>
   );
 }
@@ -414,7 +438,7 @@ export default function IslandHomepageScene() {
       orthographic
       gl={{ alpha: true, antialias: true }}
       onCreated={({ gl }) => gl.setClearColor('#000000', 0)}
-      camera={{ position: [12, 12, 12], zoom: 72, near: 0.1, far: 200 }}
+      camera={{ position: [11, 10, 11], zoom: 88, near: 0.1, far: 200 }}
       style={{ width: '100%', height: '100%' }}
     >
       <SkyLayer />
@@ -426,4 +450,4 @@ export default function IslandHomepageScene() {
 useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Wave_One_Hand_withSkin.glb');
 useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Walking_withSkin.glb');
 useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Running_withSkin.glb');
-useGLTF.preload('/Meshy_AI_Sweetheart_Cottage_0423070410_texture_patched.glb');
+useGLTF.preload('/Meshy_AI_Sweetheart_Cottage_0423083144_texture.glb');
