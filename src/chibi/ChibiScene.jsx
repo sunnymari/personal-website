@@ -4,11 +4,11 @@ import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
 const ROOMS = {
-  bedroom: { pos: [-1.9, 2.45, -0.25], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd6e0' },
-  closet: { pos: [1.9, 2.45, -0.25], label: '🎀 Closet', emoji: '🎀', floor: '#fce7f3' },
-  living: { pos: [-1.9, 0.35, -0.15], label: '🛋️ Living Room', emoji: '🛋️', floor: '#ffe4ec' },
-  office: { pos: [1.9, 0.35, -0.15], label: '💻 Office', emoji: '💻', floor: '#f3e8ff' },
-  library: { pos: [0, -1.75, -0.15], label: '📚 Library', emoji: '📚', floor: '#fef3c7' },
+  bedroom: { pos: [-1.85, 2.15, -0.35], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd6e0' },
+  closet: { pos: [1.85, 2.15, -0.35], label: '🎀 Closet', emoji: '🎀', floor: '#fce7f3' },
+  living: { pos: [-1.85, -0.05, -0.3], label: '🛋️ Living Room', emoji: '🛋️', floor: '#ffe4ec' },
+  office: { pos: [1.85, -0.05, -0.3], label: '💻 Office', emoji: '💻', floor: '#f3e8ff' },
+  library: { pos: [0, -2.1, -0.35], label: '📚 Library', emoji: '📚', floor: '#fef3c7' },
 };
 
 function ClickableFurniture({ position, rotation = [0, 0, 0], onClick, children }) {
@@ -68,20 +68,8 @@ function RoomShell({ roomKey, onRoomClick }) {
         <boxGeometry args={[3.6, 0.1, 3.2]} />
         <meshStandardMaterial color={room.floor} />
       </mesh>
-      <mesh position={[0, 1.35, -1.55]} receiveShadow castShadow>
-        <boxGeometry args={[3.6, 2.7, 0.1]} />
-        <meshStandardMaterial color="#ffd2e5" />
-      </mesh>
-      <mesh position={[-1.78, 1.35, -0.92]} receiveShadow castShadow>
-        <boxGeometry args={[0.1, 2.7, 1.25]} />
-        <meshStandardMaterial color="#ffd2e5" />
-      </mesh>
-      <mesh position={[1.78, 1.35, -0.92]} receiveShadow castShadow>
-        <boxGeometry args={[0.1, 2.7, 1.25]} />
-        <meshStandardMaterial color="#ffd2e5" />
-      </mesh>
       <Text
-        position={[0, 2.95, -0.95]}
+        position={[0, 1.62, 0.5]}
         fontSize={0.32}
         color="#9d174d"
         anchorX="center"
@@ -96,49 +84,50 @@ function RoomShell({ roomKey, onRoomClick }) {
 function DividerWalls() {
   return (
     <>
-      <mesh position={[0, 4.35, -0.15]} castShadow receiveShadow>
-        <boxGeometry args={[8.4, 0.12, 3.35]} />
-        <meshStandardMaterial color="#f7d2e4" />
+      <mesh position={[0, 5.05, -0.4]} castShadow receiveShadow>
+        <boxGeometry args={[8.55, 0.18, 3.55]} />
+        <meshStandardMaterial color="#f0b4d0" />
       </mesh>
-      <mesh position={[0, 2.25, -0.15]} castShadow receiveShadow>
-        <boxGeometry args={[8.4, 0.12, 3.35]} />
-        <meshStandardMaterial color="#ffd2e5" />
+      <mesh position={[0, 2.95, -0.4]} castShadow receiveShadow>
+        <boxGeometry args={[8.55, 0.14, 3.55]} />
+        <meshStandardMaterial color="#f8d8e8" />
       </mesh>
-      <mesh position={[0, 0.15, -0.15]} castShadow receiveShadow>
-        <boxGeometry args={[8.4, 0.12, 3.35]} />
+      <mesh position={[0, 0.75, -0.4]} castShadow receiveShadow>
+        <boxGeometry args={[8.55, 0.14, 3.55]} />
+        <meshStandardMaterial color="#f8d8e8" />
+      </mesh>
+
+      <mesh position={[0, 1.85, -0.4]} castShadow receiveShadow>
+        <boxGeometry args={[0.1, 6.35, 3.55]} />
         <meshStandardMaterial color="#ffd2e5" />
       </mesh>
 
-      <mesh position={[0, 2.45, -0.15]} castShadow receiveShadow>
-        <boxGeometry args={[0.1, 3.7, 3.35]} />
-        <meshStandardMaterial color="#ffd2e5" />
+      <mesh position={[-4.27, 1.85, -0.4]} castShadow receiveShadow>
+        <boxGeometry args={[0.16, 6.45, 3.55]} />
+        <meshStandardMaterial color="#f2dce8" />
       </mesh>
-      <mesh position={[0, 0.35, -0.15]} castShadow receiveShadow>
-        <boxGeometry args={[0.1, 3.7, 3.35]} />
-        <meshStandardMaterial color="#ffd2e5" />
-      </mesh>
-
-      <mesh position={[-4.2, 1.45, -0.15]} castShadow receiveShadow>
-        <boxGeometry args={[0.14, 6, 3.35]} />
-        <meshStandardMaterial color="#f3d7e4" />
-      </mesh>
-      <mesh position={[4.2, 1.45, -0.15]} castShadow receiveShadow>
-        <boxGeometry args={[0.14, 6, 3.35]} />
-        <meshStandardMaterial color="#f3d7e4" />
+      <mesh position={[4.27, 1.85, -0.4]} castShadow receiveShadow>
+        <boxGeometry args={[0.16, 6.45, 3.55]} />
+        <meshStandardMaterial color="#f2dce8" />
       </mesh>
 
-      <mesh position={[0, 1.45, -1.8]} castShadow receiveShadow>
-        <boxGeometry args={[8.4, 6, 0.14]} />
+      <mesh position={[0, 1.85, -2.15]} castShadow receiveShadow>
+        <boxGeometry args={[8.55, 6.45, 0.16]} />
         <meshStandardMaterial color="#ffd2e5" />
       </mesh>
 
-      <mesh position={[-2.1, 5.55, -0.15]} rotation={[0, 0, -0.58]} castShadow receiveShadow>
-        <boxGeometry args={[4.4, 0.16, 3.35]} />
-        <meshStandardMaterial color="#f39bc8" />
+      <mesh position={[-2.15, 6.15, -0.4]} rotation={[0, 0, -0.53]} castShadow receiveShadow>
+        <boxGeometry args={[4.55, 0.18, 3.55]} />
+        <meshStandardMaterial color="#f2a8cc" />
       </mesh>
-      <mesh position={[2.1, 5.55, -0.15]} rotation={[0, 0, 0.58]} castShadow receiveShadow>
-        <boxGeometry args={[4.4, 0.16, 3.35]} />
-        <meshStandardMaterial color="#f39bc8" />
+      <mesh position={[2.15, 6.15, -0.4]} rotation={[0, 0, 0.53]} castShadow receiveShadow>
+        <boxGeometry args={[4.55, 0.18, 3.55]} />
+        <meshStandardMaterial color="#f2a8cc" />
+      </mesh>
+
+      <mesh position={[0, -1.45, -0.4]} castShadow receiveShadow>
+        <boxGeometry args={[8.55, 0.2, 3.55]} />
+        <meshStandardMaterial color="#f7e4ee" />
       </mesh>
     </>
   );
@@ -882,16 +871,29 @@ function RoomFurniture({ onBedClick }) {
 
 function CameraRig({ focusRoom, controlsRef }) {
   const { camera } = useThree();
+  const rigRef = useRef({
+    active: false,
+    desiredCam: new THREE.Vector3(),
+    desiredTarget: new THREE.Vector3(),
+  });
+
+  useEffect(() => {
+    const roomPos = ROOMS[focusRoom]?.pos ?? [0, 0, 0];
+    rigRef.current.desiredTarget.set(roomPos[0], roomPos[1] + 0.3, roomPos[2] - 0.62);
+    rigRef.current.desiredCam.set(roomPos[0], roomPos[1] + 2.6, roomPos[2] + 8.85);
+    rigRef.current.active = true;
+  }, [focusRoom]);
 
   useFrame(() => {
-    const roomPos = ROOMS[focusRoom]?.pos ?? [0, 0, 0];
-    const target = new THREE.Vector3(roomPos[0], roomPos[1] + 0.45, roomPos[2] - 0.45);
-    const desiredCam = new THREE.Vector3(roomPos[0], roomPos[1] + 3.2, roomPos[2] + 10.5);
-    camera.position.lerp(desiredCam, 0.08);
-    if (controlsRef.current) {
-      controlsRef.current.target.lerp(target, 0.08);
-      controlsRef.current.update();
-    }
+    if (!rigRef.current.active || !controlsRef.current) return;
+
+    camera.position.lerp(rigRef.current.desiredCam, 0.12);
+    controlsRef.current.target.lerp(rigRef.current.desiredTarget, 0.12);
+    controlsRef.current.update();
+
+    const camClose = camera.position.distanceTo(rigRef.current.desiredCam) < 0.05;
+    const targetClose = controlsRef.current.target.distanceTo(rigRef.current.desiredTarget) < 0.05;
+    if (camClose && targetClose) rigRef.current.active = false;
   });
 
   return null;
@@ -974,7 +976,7 @@ export default function ChibiScene({ embedded = false }) {
 
       <Canvas
         shadows
-        camera={{ position: [0, 3.2, 10.5], fov: 34 }}
+        camera={{ position: [0, 2.6, 8.85], fov: 36 }}
         style={{ width: '100%', height: '100%' }}
       >
         <ambientLight intensity={0.72} color="#ffe4ec" />
@@ -1020,12 +1022,14 @@ export default function ChibiScene({ embedded = false }) {
         <CameraRig focusRoom={focusRoom} controlsRef={controlsRef} />
         <OrbitControls
           ref={controlsRef}
-          enablePan={false}
-          enableRotate={false}
+          enablePan
+          enableRotate
           enableZoom
-          minDistance={8.4}
-          maxDistance={16}
-          target={[0, 0.55, -0.3]}
+          minDistance={6}
+          maxDistance={16.5}
+          minPolarAngle={0.35}
+          maxPolarAngle={Math.PI / 2.02}
+          target={[0, 0.3, -0.62]}
         />
       </Canvas>
 
