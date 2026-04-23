@@ -1,10 +1,10 @@
-import MeshyRoomCanvas from './MeshyRoomCanvas.jsx';
+import DollhouseScene from '../chibi/DollhouseScene.jsx';
 
 export default function MeshyRoomMount() {
   return (
     <div className="meshy-room-inner">
-      <div className="meshy-three-canvas" aria-label="3D scene with chibi and laptop">
-        <MeshyRoomCanvas />
+      <div className="meshy-three-canvas" aria-label="3D kawaii dollhouse scene">
+        <DollhouseScene embedded />
       </div>
     </div>
   );

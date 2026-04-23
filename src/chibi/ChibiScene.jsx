@@ -873,7 +873,7 @@ function CameraRig({ focusRoom, controlsRef }) {
   return null;
 }
 
-export default function ChibiScene() {
+export default function ChibiScene({ embedded = false }) {
   const [chibiPos, setChibiPos] = useState([-4.2, 0, 2.2]);
   const [chibiSelected, setChibiSelected] = useState(false);
   const [chibiTarget, setChibiTarget] = useState(null);
@@ -899,8 +899,8 @@ export default function ChibiScene() {
   return (
     <div
       style={{
-        width: '100vw',
-        height: '100vh',
+        width: embedded ? '100%' : '100vw',
+        height: embedded ? '100%' : '100vh',
         background: 'linear-gradient(180deg, #fff5f7 0%, #ffe4ec 45%, #ffd6e0 100%)',
         fontFamily: "'Nunito', system-ui, sans-serif",
         position: 'relative',
@@ -908,22 +908,24 @@ export default function ChibiScene() {
         margin: 0,
       }}
     >
-      <a
-        href="/"
-        style={{
-          position: 'absolute',
-          top: 20,
-          left: 20,
-          zIndex: 20,
-          color: '#c2185b',
-          textDecoration: 'none',
-          fontSize: 14,
-          fontWeight: 800,
-          letterSpacing: '0.04em',
-        }}
-      >
-        ← marissa codes
-      </a>
+      {!embedded && (
+        <a
+          href="/"
+          style={{
+            position: 'absolute',
+            top: 20,
+            left: 20,
+            zIndex: 20,
+            color: '#c2185b',
+            textDecoration: 'none',
+            fontSize: 14,
+            fontWeight: 800,
+            letterSpacing: '0.04em',
+          }}
+        >
+          ← marissa codes
+        </a>
+      )}
       <div
         style={{
           position: 'absolute',
@@ -1002,45 +1004,47 @@ export default function ChibiScene() {
         />
       </Canvas>
 
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 24,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 20,
-          display: 'flex',
-          gap: 8,
-          background: 'rgba(255,255,255,0.8)',
-          padding: '8px 12px',
-          borderRadius: 999,
-          border: '1px solid rgba(255, 105, 180, 0.3)',
-          backdropFilter: 'blur(10px)',
-        }}
-      >
-        {roomKeys.map((roomKey) => (
-          <button
-            key={roomKey}
-            type="button"
-            onClick={() => setFocusRoom(roomKey)}
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: 10,
-              border: 'none',
-              cursor: 'pointer',
-              background: focusRoom === roomKey ? '#ff69b4' : '#fbcfe8',
-              color: focusRoom === roomKey ? '#fff' : '#9d174d',
-              fontSize: 16,
-              fontWeight: 700,
-              boxShadow: focusRoom === roomKey ? '0 0 16px rgba(255, 105, 180, 0.45)' : 'none',
-            }}
-            aria-label={`Focus ${ROOMS[roomKey].label}`}
-          >
-            {ROOMS[roomKey].emoji}
-          </button>
-        ))}
-      </div>
+      {!embedded && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 24,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 20,
+            display: 'flex',
+            gap: 8,
+            background: 'rgba(255,255,255,0.8)',
+            padding: '8px 12px',
+            borderRadius: 999,
+            border: '1px solid rgba(255, 105, 180, 0.3)',
+            backdropFilter: 'blur(10px)',
+          }}
+        >
+          {roomKeys.map((roomKey) => (
+            <button
+              key={roomKey}
+              type="button"
+              onClick={() => setFocusRoom(roomKey)}
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 10,
+                border: 'none',
+                cursor: 'pointer',
+                background: focusRoom === roomKey ? '#ff69b4' : '#fbcfe8',
+                color: focusRoom === roomKey ? '#fff' : '#9d174d',
+                fontSize: 16,
+                fontWeight: 700,
+                boxShadow: focusRoom === roomKey ? '0 0 16px rgba(255, 105, 180, 0.45)' : 'none',
+              }}
+              aria-label={`Focus ${ROOMS[roomKey].label}`}
+            >
+              {ROOMS[roomKey].emoji}
+            </button>
+          ))}
+        </div>
+      )}
 
       {popup.visible && (
         <div

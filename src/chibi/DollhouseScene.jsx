@@ -1,5 +1,5 @@
 import ChibiScene from './ChibiScene.jsx';
 
-export default function DollhouseScene() {
-  return <ChibiScene />;
+export default function DollhouseScene({ embedded = false }) {
+  return <ChibiScene embedded={embedded} />;
 }
