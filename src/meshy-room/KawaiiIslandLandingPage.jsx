@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import IslandHomepageScene from './IslandHomepageScene.jsx';
 
 const MENU_ITEMS = [
-  { emoji: '🌸', label: 'About' },
-  { emoji: '🎀', label: 'Projects' },
-  { emoji: '📚', label: 'Reading' },
-  { emoji: '☁️', label: 'Work With Me' },
-  { emoji: '📝', label: 'Blog' },
-  { emoji: '🎮', label: 'Pageant Sim' },
-  { emoji: '🏠', label: 'Dollhouse' },
+  { emoji: '🌸', label: 'About', href: '/about.html' },
+  { emoji: '🎀', label: 'Projects', href: '/projects.html' },
+  { emoji: '📚', label: 'Reading', href: '/reading.html' },
+  { emoji: '☁️', label: 'Work With Me', href: '/work-with-me.html' },
+  { emoji: '📝', label: 'Blog', href: '/blog.html' },
+  { emoji: '🎮', label: 'Pageant Sim', href: '/pageant.html' },
+  { emoji: '🏠', label: 'Dollhouse', href: '/chibi.html' },
 ];
 
 
@@ -99,7 +99,13 @@ export default function KawaiiIslandLandingPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.55),_transparent_30%),linear-gradient(to_bottom,_#9ed8ff_0%,_#aee5ff_35%,_#76d7f6_100%)]" />
       <div className="absolute inset-x-0 top-0 h-[42vh] bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.36),transparent_55%)]" />
       <div className="absolute inset-x-0 bottom-0 h-[30vh] bg-[linear-gradient(to_top,rgba(88,199,236,0.28),transparent)]" />
-      <div className="absolute inset-0 z-[1] island-scene-frame animate-game-zoom">
+      <div 
+        className="absolute inset-0 z-[1] island-scene-frame animate-game-zoom"
+        style={{
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 45%, transparent 75%)',
+          maskImage: 'radial-gradient(ellipse at center, black 45%, transparent 75%)'
+        }}
+      >
         <IslandHomepageScene />
       </div>
 
@@ -111,30 +117,30 @@ export default function KawaiiIslandLandingPage() {
       <section className="relative z-20 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center px-4 pb-14 pt-7 sm:px-6 animate-ui-fade">
 
         <div
-          className="relative mb-6 w-full max-w-[620px] transition-transform duration-500 ease-out md:mb-4"
+          className="relative mb-6 w-full max-w-[660px] transition-transform duration-500 ease-out md:mb-4"
           style={heroStyle}
         >
-          <div className="relative rounded-[34px] border-[5px] border-[#f0bfd4] bg-[linear-gradient(180deg,#ffeaf7_0%,#ffd9ef_100%)] px-5 py-5 text-center shadow-[0_18px_32px_rgba(212,130,170,0.14),inset_0_2px_0_rgba(255,255,255,0.95)] sm:px-8 md:mt-0 md:max-w-[620px] md:px-10 md:py-6">
-            <div className="absolute -right-1 top-3 text-4xl sm:top-4 sm:text-5xl" style={{ animation: 'floaty 3s ease-in-out infinite' }}>
+          <div className="relative rounded-[40px] border-[6px] border-[#ffb3d9] bg-[#fffafc] px-6 py-6 text-center shadow-[0_12px_24px_rgba(212,130,170,0.12),inset_0_2px_0_rgba(255,255,255,1)] sm:px-10 md:mt-0 md:px-12 md:py-7">
+            <div className="absolute -right-4 -top-5 text-4xl sm:text-5xl" style={{ animation: 'floaty 3s ease-in-out infinite' }}>
               🎀
             </div>
-            <div className="absolute left-3 top-8 text-lg sm:left-5 sm:top-12 sm:text-xl" style={{ animation: 'floaty 2.8s ease-in-out infinite' }}>
+            <div className="absolute -left-3 top-[40%] text-xl sm:text-2xl" style={{ animation: 'floaty 2.8s ease-in-out infinite' }}>
               🌸
             </div>
-            <div className="absolute bottom-4 right-5 text-lg sm:bottom-6 sm:right-8 sm:text-xl" style={{ animation: 'floaty 3.2s ease-in-out infinite' }}>
+            <div className="absolute -bottom-3 right-6 text-xl sm:text-2xl" style={{ animation: 'floaty 3.2s ease-in-out infinite' }}>
               🌸
             </div>
 
-            <div className="min-h-[104px] sm:min-h-[126px] md:min-h-[142px]">
+            <div>
               <h1
-                className={`text-3xl font-black leading-[0.95] tracking-tight text-[#ef5da8] drop-shadow-[0_3px_0_rgba(255,255,255,0.72)] transition-all duration-1000 sm:text-4xl md:text-5xl ${
+                className={`text-2xl font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-3xl md:text-4xl ${
                   titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3'
                 }`}
               >
                 Welcome To My Island
               </h1>
               <p
-                className={`mt-3 text-base font-semibold text-[#9c79b0] transition-all duration-1000 sm:text-lg md:mt-4 md:text-xl ${
+                className={`mt-2 text-sm font-bold text-[#967bb6] transition-all duration-1000 sm:text-base md:mt-3 md:text-lg ${
                   titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
                 }`}
               >
@@ -146,16 +152,16 @@ export default function KawaiiIslandLandingPage() {
 
         <div className="mt-auto grid w-full max-w-[1120px] grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-7">
           {MENU_ITEMS.map((item) => (
-            <button
+            <a
               key={item.label}
-              type="button"
+              href={item.href}
               className="group rounded-[30px] border-[4px] border-[#efd2de] bg-[linear-gradient(180deg,#fff8fc_0%,#fff0f7_100%)] px-4 py-5 shadow-[0_14px_24px_rgba(206,140,171,0.16),inset_0_2px_0_rgba(255,255,255,0.95)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_30px_rgba(206,140,171,0.22)] sm:py-6"
             >
               <div className="flex flex-col items-center justify-center gap-3">
                 <div className="text-4xl transition group-hover:scale-110">{item.emoji}</div>
                 <div className="text-base font-extrabold text-[#8f6b7d] sm:text-lg">{item.label}</div>
               </div>
-            </button>
+            </a>
           ))}
         </div>
 
