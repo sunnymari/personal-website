@@ -232,20 +232,8 @@ function PrincessChibi() {
   const pathIndexRef = useRef(0);
   const modeRef = useRef('walk');
   const modeTimerRef = useRef(0);
-  const targetRef = useRef(new THREE.Vector3(-0.2, 0.08, 2.7));
+  const targetRef = useRef(new THREE.Vector3(-1.9, 0.08, 1.5));
   const lastFacingRef = useRef(0);
-  const route = useMemo(
-    () => [
-      new THREE.Vector3(-2.6, 0.08, 1.9),
-      new THREE.Vector3(-0.2, 0.08, 2.7),
-      new THREE.Vector3(2.2, 0.08, 2.05),
-      new THREE.Vector3(3.2, 0.08, 0.55),
-      new THREE.Vector3(1.65, 0.08, -1.1),
-      new THREE.Vector3(-0.85, 0.08, -0.5),
-      new THREE.Vector3(-2.95, 0.08, 0.55),
-    ],
-    []
-  );
 
   const waveGltf = useGLTF('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Wave_One_Hand_withSkin.glb');
   const walkGltf = useGLTF('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Walking_withSkin.glb');
@@ -253,7 +241,7 @@ function PrincessChibi() {
 
   const princessModel = useMemo(() => {
     const cloned = SkeletonUtils.clone(waveGltf.scene);
-    cloned.scale.setScalar(0.74);
+    cloned.scale.setScalar(1.2);
     const box = new THREE.Box3().setFromObject(cloned);
     const center = box.getCenter(new THREE.Vector3());
     const min = box.min.clone();
@@ -297,31 +285,34 @@ function PrincessChibi() {
     if (!group.current) return;
     if (mixer) mixer.update(delta);
 
+    const route = [
+      new THREE.Vector3(-2.1, 0.08, 1.8),  // Front-left
+      new THREE.Vector3(0.0, 0.08, 2.6),   // Front-center
+      new THREE.Vector3(2.1, 0.08, 1.8),   // Front-right (avoid mailbox at 2.9)
+      new THREE.Vector3(2.5, 0.08, -0.5),  // Right (avoid house at center)
+      new THREE.Vector3(1.0, 0.08, -2.5),  // Back-right
+      new THREE.Vector3(-1.0, 0.08, -2.5), // Back-left
+      new THREE.Vector3(-2.5, 0.08, -0.5), // Left (avoid bench at -2.7)
+    ];
+
     modeTimerRef.current += delta;
 
     if (modeRef.current === 'walk') {
       const current = group.current.position;
       const target = targetRef.current;
-      const toTarget = new THREE.Vector3().subVectors(target, current);
-      const dist = toTarget.length();
-      const walkSpeed = 1.12;
-      if (dist > 0.0001) {
-        toTarget.normalize();
-        const step = Math.min(dist, walkSpeed * delta);
-        current.addScaledVector(toTarget, step);
-      }
+      current.lerp(target, Math.min(0.03 + delta * 1.4, 0.12));
 
       const dx = target.x - current.x;
       const dz = target.z - current.z;
-      const planarDist = Math.hypot(dx, dz);
+      const dist = Math.hypot(dx, dz);
 
-      if (planarDist > 0.02) {
+      if (dist > 0.02) {
         const desiredRot = Math.atan2(dx, dz);
         lastFacingRef.current = desiredRot;
         group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, desiredRot, 0.16);
       }
 
-      if (planarDist <= 0.2 && modeTimerRef.current > 1.4) {
+      if (dist <= 0.24 && modeTimerRef.current > 2.2) {
         modeRef.current = 'wave';
         modeTimerRef.current = 0;
         if (actions?.[walkName] && actions?.[waveName]) {
@@ -331,7 +322,7 @@ function PrincessChibi() {
       }
     } else {
       group.current.rotation.y = lastFacingRef.current;
-      if (modeTimerRef.current > 1.15) {
+      if (modeTimerRef.current > 2.8) {
         modeRef.current = 'walk';
         modeTimerRef.current = 0;
         pathIndexRef.current = (pathIndexRef.current + 1) % route.length;
@@ -345,7 +336,7 @@ function PrincessChibi() {
   });
 
   return (
-    <group ref={group} position={[-2.6, 0.08, 1.9]}>
+    <group ref={group} position={[-2.1, 0.08, 1.8]}>
       <primitive object={princessModel} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
         <ringGeometry args={[0.22, 0.3, 24]} />
