@@ -221,7 +221,7 @@ function PrincessChibi() {
 
   const princessModel = useMemo(() => {
     const cloned = SkeletonUtils.clone(waveGltf.scene);
-    cloned.scale.setScalar(0.52);
+    cloned.scale.setScalar(0.74);
     const box = new THREE.Box3().setFromObject(cloned);
     const center = box.getCenter(new THREE.Vector3());
     const min = box.min.clone();
