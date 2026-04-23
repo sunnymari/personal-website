@@ -1,81 +1,478 @@
-import { useRef, useEffect, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { useRef, useEffect, useMemo, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
-import { PinkRoom } from '../components/PinkRoom.jsx';
 
-// ─── PHASE CONSTANTS ───────────────────────────────────────────────────────────
-const CHIBI_START = [-2.5, 0, 0];
-const LAPTOP_POS = [1.2, 0, 0];
-const PICKUP_DIST = 0.9;
+const ROOMS = {
+  bedroom: { pos: [-4.2, 0, 2.2], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd6e0' },
+  living: { pos: [0, 0, 2.2], label: '🛋️ Living Room', emoji: '🛋️', floor: '#ffe4ec' },
+  office: { pos: [4.2, 0, 2.2], label: '💻 Office', emoji: '💻', floor: '#f3e8ff' },
+  library: { pos: [-4.2, 0, -2.2], label: '📚 Library', emoji: '📚', floor: '#fef3c7' },
+  closet: { pos: [0, 0, -2.2], label: '🎀 Closet', emoji: '🎀', floor: '#fce7f3' },
+};
 
-function Laptop({ phase }) {
-  const pivot = useRef();
-  const screenRef = useRef();
+function ClickableFurniture({ position, rotation = [0, 0, 0], onClick, children }) {
+  const ref = useRef();
+  const [hovered, setHovered] = useState(false);
+  const [hoverSize, setHoverSize] = useState([1.2, 1.2, 1.2]);
 
-  useFrame(({ clock }) => {
-    if (!pivot.current) return;
-    const t = clock.elapsedTime;
-
-    if (phase === 'holding') {
-      pivot.current.rotation.z = Math.sin(t * 4) * 0.4;
-      pivot.current.rotation.y = Math.sin(t * 2) * 0.3;
-      pivot.current.position.y = THREE.MathUtils.lerp(
-        pivot.current.position.y,
-        1.1,
-        0.05
-      );
-    } else if (phase === 'pickup') {
-      pivot.current.position.y = THREE.MathUtils.lerp(
-        pivot.current.position.y,
-        0.3,
-        0.04
-      );
-    } else {
-      pivot.current.position.y = THREE.MathUtils.lerp(
-        pivot.current.position.y,
-        0.12,
-        0.08
-      );
-    }
-
-    if (screenRef.current) {
-      screenRef.current.material.emissiveIntensity =
-        0.6 + Math.sin(t * 2.5) * 0.3;
-    }
-  });
+  useEffect(() => {
+    if (!ref.current) return;
+    const box = new THREE.Box3().setFromObject(ref.current);
+    const size = box.getSize(new THREE.Vector3());
+    setHoverSize([
+      Math.max(size.x * 1.1, 0.5),
+      Math.max(size.y * 1.1, 0.5),
+      Math.max(size.z * 1.1, 0.5),
+    ]);
+  }, []);
 
   return (
-    <group ref={pivot} position={LAPTOP_POS}>
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[0.7, 0.05, 0.5]} />
-        <meshStandardMaterial color="#1a1a2e" metalness={0.8} roughness={0.2} />
+    <group
+      ref={ref}
+      position={position}
+      rotation={rotation}
+      scale={hovered ? 1.05 : 1}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = 'pointer';
+        setHovered(true);
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = 'auto';
+        setHovered(false);
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (onClick) onClick();
+      }}
+    >
+      {hovered && (
+        <mesh>
+          <boxGeometry args={hoverSize} />
+          <meshStandardMaterial color="#ff69b4" transparent opacity={0.18} emissive="#ff69b4" emissiveIntensity={0.35} />
+        </mesh>
+      )}
+      {children}
+    </group>
+  );
+}
+
+function RoomShell({ roomKey, onRoomClick }) {
+  const room = ROOMS[roomKey];
+  const [x, , z] = room.pos;
+
+  return (
+    <group position={[x, 0, z]}>
+      <mesh receiveShadow onClick={() => onRoomClick(roomKey)}>
+        <boxGeometry args={[4, 0.1, 4]} />
+        <meshStandardMaterial color={room.floor} />
       </mesh>
-      <mesh position={[0, 0.028, 0]}>
-        <boxGeometry args={[0.62, 0.002, 0.42]} />
-        <meshStandardMaterial color="#16213e" />
+      <mesh position={[0, 1.5, -2]} receiveShadow castShadow>
+        <boxGeometry args={[4, 3, 0.1]} />
+        <meshStandardMaterial color="#ffd2e5" />
       </mesh>
-      <mesh position={[0, 0.07, -0.22]} rotation={[0.4, 0, 0]}>
-        <boxGeometry args={[0.7, 0.45, 0.04]} />
-        <meshStandardMaterial color="#1a1a2e" metalness={0.8} roughness={0.2} />
+      <mesh position={[-2, 1.5, 0]} receiveShadow castShadow>
+        <boxGeometry args={[0.1, 3, 4]} />
+        <meshStandardMaterial color="#ffd2e5" />
       </mesh>
-      <mesh ref={screenRef} position={[0, 0.07, -0.2]} rotation={[0.4, 0, 0]}>
-        <boxGeometry args={[0.62, 0.38, 0.001]} />
-        <meshStandardMaterial
-          color="#a78bfa"
-          emissive="#7c3aed"
-          emissiveIntensity={0.8}
-        />
+      <mesh position={[2, 1.5, 0]} receiveShadow castShadow>
+        <boxGeometry args={[0.1, 3, 4]} />
+        <meshStandardMaterial color="#ffd2e5" />
       </mesh>
-      <mesh position={[0, 0.029, 0.12]}>
-        <boxGeometry args={[0.2, 0.002, 0.14]} />
-        <meshStandardMaterial color="#0f3460" metalness={0.6} roughness={0.3} />
+      <Text
+        position={[0, 3.2, -0.2]}
+        fontSize={0.38}
+        color="#9d174d"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {room.label}
+      </Text>
+    </group>
+  );
+}
+
+function DividerWalls() {
+  return (
+    <>
+      <mesh position={[-2.1, 1.5, 2.2]} castShadow receiveShadow>
+        <boxGeometry args={[0.1, 3, 4]} />
+        <meshStandardMaterial color="#ffd2e5" />
+      </mesh>
+      <mesh position={[2.1, 1.5, 2.2]} castShadow receiveShadow>
+        <boxGeometry args={[0.1, 3, 4]} />
+        <meshStandardMaterial color="#ffd2e5" />
+      </mesh>
+      <mesh position={[-2.1, 1.5, -2.2]} castShadow receiveShadow>
+        <boxGeometry args={[0.1, 3, 4]} />
+        <meshStandardMaterial color="#ffd2e5" />
+      </mesh>
+      <mesh position={[-4.2, 1.5, 0]} castShadow receiveShadow>
+        <boxGeometry args={[4, 3, 0.1]} />
+        <meshStandardMaterial color="#ffd2e5" />
+      </mesh>
+      <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
+        <boxGeometry args={[4, 3, 0.1]} />
+        <meshStandardMaterial color="#ffd2e5" />
+      </mesh>
+    </>
+  );
+}
+
+function BedroomFurniture({ showPopup }) {
+  const [x, , z] = ROOMS.bedroom.pos;
+  return (
+    <group position={[x, 0, z]}>
+      <ClickableFurniture position={[-1.0, 0, -1.2]} onClick={() => showPopup("✨ shh i'm dreaming of shipping features 🌙")}>
+        <mesh position={[0, 0.2, 0]} castShadow receiveShadow>
+          <boxGeometry args={[1.3, 0.2, 0.7]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0, 0.34, 0]} castShadow>
+          <boxGeometry args={[1.18, 0.12, 0.58]} />
+          <meshStandardMaterial color="#ffb6c1" />
+        </mesh>
+        <mesh position={[0, 0.62, -0.31]} castShadow>
+          <boxGeometry args={[1.3, 0.6, 0.1]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[-0.3, 0.43, -0.14]} castShadow>
+          <boxGeometry args={[0.26, 0.08, 0.18]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+        <mesh position={[0.3, 0.43, -0.14]} castShadow>
+          <boxGeometry args={[0.26, 0.08, 0.18]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+      </ClickableFurniture>
+
+      <ClickableFurniture
+        position={[1.1, 0, -1.2]}
+        onClick={() => {
+          window.location.href = '/about';
+        }}
+      >
+        <mesh position={[0, 0.42, 0]} castShadow>
+          <boxGeometry args={[0.92, 0.1, 0.42]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+        <mesh position={[-0.3, 0.2, 0]} castShadow>
+          <boxGeometry args={[0.08, 0.4, 0.08]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+        <mesh position={[0.3, 0.2, 0]} castShadow>
+          <boxGeometry args={[0.08, 0.4, 0.08]} />
+          <meshStandardMaterial color="#fff0f5" />
+        </mesh>
+        <mesh position={[0, 1.0, -0.14]} castShadow>
+          <boxGeometry args={[0.7, 0.85, 0.08]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0, 1.0, -0.08]}>
+          <boxGeometry args={[0.56, 0.7, 0.02]} />
+          <meshStandardMaterial color="#e8d5f5" transparent opacity={0.6} emissive="#ffffff" emissiveIntensity={0.2} />
+        </mesh>
+      </ClickableFurniture>
+
+      <ClickableFurniture position={[-1.65, 0, 0.3]} onClick={() => showPopup('💕 my comfort items')}>
+        <mesh position={[0, 1.0, 0]} castShadow>
+          <boxGeometry args={[0.16, 1.6, 1.0]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0.12, 1.25, 0]} castShadow>
+          <boxGeometry args={[0.32, 0.08, 0.92]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0.22, 1.42, -0.24]} castShadow>
+          <boxGeometry args={[0.2, 0.2, 0.2]} />
+          <meshStandardMaterial color="#a78bfa" />
+        </mesh>
+        <mesh position={[0.22, 1.42, 0]} castShadow>
+          <boxGeometry args={[0.2, 0.2, 0.2]} />
+          <meshStandardMaterial color="#f472b6" />
+        </mesh>
+        <mesh position={[0.22, 1.42, 0.24]} castShadow>
+          <boxGeometry args={[0.2, 0.2, 0.2]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+      </ClickableFurniture>
+    </group>
+  );
+}
+
+function LivingFurniture({ showPopup }) {
+  const [x, , z] = ROOMS.living.pos;
+  return (
+    <group position={[x, 0, z]}>
+      <ClickableFurniture position={[0, 0, -1.2]} onClick={() => showPopup('🌸 come hang out with me')}>
+        <mesh position={[0, 0.25, 0]} castShadow>
+          <boxGeometry args={[1.3, 0.28, 0.62]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0, 0.62, -0.24]} castShadow>
+          <boxGeometry args={[1.3, 0.38, 0.14]} />
+          <meshStandardMaterial color="#ff85c2" />
+        </mesh>
+        <mesh position={[-0.58, 0.43, 0]} castShadow>
+          <boxGeometry args={[0.14, 0.35, 0.62]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0.58, 0.43, 0]} castShadow>
+          <boxGeometry args={[0.14, 0.35, 0.62]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+      </ClickableFurniture>
+
+      <ClickableFurniture
+        position={[1.2, 0, -1.45]}
+        onClick={() => {
+          window.location.href = '/projects';
+        }}
+      >
+        <mesh position={[0, 0.24, 0]} castShadow>
+          <boxGeometry args={[0.9, 0.26, 0.4]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0, 0.72, -0.02]} castShadow>
+          <boxGeometry args={[0.78, 0.42, 0.04]} />
+          <meshStandardMaterial color="#1a1a2e" emissive="#7c3aed" emissiveIntensity={0.25} />
+        </mesh>
+      </ClickableFurniture>
+
+      <mesh position={[0, 0.06, 0]} receiveShadow>
+        <boxGeometry args={[1.4, 0.02, 1.0]} />
+        <meshStandardMaterial color="#ffffff" transparent opacity={0.82} />
       </mesh>
     </group>
   );
 }
 
-function Chibi({ phase, onPhaseChange }) {
+function OfficeFurniture({ showPopup }) {
+  const [x, , z] = ROOMS.office.pos;
+  return (
+    <group position={[x, 0, z]}>
+      <ClickableFurniture
+        position={[0, 0, -1.2]}
+        onClick={() => {
+          window.location.href = '/work-with-me';
+        }}
+      >
+        <mesh position={[0, 0.42, 0]} castShadow>
+          <boxGeometry args={[1.4, 0.12, 0.62]} />
+          <meshStandardMaterial color="#f3e8ff" />
+        </mesh>
+        <mesh position={[0, 0.8, -0.2]} castShadow>
+          <boxGeometry args={[0.58, 0.34, 0.04]} />
+          <meshStandardMaterial color="#1a1a2e" emissive="#7c3aed" emissiveIntensity={0.24} />
+        </mesh>
+      </ClickableFurniture>
+
+      <group position={[0, 0, -0.45]}>
+        <mesh position={[0, 0.26, 0]} castShadow>
+          <boxGeometry args={[0.52, 0.12, 0.52]} />
+          <meshStandardMaterial color="#a78bfa" />
+        </mesh>
+        <mesh position={[0, 0.56, -0.2]} castShadow>
+          <boxGeometry args={[0.52, 0.5, 0.1]} />
+          <meshStandardMaterial color="#a78bfa" />
+        </mesh>
+        <mesh position={[-0.18, 0.12, -0.16]} castShadow>
+          <boxGeometry args={[0.08, 0.22, 0.08]} />
+          <meshStandardMaterial color="#7c3aed" />
+        </mesh>
+        <mesh position={[0.18, 0.12, -0.16]} castShadow>
+          <boxGeometry args={[0.08, 0.22, 0.08]} />
+          <meshStandardMaterial color="#7c3aed" />
+        </mesh>
+        <mesh position={[-0.18, 0.12, 0.16]} castShadow>
+          <boxGeometry args={[0.08, 0.22, 0.08]} />
+          <meshStandardMaterial color="#7c3aed" />
+        </mesh>
+        <mesh position={[0.18, 0.12, 0.16]} castShadow>
+          <boxGeometry args={[0.08, 0.22, 0.08]} />
+          <meshStandardMaterial color="#7c3aed" />
+        </mesh>
+      </group>
+
+      <ClickableFurniture position={[-1.2, 0, -1.95]} onClick={() => showPopup('💻 currently building something fun ✨')}>
+        <mesh position={[-0.22, 1.7, 0.07]}>
+          <boxGeometry args={[0.2, 0.2, 0.02]} />
+          <meshStandardMaterial color="#fef08a" />
+        </mesh>
+        <mesh position={[0, 1.64, 0.07]}>
+          <boxGeometry args={[0.2, 0.2, 0.02]} />
+          <meshStandardMaterial color="#bbf7d0" />
+        </mesh>
+        <mesh position={[0.22, 1.72, 0.07]}>
+          <boxGeometry args={[0.2, 0.2, 0.02]} />
+          <meshStandardMaterial color="#fbcfe8" />
+        </mesh>
+      </ClickableFurniture>
+    </group>
+  );
+}
+
+function LibraryFurniture({ showPopup }) {
+  const [x, , z] = ROOMS.library.pos;
+  const bookColors = ['#a78bfa', '#f472b6', '#ffffff', '#fbbf24', '#34d399', '#fb923c', '#f472b6', '#a78bfa'];
+
+  return (
+    <group position={[x, 0, z]}>
+      <ClickableFurniture
+        position={[-1.6, 0, 0]}
+        onClick={() => {
+          window.location.href = '/reading';
+        }}
+      >
+        <mesh position={[0, 1.0, 0]} castShadow>
+          <boxGeometry args={[0.2, 1.9, 1.2]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0.1, 0.45, 0]} castShadow>
+          <boxGeometry args={[0.3, 0.05, 1.05]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0.1, 0.95, 0]} castShadow>
+          <boxGeometry args={[0.3, 0.05, 1.05]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0.1, 1.45, 0]} castShadow>
+          <boxGeometry args={[0.3, 0.05, 1.05]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        {bookColors.map((color, i) => (
+          <mesh key={color + i} position={[0.2, 0.63 + Math.floor(i / 4) * 0.56, -0.36 + (i % 4) * 0.24]} castShadow>
+            <boxGeometry args={[0.12, 0.24, 0.18]} />
+            <meshStandardMaterial color={color} />
+          </mesh>
+        ))}
+      </ClickableFurniture>
+
+      <ClickableFurniture position={[0, 0, -0.2]} onClick={() => showPopup('📖 currently reading...')}>
+        <mesh position={[0, 0.24, 0]} castShadow>
+          <boxGeometry args={[0.85, 0.32, 0.8]} />
+          <meshStandardMaterial color="#fcd34d" />
+        </mesh>
+        <mesh position={[0, 0.64, -0.28]} castShadow>
+          <boxGeometry args={[0.85, 0.52, 0.14]} />
+          <meshStandardMaterial color="#fcd34d" />
+        </mesh>
+      </ClickableFurniture>
+
+      <group position={[1.2, 0, 1.2]}>
+        <mesh position={[0, 0.18, 0]} castShadow>
+          <boxGeometry args={[0.34, 0.36, 0.34]} />
+          <meshStandardMaterial color="#f97316" />
+        </mesh>
+        <mesh position={[0, 0.55, 0]} castShadow>
+          <boxGeometry args={[0.08, 0.42, 0.08]} />
+          <meshStandardMaterial color="#22c55e" />
+        </mesh>
+        <mesh position={[0.12, 0.76, 0]} castShadow>
+          <boxGeometry args={[0.24, 0.08, 0.12]} />
+          <meshStandardMaterial color="#22c55e" />
+        </mesh>
+        <mesh position={[-0.1, 0.7, 0.09]} castShadow>
+          <boxGeometry args={[0.22, 0.08, 0.1]} />
+          <meshStandardMaterial color="#22c55e" />
+        </mesh>
+        <mesh position={[-0.04, 0.82, -0.12]} castShadow>
+          <boxGeometry args={[0.2, 0.08, 0.1]} />
+          <meshStandardMaterial color="#22c55e" />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+function ClosetFurniture({ showPopup }) {
+  const [x, , z] = ROOMS.closet.pos;
+  const clothingColors = ['#f472b6', '#a78bfa', '#fbbf24', '#ffffff', '#fb7185'];
+
+  return (
+    <group position={[x, 0, z]}>
+      <ClickableFurniture position={[0, 0, -1.45]} onClick={() => showPopup('🎀 outfit of the day')}>
+        <mesh position={[0, 1.78, 0]} castShadow>
+          <boxGeometry args={[1.3, 0.06, 0.06]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[-0.62, 1.05, 0]} castShadow>
+          <boxGeometry args={[0.08, 1.46, 0.08]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0.62, 1.05, 0]} castShadow>
+          <boxGeometry args={[0.08, 1.46, 0.08]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        {clothingColors.map((color, i) => (
+          <mesh key={color + i} position={[-0.45 + i * 0.23, 1.35, 0]} castShadow>
+            <boxGeometry args={[0.16, 0.5, 0.04]} />
+            <meshStandardMaterial color={color} />
+          </mesh>
+        ))}
+      </ClickableFurniture>
+
+      <ClickableFurniture
+        position={[1.55, 0, 0]}
+        rotation={[0, -Math.PI / 2, 0]}
+        onClick={() => {
+          window.location.href = '/about';
+        }}
+      >
+        <mesh position={[0, 1.1, 0]} castShadow>
+          <boxGeometry args={[0.1, 2.0, 0.95]} />
+          <meshStandardMaterial color="#ff69b4" />
+        </mesh>
+        <mesh position={[0.06, 1.1, 0]} castShadow>
+          <boxGeometry args={[0.02, 1.8, 0.78]} />
+          <meshStandardMaterial color="#e8d5f5" transparent opacity={0.6} emissive="#ffffff" emissiveIntensity={0.18} />
+        </mesh>
+      </ClickableFurniture>
+
+      <ClickableFurniture position={[-1.55, 0, 0]} rotation={[0, Math.PI / 2, 0]} onClick={() => showPopup('✨ a girl and her shoes')}>
+        <mesh position={[0, 0.68, 0]} castShadow>
+          <boxGeometry args={[0.16, 1.22, 0.9]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0.08, 0.43, 0]} castShadow>
+          <boxGeometry args={[0.3, 0.05, 0.82]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0.08, 0.88, 0]} castShadow>
+          <boxGeometry args={[0.3, 0.05, 0.82]} />
+          <meshStandardMaterial color="#f8c8d4" />
+        </mesh>
+        <mesh position={[0.15, 0.55, -0.24]} castShadow>
+          <boxGeometry args={[0.16, 0.08, 0.18]} />
+          <meshStandardMaterial color="#f472b6" />
+        </mesh>
+        <mesh position={[0.15, 0.55, 0.24]} castShadow>
+          <boxGeometry args={[0.16, 0.08, 0.18]} />
+          <meshStandardMaterial color="#a78bfa" />
+        </mesh>
+        <mesh position={[0.15, 1.0, -0.2]} castShadow>
+          <boxGeometry args={[0.16, 0.08, 0.18]} />
+          <meshStandardMaterial color="#fbbf24" />
+        </mesh>
+        <mesh position={[0.15, 1.0, 0.2]} castShadow>
+          <boxGeometry args={[0.16, 0.08, 0.18]} />
+          <meshStandardMaterial color="#fb7185" />
+        </mesh>
+      </ClickableFurniture>
+    </group>
+  );
+}
+
+function Chibi({
+  chibiPos,
+  setChibiPos,
+  chibiTarget,
+  setChibiTarget,
+  chibiSelected,
+  setChibiSelected,
+  setSelectedRoom,
+}) {
   const group = useRef();
   const bodyRef = useRef();
   const headRef = useRef();
@@ -83,104 +480,49 @@ function Chibi({ phase, onPhaseChange }) {
   const rightArmRef = useRef();
   const leftLegRef = useRef();
   const rightLegRef = useRef();
-  const posX = useRef(CHIBI_START[0]);
+  const movingRef = useRef(false);
 
   useFrame(({ clock }, delta) => {
     if (!group.current) return;
     const t = clock.elapsedTime;
+    let moving = false;
 
-    if (phase === 'walking') {
-      const speed = 1.4;
-      posX.current += delta * speed;
-      group.current.position.x = posX.current;
-      group.current.rotation.y = 0;
+    if (chibiTarget) {
+      const current = new THREE.Vector3(...chibiPos);
+      const target = new THREE.Vector3(...chibiTarget);
+      const dir = target.clone().sub(current);
+      const dist = dir.length();
+      if (dist > 0.07) {
+        moving = true;
+        dir.normalize();
+        const speed = 2.1;
+        const next = current.add(dir.multiplyScalar(speed * delta));
+        setChibiPos([next.x, 0, next.z]);
+        const yaw = Math.atan2(next.x - chibiPos[0], next.z - chibiPos[2]);
+        group.current.rotation.y = yaw;
+      } else {
+        setChibiPos([chibiTarget[0], 0, chibiTarget[2]]);
+        setChibiTarget(null);
+      }
+    }
 
-      const swing = Math.sin(t * 8) * 0.5;
+    movingRef.current = moving;
+    group.current.position.set(chibiPos[0], 0, chibiPos[2]);
+
+    const swing = Math.sin(t * 9) * 0.55;
+    if (movingRef.current) {
       if (leftLegRef.current) leftLegRef.current.rotation.x = swing;
       if (rightLegRef.current) rightLegRef.current.rotation.x = -swing;
-
       if (leftArmRef.current) leftArmRef.current.rotation.x = -swing * 0.6;
       if (rightArmRef.current) rightArmRef.current.rotation.x = swing * 0.6;
-
-      if (bodyRef.current)
-        bodyRef.current.position.y = Math.abs(Math.sin(t * 8)) * 0.03;
-
-      if (headRef.current) headRef.current.rotation.z = Math.sin(t * 4) * 0.05;
-
-      if (posX.current >= LAPTOP_POS[0] - PICKUP_DIST) {
-        onPhaseChange('pickup');
-      }
-    }
-
-    if (phase === 'pickup') {
-      if (bodyRef.current)
-        bodyRef.current.rotation.x = THREE.MathUtils.lerp(
-          bodyRef.current.rotation.x,
-          0.5,
-          0.05
-        );
-      if (rightArmRef.current)
-        rightArmRef.current.rotation.x = THREE.MathUtils.lerp(
-          rightArmRef.current.rotation.x,
-          1.4,
-          0.05
-        );
-      if (leftLegRef.current)
-        leftLegRef.current.rotation.x = THREE.MathUtils.lerp(
-          leftLegRef.current.rotation.x,
-          0,
-          0.1
-        );
-      if (rightLegRef.current)
-        rightLegRef.current.rotation.x = THREE.MathUtils.lerp(
-          rightLegRef.current.rotation.x,
-          0,
-          0.1
-        );
-    }
-
-    if (phase === 'holding') {
-      if (bodyRef.current)
-        bodyRef.current.rotation.x = THREE.MathUtils.lerp(
-          bodyRef.current.rotation.x,
-          0,
-          0.05
-        );
-      if (rightArmRef.current) {
-        rightArmRef.current.rotation.x = THREE.MathUtils.lerp(
-          rightArmRef.current.rotation.x,
-          -1.2 + Math.sin(t * 4) * 0.3,
-          0.08
-        );
-        rightArmRef.current.rotation.z = THREE.MathUtils.lerp(
-          rightArmRef.current.rotation.z,
-          -0.4 + Math.sin(t * 4) * 0.2,
-          0.08
-        );
-      }
-      if (leftArmRef.current) {
-        leftArmRef.current.rotation.x = THREE.MathUtils.lerp(
-          leftArmRef.current.rotation.x,
-          -0.8 + Math.sin(t * 3 + 1) * 0.5,
-          0.08
-        );
-        leftArmRef.current.rotation.z = THREE.MathUtils.lerp(
-          leftArmRef.current.rotation.z,
-          0.6 + Math.sin(t * 3) * 0.3,
-          0.08
-        );
-      }
-      if (headRef.current) {
-        headRef.current.rotation.z = Math.sin(t * 3) * 0.1;
-        headRef.current.rotation.x = Math.sin(t * 2) * 0.05 - 0.1;
-      }
-      if (bodyRef.current)
-        bodyRef.current.position.y = Math.abs(Math.sin(t * 4)) * 0.04;
-    }
-
-    if (phase === 'idle') {
-      if (bodyRef.current)
-        bodyRef.current.position.y = Math.sin(t * 1.5) * 0.02;
+      if (bodyRef.current) bodyRef.current.position.y = Math.abs(Math.sin(t * 8)) * 0.03;
+      if (headRef.current) headRef.current.rotation.z = Math.sin(t * 4) * 0.04;
+    } else {
+      if (leftLegRef.current) leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, 0, 0.15);
+      if (rightLegRef.current) rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, 0, 0.15);
+      if (leftArmRef.current) leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, 0, 0.15);
+      if (rightArmRef.current) rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, 0, 0.15);
+      if (bodyRef.current) bodyRef.current.position.y = Math.sin(t * 1.5) * 0.02;
       if (headRef.current) headRef.current.rotation.z = Math.sin(t * 0.8) * 0.04;
     }
   });
@@ -191,7 +533,22 @@ function Chibi({ phase, onPhaseChange }) {
   const eyeColor = '#7c3aed';
 
   return (
-    <group ref={group} position={CHIBI_START} castShadow>
+    <group
+      ref={group}
+      position={chibiPos}
+      onClick={(e) => {
+        e.stopPropagation();
+        setChibiSelected((s) => !s);
+        setSelectedRoom(null);
+      }}
+      castShadow
+    >
+      {chibiSelected && (
+        <mesh position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.42, 0.42, 0.03, 24]} />
+          <meshStandardMaterial color="#ff69b4" emissive="#ff69b4" emissiveIntensity={0.35} transparent opacity={0.65} />
+        </mesh>
+      )}
       <mesh ref={bodyRef} position={[0, 0.35, 0]} castShadow>
         <boxGeometry args={[0.32, 0.38, 0.22]} />
         <meshStandardMaterial color={outfitColor} roughness={0.7} />
@@ -304,33 +661,11 @@ function Chibi({ phase, onPhaseChange }) {
   );
 }
 
-function SceneController({ phase, setPhase }) {
-  useEffect(() => {
-    if (phase === 'idle') {
-      const t = setTimeout(() => setPhase('walking'), 1800);
-      return () => clearTimeout(t);
-    }
-    if (phase === 'pickup') {
-      const t = setTimeout(() => setPhase('holding'), 1600);
-      return () => clearTimeout(t);
-    }
-  }, [phase, setPhase]);
-
-  return null;
-}
-
-const PHASE_LABELS = {
-  idle: '✨ In the coder room...',
-  walking: '🚶‍♀️ Walking across the room...',
-  pickup: '🤏 Picking up the laptop...',
-  holding: '💻 Waving the laptop!',
-};
-
 function FloatParticle({ index }) {
   const mesh = useRef();
   const speed = 0.4 + (index % 5) * 0.2;
-  const xPos = -2.2 + (index % 6) * 0.75;
-  const zBase = -1.85 + (index % 3) * 0.35;
+  const xPos = -6 + (index % 10) * 1.35;
+  const zBase = -3.5 + (index % 5) * 1.4;
   const phase = index * 0.9;
 
   useFrame(({ clock }) => {
@@ -521,21 +856,44 @@ function RoomFurniture({ onBedClick }) {
   );
 }
 
+function CameraRig({ focusRoom, controlsRef }) {
+  const { camera } = useThree();
+
+  useFrame(() => {
+    const roomPos = ROOMS[focusRoom]?.pos ?? [0, 0, 0];
+    const target = new THREE.Vector3(roomPos[0], 0.2, roomPos[2]);
+    const desiredCam = new THREE.Vector3(roomPos[0], 14, roomPos[2] + 10);
+    camera.position.lerp(desiredCam, 0.08);
+    if (controlsRef.current) {
+      controlsRef.current.target.lerp(target, 0.08);
+      controlsRef.current.update();
+    }
+  });
+
+  return null;
+}
+
 export default function ChibiScene() {
-  const [phase, setPhase] = useState('idle');
-  const [runId, setRunId] = useState(0);
-  const [bedMessage, setBedMessage] = useState(false);
+  const [chibiPos, setChibiPos] = useState([-4.2, 0, 2.2]);
+  const [chibiSelected, setChibiSelected] = useState(false);
+  const [chibiTarget, setChibiTarget] = useState(null);
+  const [popup, setPopup] = useState({ visible: false, message: '' });
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [focusRoom, setFocusRoom] = useState('bedroom');
+  const controlsRef = useRef();
 
-  useEffect(() => {
-    if (!bedMessage) return undefined;
-    const dismiss = () => setBedMessage(false);
-    window.addEventListener('pointerdown', dismiss);
-    return () => window.removeEventListener('pointerdown', dismiss);
-  }, [bedMessage]);
+  const roomKeys = useMemo(() => Object.keys(ROOMS), []);
 
-  const handleReplay = () => {
-    setRunId((k) => k + 1);
-    setPhase('idle');
+  const showPopup = (message) => {
+    setPopup({ visible: true, message });
+  };
+
+  const onRoomClick = (roomKey) => {
+    setSelectedRoom(roomKey);
+    if (chibiSelected) {
+      setChibiTarget(ROOMS[roomKey].pos);
+      setChibiSelected(false);
+    }
   };
 
   return (
@@ -566,17 +924,6 @@ export default function ChibiScene() {
       >
         ← marissa codes
       </a>
-
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          background:
-            'radial-gradient(ellipse at 25% 20%, rgba(255,182,193,0.35) 0%, transparent 55%), radial-gradient(ellipse at 80% 80%, rgba(255,192,203,0.25) 0%, transparent 50%)',
-        }}
-      />
-
       <div
         style={{
           position: 'absolute',
@@ -587,87 +934,22 @@ export default function ChibiScene() {
           backdropFilter: 'blur(12px)',
           border: '1px solid rgba(255,182,193,0.65)',
           borderRadius: 999,
-          padding: '10px 28px',
+          padding: '10px 24px',
           color: '#9d174d',
-          fontSize: 16,
-          fontWeight: 600,
+          fontSize: 15,
+          fontWeight: 700,
           letterSpacing: '0.04em',
           zIndex: 10,
-          transition: 'all 0.4s ease',
         }}
       >
-        {PHASE_LABELS[phase]}
+        {chibiSelected ? '✨ Select a room for Chibi' : `📍 ${selectedRoom ? ROOMS[selectedRoom].label : 'Click Chibi to move her'}`}
       </div>
-
-      {phase === 'holding' && (
-        <button
-          type="button"
-          onClick={handleReplay}
-          style={{
-            position: 'absolute',
-            bottom: 36,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'linear-gradient(135deg, #a855f7, #ec4899)',
-            border: 'none',
-            borderRadius: 999,
-            padding: '14px 40px',
-            color: 'white',
-            fontSize: 15,
-            fontWeight: 700,
-            cursor: 'pointer',
-            letterSpacing: '0.06em',
-            zIndex: 10,
-            boxShadow: '0 0 30px rgba(168,85,247,0.5)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            fontFamily: 'inherit',
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'translateX(-50%) scale(1.07)';
-            e.target.style.boxShadow = '0 0 50px rgba(168,85,247,0.8)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'translateX(-50%) scale(1)';
-            e.target.style.boxShadow = '0 0 30px rgba(168,85,247,0.5)';
-          }}
-        >
-          ↺ Replay
-        </button>
-      )}
-
-      {bedMessage && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 25,
-            background: 'rgba(255, 255, 255, 0.88)',
-            border: '2px solid #ff69b4',
-            borderRadius: 18,
-            padding: '14px 22px',
-            color: '#9d174d',
-            fontSize: 18,
-            fontWeight: 700,
-            letterSpacing: '0.02em',
-            backdropFilter: 'blur(12px)',
-            boxShadow: '0 14px 28px rgba(255, 105, 180, 0.25)',
-            textAlign: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          ✨ shh i'm dreaming of shipping features 🌙
-        </div>
-      )}
 
       <Canvas
         shadows
-        camera={{ position: [0, 1.8, 5.5], fov: 45 }}
+        camera={{ position: [0, 14, 10], fov: 40 }}
         style={{ width: '100%', height: '100%' }}
       >
-        <SceneController phase={phase} setPhase={setPhase} />
-
         <ambientLight intensity={0.72} color="#ffe4ec" />
         <directionalLight
           castShadow
@@ -679,31 +961,138 @@ export default function ChibiScene() {
         <pointLight position={[1.2, 1.5, 0.8]} intensity={0.45} color="#ffb7c5" distance={8} />
         <pointLight position={[-2.2, 1.2, -1]} intensity={0.35} color="#ffc2d4" distance={7} />
         <pointLight position={[0, 2.5, -1]} intensity={0.28} color="#ffffff" distance={6} />
+        {roomKeys.map((k) => (
+          <pointLight key={`room-light-${k}`} position={[ROOMS[k].pos[0], 2, ROOMS[k].pos[2]]} intensity={0.3} color="#ffb7c5" distance={6} />
+        ))}
 
-        <PinkRoom />
-        <RoomFurniture onBedClick={() => setBedMessage(true)} />
+        {roomKeys.map((k) => (
+          <RoomShell key={k} roomKey={k} onRoomClick={onRoomClick} />
+        ))}
+        <DividerWalls />
+
+        <BedroomFurniture showPopup={showPopup} />
+        <LivingFurniture showPopup={showPopup} />
+        <OfficeFurniture showPopup={showPopup} />
+        <LibraryFurniture showPopup={showPopup} />
+        <ClosetFurniture showPopup={showPopup} />
 
         <Chibi
-          key={runId}
-          phase={phase}
-          onPhaseChange={(next) => setPhase(next)}
+          chibiPos={chibiPos}
+          setChibiPos={setChibiPos}
+          chibiTarget={chibiTarget}
+          setChibiTarget={setChibiTarget}
+          chibiSelected={chibiSelected}
+          setChibiSelected={setChibiSelected}
+          setSelectedRoom={setSelectedRoom}
         />
-
-        <Laptop phase={phase} />
 
         {[...Array(12)].map((_, i) => (
           <FloatParticle key={i} index={i} />
         ))}
 
+        <CameraRig focusRoom={focusRoom} controlsRef={controlsRef} />
         <OrbitControls
+          ref={controlsRef}
           enablePan={false}
-          minDistance={3.2}
-          maxDistance={8}
-          minPolarAngle={0.35}
-          maxPolarAngle={Math.PI / 2.15}
-          target={[0, 0.6, 0]}
+          enableRotate={false}
+          enableZoom
+          minDistance={8}
+          maxDistance={22}
+          target={[0, 0, 0]}
         />
       </Canvas>
+
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 24,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 20,
+          display: 'flex',
+          gap: 8,
+          background: 'rgba(255,255,255,0.8)',
+          padding: '8px 12px',
+          borderRadius: 999,
+          border: '1px solid rgba(255, 105, 180, 0.3)',
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        {roomKeys.map((roomKey) => (
+          <button
+            key={roomKey}
+            type="button"
+            onClick={() => setFocusRoom(roomKey)}
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 10,
+              border: 'none',
+              cursor: 'pointer',
+              background: focusRoom === roomKey ? '#ff69b4' : '#fbcfe8',
+              color: focusRoom === roomKey ? '#fff' : '#9d174d',
+              fontSize: 16,
+              fontWeight: 700,
+              boxShadow: focusRoom === roomKey ? '0 0 16px rgba(255, 105, 180, 0.45)' : 'none',
+            }}
+            aria-label={`Focus ${ROOMS[roomKey].label}`}
+          >
+            {ROOMS[roomKey].emoji}
+          </button>
+        ))}
+      </div>
+
+      {popup.visible && (
+        <div
+          onClick={() => setPopup({ visible: false, message: '' })}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255, 182, 193, 0.14)',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              background: 'rgba(255,255,255,0.92)',
+              backdropFilter: 'blur(16px)',
+              border: '2px solid #ff69b4',
+              borderRadius: 24,
+              padding: '24px 36px',
+              fontSize: 18,
+              fontWeight: 700,
+              color: '#9d174d',
+              boxShadow: '0 8px 32px rgba(255,105,180,0.3)',
+              textAlign: 'center',
+              maxWidth: 520,
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setPopup({ visible: false, message: '' })}
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 12,
+                border: 'none',
+                background: 'transparent',
+                color: '#ff69b4',
+                fontSize: 18,
+                fontWeight: 800,
+                cursor: 'pointer',
+              }}
+            >
+              ✕
+            </button>
+            {popup.message}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
