@@ -422,6 +422,21 @@ function IslandWorld() {
   );
 }
 
+function ResponsiveCamera() {
+  const { camera, size } = useThree();
+  useEffect(() => {
+    if (size.width < 640) {
+      camera.zoom = 48;
+    } else if (size.width < 1024) {
+      camera.zoom = 65;
+    } else {
+      camera.zoom = 88;
+    }
+    camera.updateProjectionMatrix();
+  }, [size, camera]);
+  return null;
+}
+
 export default function IslandHomepageScene() {
   return (
     <Canvas
@@ -432,6 +447,7 @@ export default function IslandHomepageScene() {
       camera={{ position: [11, 10, 11], zoom: 88, near: 0.1, far: 200 }}
       style={{ width: '100%', height: '100%' }}
     >
+      <ResponsiveCamera />
       <SkyLayer />
       <IslandWorld />
     </Canvas>

@@ -114,13 +114,13 @@ export default function KawaiiIslandLandingPage() {
       <Cloud className="left-[26%] top-[18%] scale-75" />
 
 
-      <section className="relative z-20 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center px-4 pb-14 pt-7 sm:px-6 animate-ui-fade">
+      <section className="relative z-20 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center px-4 pb-6 pt-4 sm:px-6 sm:pb-14 sm:pt-7 animate-ui-fade pointer-events-none">
 
         <div
-          className="relative mb-6 w-full max-w-[480px] transition-transform duration-500 ease-out md:mb-4"
+          className="relative mb-2 w-full max-w-[480px] transition-transform duration-500 ease-out sm:mb-6 md:mb-4 pointer-events-auto"
           style={heroStyle}
         >
-          <div className="relative rounded-[30px] border-[4px] border-[#ffb3d9] bg-[#fffafc] px-5 py-4 text-center shadow-[0_8px_16px_rgba(212,130,170,0.12),inset_0_2px_0_rgba(255,255,255,1)] sm:px-8 md:mt-0 md:px-10 md:py-5">
+          <div className="relative rounded-[30px] border-[4px] border-[#ffb3d9] bg-[#fffafc] px-4 py-3 text-center shadow-[0_8px_16px_rgba(212,130,170,0.12),inset_0_2px_0_rgba(255,255,255,1)] sm:px-8 sm:py-4 md:mt-0 md:px-10 md:py-5">
             <div className="absolute -right-3 -top-4 text-3xl sm:text-4xl" style={{ animation: 'floaty 3s ease-in-out infinite' }}>
               🎀
             </div>
@@ -135,14 +135,14 @@ export default function KawaiiIslandLandingPage() {
               <div
                 role="heading"
                 aria-level="1"
-                className={`text-xl font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-2xl md:text-3xl ${
+                className={`text-lg font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-2xl md:text-3xl ${
                   titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3'
                 }`}
               >
                 Welcome To My Island
               </div>
               <p
-                className={`mt-1.5 text-xs font-bold text-[#967bb6] transition-all duration-1000 sm:text-sm md:mt-2 md:text-base ${
+                className={`mt-1 text-xs font-bold text-[#967bb6] transition-all duration-1000 sm:text-sm md:mt-2 md:text-base ${
                   titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
                 }`}
               >
@@ -152,22 +152,22 @@ export default function KawaiiIslandLandingPage() {
           </div>
         </div>
 
-        <div className="mt-auto grid w-full max-w-[960px] grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-7">
+        <div className="mt-auto flex w-full max-w-[960px] snap-x snap-mandatory flex-row gap-3 overflow-x-auto pb-4 pt-2 pointer-events-auto sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:pb-0 lg:flex lg:justify-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {MENU_ITEMS.map((item) => (
             <a
               key={item.label}
               href={item.href}
-              className="group rounded-[24px] border-[4px] border-[#efd2de] bg-[linear-gradient(180deg,#fff8fc_0%,#fff0f7_100%)] px-3 py-3 shadow-[0_10px_20px_rgba(206,140,171,0.16),inset_0_2px_0_rgba(255,255,255,0.95)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_24px_rgba(206,140,171,0.22)] sm:py-4"
+              className="group shrink-0 snap-center rounded-[24px] border-[4px] border-[#efd2de] bg-[linear-gradient(180deg,#fff8fc_0%,#fff0f7_100%)] px-3 py-3 w-[120px] shadow-[0_10px_20px_rgba(206,140,171,0.16),inset_0_2px_0_rgba(255,255,255,0.95)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_24px_rgba(206,140,171,0.22)] sm:w-auto sm:py-4 lg:w-[130px]"
             >
               <div className="flex flex-col items-center justify-center gap-2">
                 <div className="text-3xl transition group-hover:scale-110">{item.emoji}</div>
-                <div className="text-sm font-extrabold text-[#8f6b7d] sm:text-base">{item.label}</div>
+                <div className="text-sm font-extrabold text-[#8f6b7d] sm:text-base text-center leading-tight">{item.label}</div>
               </div>
             </a>
           ))}
         </div>
 
-        <div className="mt-7 rounded-full border-[4px] border-[#efbfd1] bg-[linear-gradient(180deg,#ffe9f2_0%,#ffdbe9_100%)] px-8 py-4 text-center text-base font-black tracking-wide text-[#b45e89] shadow-[0_12px_24px_rgba(226,126,175,0.18),inset_0_2px_0_rgba(255,255,255,0.88)] sm:px-10 sm:text-lg">
+        <div className="mt-4 rounded-full border-[4px] border-[#efbfd1] bg-[linear-gradient(180deg,#ffe9f2_0%,#ffdbe9_100%)] px-6 py-3 text-center text-sm font-black tracking-wide text-[#b45e89] shadow-[0_12px_24px_rgba(226,126,175,0.18),inset_0_2px_0_rgba(255,255,255,0.88)] pointer-events-auto sm:mt-7 sm:px-10 sm:py-4 sm:text-lg">
           MARISSA CODES ✨ ISLAND EDITION
         </div>
       </section>
