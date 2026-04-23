@@ -846,9 +846,9 @@ function Chibi({
   const movingRef = useRef(false);
   const animRef = useRef('idle');
 
-  const idleGltf = useGLTF('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Idle_4_withSkin.glb');
-  const walkGltf = useGLTF('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb');
-  const runGltf = useGLTF('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Running_withSkin.glb');
+  const idleGltf = useGLTF('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Wave_One_Hand_withSkin.glb');
+  const walkGltf = useGLTF('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Walking_withSkin.glb');
+  const runGltf = useGLTF('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Running_withSkin.glb');
 
   const chibiModel = useMemo(() => {
     const cloned = SkeletonUtils.clone(idleGltf.scene);
@@ -1422,6 +1422,6 @@ export default function ChibiScene({ embedded = false }) {
   );
 }
 
-useGLTF.preload('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Idle_4_withSkin.glb');
-useGLTF.preload('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb');
-useGLTF.preload('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Running_withSkin.glb');
+useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Wave_One_Hand_withSkin.glb');
+useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Walking_withSkin.glb');
+useGLTF.preload('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Running_withSkin.glb');
