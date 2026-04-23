@@ -117,30 +117,30 @@ export default function KawaiiIslandLandingPage() {
       <section className="relative z-20 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center px-4 pb-14 pt-7 sm:px-6 animate-ui-fade">
 
         <div
-          className="relative mb-6 w-full max-w-[660px] transition-transform duration-500 ease-out md:mb-4"
+          className="relative mb-6 w-full max-w-[480px] transition-transform duration-500 ease-out md:mb-4"
           style={heroStyle}
         >
-          <div className="relative rounded-[40px] border-[6px] border-[#ffb3d9] bg-[#fffafc] px-6 py-6 text-center shadow-[0_12px_24px_rgba(212,130,170,0.12),inset_0_2px_0_rgba(255,255,255,1)] sm:px-10 md:mt-0 md:px-12 md:py-7">
-            <div className="absolute -right-4 -top-5 text-4xl sm:text-5xl" style={{ animation: 'floaty 3s ease-in-out infinite' }}>
+          <div className="relative rounded-[30px] border-[4px] border-[#ffb3d9] bg-[#fffafc] px-5 py-4 text-center shadow-[0_8px_16px_rgba(212,130,170,0.12),inset_0_2px_0_rgba(255,255,255,1)] sm:px-8 md:mt-0 md:px-10 md:py-5">
+            <div className="absolute -right-3 -top-4 text-3xl sm:text-4xl" style={{ animation: 'floaty 3s ease-in-out infinite' }}>
               🎀
             </div>
-            <div className="absolute -left-3 top-[40%] text-xl sm:text-2xl" style={{ animation: 'floaty 2.8s ease-in-out infinite' }}>
+            <div className="absolute -left-3 top-[40%] text-lg sm:text-xl" style={{ animation: 'floaty 2.8s ease-in-out infinite' }}>
               🌸
             </div>
-            <div className="absolute -bottom-3 right-6 text-xl sm:text-2xl" style={{ animation: 'floaty 3.2s ease-in-out infinite' }}>
+            <div className="absolute -bottom-3 right-5 text-lg sm:text-xl" style={{ animation: 'floaty 3.2s ease-in-out infinite' }}>
               🌸
             </div>
 
             <div>
               <h1
-                className={`text-2xl font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-3xl md:text-4xl ${
+                className={`text-xl font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-2xl md:text-3xl ${
                   titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3'
                 }`}
               >
                 Welcome To My Island
               </h1>
               <p
-                className={`mt-2 text-sm font-bold text-[#967bb6] transition-all duration-1000 sm:text-base md:mt-3 md:text-lg ${
+                className={`mt-1.5 text-xs font-bold text-[#967bb6] transition-all duration-1000 sm:text-sm md:mt-2 md:text-base ${
                   titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
                 }`}
               >
