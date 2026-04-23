@@ -5,17 +5,17 @@ import * as THREE from 'three';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 const ROOMS = {
-  bedroom: { pos: [-3.9, 0.55, -0.25], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd6e0' },
+  bedroom: { pos: [-3.9, 0.55, -0.25], label: '🛏️ Bedroom', emoji: '🛏️', floor: '#ffd9ea' },
   closet: { pos: [0, 0.55, -0.25], label: '🎀 Closet', emoji: '🎀', floor: '#fce7f3' },
-  library: { pos: [3.9, 0.55, -0.25], label: '📚 Library', emoji: '📚', floor: '#fef3c7' },
-  living: { pos: [-3.9, -2.55, -0.25], label: '🛋️ Living Room', emoji: '🛋️', floor: '#ffe4ec' },
+  library: { pos: [3.9, 0.55, -0.25], label: '📚 Library', emoji: '📚', floor: '#f8ead8' },
+  living: { pos: [-3.9, -2.55, -0.25], label: '🛋️ Living Room', emoji: '🛋️', floor: '#fff4fa' },
   office: { pos: [0, -2.55, -0.25], label: '💻 Office', emoji: '💻', floor: '#f3e8ff' },
 };
 
 const DOLLHOUSE_COLORS = {
-  hot: '#e91e8c',
-  darkPink: '#c2185b',
-  accent: '#f48fb1',
+  hot: '#ef5da8',
+  darkPink: '#b45e89',
+  accent: '#f0bfd4',
 };
 
 function ClickableFurniture({ position, rotation = [0, 0, 0], onClick, children }) {
@@ -57,7 +57,7 @@ function ClickableFurniture({ position, rotation = [0, 0, 0], onClick, children 
       {hovered && (
         <mesh>
           <boxGeometry args={hoverSize} />
-          <meshStandardMaterial color="#ff69b4" transparent opacity={0.18} emissive="#ff69b4" emissiveIntensity={0.35} />
+          <meshStandardMaterial color="#ef5da8" transparent opacity={0.18} emissive="#ef5da8" emissiveIntensity={0.35} />
         </mesh>
       )}
       {children}
@@ -70,7 +70,7 @@ function RoomShell({ roomKey, onRoomClick }) {
   const [x, y, z] = room.pos;
   const wallpaper = {
     bedroom: '#ffe0ec',
-    library: '#fef9c3',
+    library: '#f8ead8',
     office: '#ede9fe',
     living: '#fff0f5',
     closet: '#f3e8ff',
@@ -102,7 +102,7 @@ function RoomShell({ roomKey, onRoomClick }) {
         Array.from({ length: 10 }).map((_, i) => (
           <mesh key={`lib-stripe-${i}`} position={[-1.65 + i * 0.37, 0.72, -1.69]}>
             <boxGeometry args={[0.05, 1.2, 0.02]} />
-            <meshStandardMaterial color="#facc15" emissive="#fef08a" emissiveIntensity={0.08} />
+            <meshStandardMaterial color="#cda7ff" emissive="#ffd9ea" emissiveIntensity={0.08} />
           </mesh>
         ))}
       {roomKey === 'office' &&
@@ -116,13 +116,13 @@ function RoomShell({ roomKey, onRoomClick }) {
         Array.from({ length: 9 }).map((_, i) => (
           <mesh key={`liv-stripe-${i}`} position={[-1.52 + i * 0.38, 0.72, -1.69]}>
             <boxGeometry args={[0.08, 1.22, 0.02]} />
-            <meshStandardMaterial color="#f9a8d4" emissive="#fbcfe8" emissiveIntensity={0.09} />
+            <meshStandardMaterial color="#ffd9ea" emissive="#f8ead8" emissiveIntensity={0.09} />
           </mesh>
         ))}
       <Text
         position={[0, 1.52, 0.55]}
         fontSize={0.28}
-        color="#9d174d"
+        color="#8f5f79"
         anchorX="center"
         anchorY="middle"
       >
@@ -1214,11 +1214,12 @@ export default function ChibiScene({ embedded = false }) {
       style={{
         width: embedded ? '100%' : '100vw',
         height: embedded ? '100%' : '100vh',
-        background: 'linear-gradient(180deg, #fff5f7 0%, #ffe4ec 45%, #ffd6e0 100%)',
+        background: 'radial-gradient(circle at 14% 18%, rgba(255,217,234,0.62) 0, rgba(255,217,234,0) 26%), radial-gradient(circle at 84% 12%, rgba(205,167,255,0.4) 0, rgba(205,167,255,0) 28%), linear-gradient(180deg, #9ed8ff 0%, #b8e7ff 42%, #ffe8f2 100%)',
         fontFamily: "'Nunito', system-ui, sans-serif",
         position: 'relative',
         overflow: 'hidden',
         margin: 0,
+        color: '#8f5f79',
       }}
     >
       {!embedded && (
@@ -1229,11 +1230,16 @@ export default function ChibiScene({ embedded = false }) {
             top: 20,
             left: 20,
             zIndex: 20,
-            color: '#c2185b',
+            color: '#b45e89',
             textDecoration: 'none',
             fontSize: 14,
             fontWeight: 800,
             letterSpacing: '0.04em',
+            background: 'linear-gradient(180deg, #fff8ef 0%, #ffd9ea 100%)',
+            border: '2px solid #f0bfd4',
+            borderRadius: 999,
+            padding: '9px 16px',
+            boxShadow: '0 10px 20px rgba(180, 94, 137, 0.16)',
           }}
         >
           ← marissa codes
@@ -1245,17 +1251,18 @@ export default function ChibiScene({ embedded = false }) {
           top: 28,
           left: '50%',
           transform: 'translateX(-50%)',
-          background: 'rgba(255,255,255,0.72)',
+          background: 'linear-gradient(180deg, rgba(255,248,239,0.92) 0%, rgba(255,244,250,0.9) 100%)',
           backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255,182,193,0.65)',
+          border: '3px solid #f0bfd4',
           borderRadius: 999,
           padding: '10px 24px',
-          color: '#9d174d',
+          color: '#b45e89',
           fontSize: 15,
-          fontWeight: 700,
+          fontWeight: 800,
           letterSpacing: '0.04em',
           zIndex: 10,
           display: embedded ? 'none' : 'block',
+          boxShadow: '0 14px 28px rgba(90, 126, 152, 0.14)',
         }}
       >
         {chibiSelected ? '✨ Select a room for Chibi' : `📍 ${selectedRoom ? ROOMS[selectedRoom].label : 'Click Chibi to move her'}`}
@@ -1266,22 +1273,22 @@ export default function ChibiScene({ embedded = false }) {
         camera={{ position: [0, 6, 18], fov: 38 }}
         style={{ width: '100%', height: '100%' }}
       >
-        <color attach="background" args={['#fce4ec']} />
+        <color attach="background" args={['#b8e7ff']} />
         <DollhouseBackdrop />
         <KawaiiAtmosphere />
-        <ambientLight intensity={0.72} color="#ffe4ec" />
+        <ambientLight intensity={0.72} color="#fff8ef" />
         <directionalLight
           castShadow
           position={[4, 6, 4]}
           intensity={1.05}
-          color="#fff8f8"
+          color="#fff8ef"
           shadow-mapSize={[2048, 2048]}
         />
-        <pointLight position={[1.2, 1.5, 0.8]} intensity={0.45} color="#ffb7c5" distance={8} />
-        <pointLight position={[-2.2, 1.2, -1]} intensity={0.35} color="#ffc2d4" distance={7} />
+        <pointLight position={[1.2, 1.5, 0.8]} intensity={0.45} color="#ffd9ea" distance={8} />
+        <pointLight position={[-2.2, 1.2, -1]} intensity={0.35} color="#cda7ff" distance={7} />
         <pointLight position={[0, 2.5, -1]} intensity={0.28} color="#ffffff" distance={6} />
         {roomKeys.map((k) => (
-          <pointLight key={`room-light-${k}`} position={[ROOMS[k].pos[0], ROOMS[k].pos[1] + 2, ROOMS[k].pos[2] + 0.2]} intensity={0.3} color="#ffb7c5" distance={6} />
+          <pointLight key={`room-light-${k}`} position={[ROOMS[k].pos[0], ROOMS[k].pos[1] + 2, ROOMS[k].pos[2] + 0.2]} intensity={0.3} color="#ffd9ea" distance={6} />
         ))}
 
         {roomKeys.map((k) => (
@@ -1335,11 +1342,12 @@ export default function ChibiScene({ embedded = false }) {
             zIndex: 20,
             display: 'flex',
             gap: 8,
-            background: 'rgba(255,255,255,0.8)',
+            background: 'linear-gradient(180deg, rgba(255,248,239,0.92) 0%, rgba(255,244,250,0.9) 100%)',
             padding: '8px 12px',
             borderRadius: 999,
-            border: '1px solid rgba(255, 105, 180, 0.3)',
+            border: '3px solid #f0bfd4',
             backdropFilter: 'blur(10px)',
+            boxShadow: '0 14px 28px rgba(90, 126, 152, 0.14)',
           }}
         >
           {roomKeys.map((roomKey) => (
@@ -1351,13 +1359,13 @@ export default function ChibiScene({ embedded = false }) {
                 width: 34,
                 height: 34,
                 borderRadius: 10,
-                border: 'none',
+                border: focusRoom === roomKey ? '2px solid #ef5da8' : '2px solid #f0bfd4',
                 cursor: 'pointer',
-                background: focusRoom === roomKey ? '#ff69b4' : '#fbcfe8',
-                color: focusRoom === roomKey ? '#fff' : '#9d174d',
+                background: focusRoom === roomKey ? '#ef5da8' : '#f8ead8',
+                color: focusRoom === roomKey ? '#fff' : '#b45e89',
                 fontSize: 16,
-                fontWeight: 700,
-                boxShadow: focusRoom === roomKey ? '0 0 16px rgba(255, 105, 180, 0.45)' : 'none',
+                fontWeight: 800,
+                boxShadow: focusRoom === roomKey ? '0 0 16px rgba(239, 93, 168, 0.38)' : 'none',
               }}
               aria-label={`Focus ${ROOMS[roomKey].label}`}
             >
@@ -1377,22 +1385,22 @@ export default function ChibiScene({ embedded = false }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'rgba(255, 182, 193, 0.14)',
+            background: 'rgba(158, 216, 255, 0.28)',
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
               position: 'relative',
-              background: 'rgba(255,255,255,0.92)',
+              background: 'linear-gradient(180deg, rgba(255,248,239,0.96) 0%, rgba(255,244,250,0.94) 100%)',
               backdropFilter: 'blur(16px)',
-              border: '2px solid #ff69b4',
+              border: '3px solid #f0bfd4',
               borderRadius: 24,
               padding: '24px 36px',
               fontSize: 18,
-              fontWeight: 700,
-              color: '#9d174d',
-              boxShadow: '0 8px 32px rgba(255,105,180,0.3)',
+              fontWeight: 800,
+              color: '#8f5f79',
+              boxShadow: '0 18px 36px rgba(180,94,137,0.22)',
               textAlign: 'center',
               maxWidth: 520,
             }}
@@ -1406,7 +1414,7 @@ export default function ChibiScene({ embedded = false }) {
                 right: 12,
                 border: 'none',
                 background: 'transparent',
-                color: '#ff69b4',
+                color: '#ef5da8',
                 fontSize: 18,
                 fontWeight: 800,
                 cursor: 'pointer',

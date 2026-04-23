@@ -19,7 +19,6 @@ const PALETTE = {
 function SkyLayer() {
   return (
     <>
-      <color attach="background" args={['#8ec8ec']} />
       <fog attach="fog" args={['#98d0ef', 18, 40]} />
       <Float speed={0.9} rotationIntensity={0.04} floatIntensity={0.12}>
         <mesh position={[-7.5, 7.2, -8]}>
@@ -404,6 +403,8 @@ export default function IslandHomepageScene() {
     <Canvas
       shadows
       orthographic
+      gl={{ alpha: true, antialias: true }}
+      onCreated={({ gl }) => gl.setClearColor('#000000', 0)}
       camera={{ position: [12, 12, 12], zoom: 72, near: 0.1, far: 200 }}
       style={{ width: '100%', height: '100%' }}
     >
