@@ -62,8 +62,8 @@ h1,
 
 .models-showcase {
   width: 100%;
-  max-width: 920px;
-  margin: 0.75rem auto 1.25rem;
+  max-width: 1120px;
+  margin: 0.35rem auto 1.5rem;
   padding: 0 12px;
   display: grid;
   grid-template-columns: 1fr;
@@ -71,8 +71,8 @@ h1,
 }
 
 .meshy-home-wrap {
-  margin: 0.25rem auto 2rem;
-  max-width: 880px;
+  margin: 0.1rem auto 2.25rem;
+  max-width: 1080px;
 }
 
 .meshy-room-inner {
@@ -81,8 +81,8 @@ h1,
 
 .meshy-three-canvas {
   width: 100%;
-  height: min(52vh, 480px);
-  min-height: 300px;
+  height: min(68vh, 680px);
+  min-height: 430px;
   border-radius: 24px;
   overflow: hidden;
   background: #fff5f7;
