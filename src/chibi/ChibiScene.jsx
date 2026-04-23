@@ -1,6 +1,6 @@
 import { useRef, useEffect, useMemo, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Text, useAnimations, useGLTF } from '@react-three/drei';
+import { Float, OrbitControls, Stars, Text, useAnimations, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
@@ -10,6 +10,12 @@ const ROOMS = {
   library: { pos: [3.9, 0.55, -0.25], label: '📚 Library', emoji: '📚', floor: '#fef3c7' },
   living: { pos: [-3.9, -2.55, -0.25], label: '🛋️ Living Room', emoji: '🛋️', floor: '#ffe4ec' },
   office: { pos: [0, -2.55, -0.25], label: '💻 Office', emoji: '💻', floor: '#f3e8ff' },
+};
+
+const DOLLHOUSE_COLORS = {
+  hot: '#e91e8c',
+  darkPink: '#c2185b',
+  accent: '#f48fb1',
 };
 
 function ClickableFurniture({ position, rotation = [0, 0, 0], onClick, children }) {
@@ -419,31 +425,138 @@ function DollhouseBackdrop() {
   );
 }
 
+function KawaiiAtmosphere() {
+  return (
+    <>
+      <Stars radius={52} depth={20} count={1100} factor={2.4} saturation={0} fade speed={0.25} />
+      <Float speed={2} rotationIntensity={0.1} floatIntensity={0.2}>
+        <group position={[0, 5.9, 1.15]}>
+          <mesh position={[-0.18, 0, 0]}>
+            <torusGeometry args={[0.16, 0.05, 8, 20, Math.PI]} />
+            <meshStandardMaterial color={DOLLHOUSE_COLORS.hot} />
+          </mesh>
+          <mesh position={[0.18, 0, 0]} rotation={[0, 0, Math.PI]}>
+            <torusGeometry args={[0.16, 0.05, 8, 20, Math.PI]} />
+            <meshStandardMaterial color={DOLLHOUSE_COLORS.hot} />
+          </mesh>
+          <mesh>
+            <boxGeometry args={[0.08, 0.12, 0.07]} />
+            <meshStandardMaterial color={DOLLHOUSE_COLORS.darkPink} />
+          </mesh>
+        </group>
+      </Float>
+    </>
+  );
+}
+
+function DollhouseBed({ position = [0, 0, 0] }) {
+  return (
+    <group position={position}>
+      <mesh position={[0, 0.1, 0]} castShadow>
+        <boxGeometry args={[0.7, 0.12, 1.1]} />
+        <meshStandardMaterial color={DOLLHOUSE_COLORS.accent} />
+      </mesh>
+      <mesh position={[0, 0.19, 0]} castShadow>
+        <boxGeometry args={[0.65, 0.1, 1.0]} />
+        <meshStandardMaterial color="#fff9fb" />
+      </mesh>
+      <mesh position={[0, 0.26, -0.38]} castShadow>
+        <boxGeometry args={[0.5, 0.08, 0.22]} />
+        <meshStandardMaterial color="#f3e5f5" />
+      </mesh>
+      <mesh position={[0, 0.35, -0.56]} castShadow>
+        <boxGeometry args={[0.7, 0.5, 0.06]} />
+        <meshStandardMaterial color={DOLLHOUSE_COLORS.hot} />
+      </mesh>
+    </group>
+  );
+}
+
+function DollhouseDresser({ position = [0, 0, 0] }) {
+  return (
+    <group position={position}>
+      <mesh position={[0, 0.22, 0]} castShadow>
+        <boxGeometry args={[0.5, 0.44, 0.3]} />
+        <meshStandardMaterial color="#fff9fb" />
+      </mesh>
+      {[-0.08, 0.08].map((y, i) => (
+        <mesh key={`dresser-line-${i}`} position={[0, y + 0.22, 0.152]} castShadow>
+          <boxGeometry args={[0.44, 0.01, 0.01]} />
+          <meshStandardMaterial color={DOLLHOUSE_COLORS.accent} />
+        </mesh>
+      ))}
+      {[-0.08, 0.08].map((y, i) => (
+        <mesh key={`dresser-knob-${i}`} position={[0, y + 0.22, 0.16]} castShadow>
+          <boxGeometry args={[0.03, 0.03, 0.03]} />
+          <meshStandardMaterial color={DOLLHOUSE_COLORS.hot} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function DollhouseDesk({ position = [0, 0, 0] }) {
+  return (
+    <group position={position}>
+      <mesh position={[0, 0.42, 0]} castShadow>
+        <boxGeometry args={[0.8, 0.05, 0.4]} />
+        <meshStandardMaterial color="#fff9fb" />
+      </mesh>
+      {[[-0.36, -0.18], [-0.36, 0.18], [0.36, -0.18], [0.36, 0.18]].map(([lx, lz], i) => (
+        <mesh key={`desk-leg-${i}`} position={[lx, 0.2, lz]} castShadow>
+          <boxGeometry args={[0.04, 0.44, 0.04]} />
+          <meshStandardMaterial color={DOLLHOUSE_COLORS.accent} />
+        </mesh>
+      ))}
+      <mesh position={[0, 0.72, -0.12]} castShadow>
+        <boxGeometry args={[0.5, 0.32, 0.03]} />
+        <meshStandardMaterial color={DOLLHOUSE_COLORS.darkPink} />
+      </mesh>
+      <mesh position={[0, 0.62, -0.1]} castShadow>
+        <boxGeometry args={[0.04, 0.12, 0.04]} />
+        <meshStandardMaterial color={DOLLHOUSE_COLORS.accent} />
+      </mesh>
+      <mesh position={[0, 0.46, 0.08]} castShadow>
+        <boxGeometry args={[0.36, 0.02, 0.14]} />
+        <meshStandardMaterial color="#f3e5f5" />
+      </mesh>
+    </group>
+  );
+}
+
+function DollhouseHangingRod({ position = [0, 0, 0] }) {
+  return (
+    <group position={position}>
+      <mesh rotation={[0, 0, Math.PI / 2]} castShadow>
+        <cylinderGeometry args={[0.015, 0.015, 0.7, 8]} />
+        <meshStandardMaterial color={DOLLHOUSE_COLORS.accent} metalness={0.5} roughness={0.3} />
+      </mesh>
+      {[-0.24, -0.08, 0.08, 0.24].map((hx, i) => (
+        <group key={`hanger-${i}`} position={[hx, -0.12, 0]}>
+          <mesh castShadow>
+            <boxGeometry args={[0.2, 0.01, 0.01]} />
+            <meshStandardMaterial color={DOLLHOUSE_COLORS.hot} />
+          </mesh>
+          <mesh position={[0, 0.07, 0]} castShadow>
+            <boxGeometry args={[0.01, 0.14, 0.01]} />
+            <meshStandardMaterial color={DOLLHOUSE_COLORS.hot} />
+          </mesh>
+          <mesh position={[0, -0.16, 0]} castShadow>
+            <boxGeometry args={[0.18, 0.22, 0.03]} />
+            <meshStandardMaterial color={['#f3e5f5', '#e8f5e9', '#f8bbd0', '#fff9fb'][i]} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
 function BedroomFurniture({ showPopup }) {
   const [x, y, z] = ROOMS.bedroom.pos;
   return (
     <group position={[x, y, z]} scale={[1.3, 1.3, 1.3]}>
       <ClickableFurniture position={[-1.0, 0, -1.2]} onClick={() => showPopup("✨ shh i'm dreaming of shipping features 🌙")}>
-        <mesh position={[0, 0.2, 0]} castShadow receiveShadow>
-          <boxGeometry args={[1.3, 0.2, 0.7]} />
-          <meshStandardMaterial color="#ff69b4" />
-        </mesh>
-        <mesh position={[0, 0.34, 0]} castShadow>
-          <boxGeometry args={[1.18, 0.12, 0.58]} />
-          <meshStandardMaterial color="#ffb6c1" />
-        </mesh>
-        <mesh position={[0, 0.62, -0.31]} castShadow>
-          <boxGeometry args={[1.3, 0.6, 0.1]} />
-          <meshStandardMaterial color="#ff69b4" />
-        </mesh>
-        <mesh position={[-0.3, 0.43, -0.14]} castShadow>
-          <boxGeometry args={[0.26, 0.08, 0.18]} />
-          <meshStandardMaterial color="#fff0f5" />
-        </mesh>
-        <mesh position={[0.3, 0.43, -0.14]} castShadow>
-          <boxGeometry args={[0.26, 0.08, 0.18]} />
-          <meshStandardMaterial color="#fff0f5" />
-        </mesh>
+        <DollhouseBed />
       </ClickableFurniture>
 
       <ClickableFurniture
@@ -475,26 +588,7 @@ function BedroomFurniture({ showPopup }) {
       </ClickableFurniture>
 
       <ClickableFurniture position={[-1.65, 0, 0.3]} onClick={() => showPopup('💕 my comfort items')}>
-        <mesh position={[0, 1.0, 0]} castShadow>
-          <boxGeometry args={[0.16, 1.6, 1.0]} />
-          <meshStandardMaterial color="#f8c8d4" />
-        </mesh>
-        <mesh position={[0.12, 1.25, 0]} castShadow>
-          <boxGeometry args={[0.32, 0.08, 0.92]} />
-          <meshStandardMaterial color="#f8c8d4" />
-        </mesh>
-        <mesh position={[0.22, 1.42, -0.24]} castShadow>
-          <boxGeometry args={[0.2, 0.2, 0.2]} />
-          <meshStandardMaterial color="#a78bfa" />
-        </mesh>
-        <mesh position={[0.22, 1.42, 0]} castShadow>
-          <boxGeometry args={[0.2, 0.2, 0.2]} />
-          <meshStandardMaterial color="#f472b6" />
-        </mesh>
-        <mesh position={[0.22, 1.42, 0.24]} castShadow>
-          <boxGeometry args={[0.2, 0.2, 0.2]} />
-          <meshStandardMaterial color="#fbbf24" />
-        </mesh>
+        <DollhouseDresser />
       </ClickableFurniture>
     </group>
   );
@@ -557,14 +651,7 @@ function OfficeFurniture({ showPopup }) {
           window.location.href = '/work-with-me';
         }}
       >
-        <mesh position={[0, 0.42, 0]} castShadow>
-          <boxGeometry args={[1.4, 0.12, 0.62]} />
-          <meshStandardMaterial color="#f3e8ff" />
-        </mesh>
-        <mesh position={[0, 0.8, -0.2]} castShadow>
-          <boxGeometry args={[0.58, 0.34, 0.04]} />
-          <meshStandardMaterial color="#1a1a2e" emissive="#7c3aed" emissiveIntensity={0.24} />
-        </mesh>
+        <DollhouseDesk />
       </ClickableFurniture>
 
       <group position={[0, 0, -0.45]}>
@@ -692,24 +779,7 @@ function ClosetFurniture({ showPopup }) {
   return (
     <group position={[x, y, z]} scale={[1.3, 1.3, 1.3]}>
       <ClickableFurniture position={[0, 0, -1.45]} onClick={() => showPopup('🎀 outfit of the day')}>
-        <mesh position={[0, 1.78, 0]} castShadow>
-          <boxGeometry args={[1.3, 0.06, 0.06]} />
-          <meshStandardMaterial color="#ff69b4" />
-        </mesh>
-        <mesh position={[-0.62, 1.05, 0]} castShadow>
-          <boxGeometry args={[0.08, 1.46, 0.08]} />
-          <meshStandardMaterial color="#ff69b4" />
-        </mesh>
-        <mesh position={[0.62, 1.05, 0]} castShadow>
-          <boxGeometry args={[0.08, 1.46, 0.08]} />
-          <meshStandardMaterial color="#ff69b4" />
-        </mesh>
-        {clothingColors.map((color, i) => (
-          <mesh key={color + i} position={[-0.45 + i * 0.23, 1.35, 0]} castShadow>
-            <boxGeometry args={[0.16, 0.5, 0.04]} />
-            <meshStandardMaterial color={color} />
-          </mesh>
-        ))}
+        <DollhouseHangingRod />
       </ClickableFurniture>
 
       <ClickableFurniture
@@ -1196,7 +1266,9 @@ export default function ChibiScene({ embedded = false }) {
         camera={{ position: [0, 6, 18], fov: 38 }}
         style={{ width: '100%', height: '100%' }}
       >
+        <color attach="background" args={['#fce4ec']} />
         <DollhouseBackdrop />
+        <KawaiiAtmosphere />
         <ambientLight intensity={0.72} color="#ffe4ec" />
         <directionalLight
           castShadow
