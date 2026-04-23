@@ -500,7 +500,7 @@ function Chibi({
     const box = new THREE.Box3().setFromObject(cloned);
     const size = box.getSize(new THREE.Vector3());
     const maxAxis = Math.max(size.x, size.y, size.z) || 1;
-    const scale = 0.72 / maxAxis;
+    const scale = 0.5 / maxAxis;
     cloned.scale.setScalar(scale);
     box.setFromObject(cloned);
     const center = box.getCenter(new THREE.Vector3());
