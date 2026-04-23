@@ -132,13 +132,15 @@ export default function KawaiiIslandLandingPage() {
             </div>
 
             <div>
-              <h1
-                className={`text-xl font-black whitespace-nowrap leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-2xl md:text-3xl ${
+              <div
+                role="heading"
+                aria-level="1"
+                className={`text-xl font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-2xl md:text-3xl ${
                   titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3'
                 }`}
               >
                 Welcome To My Island
-              </h1>
+              </div>
               <p
                 className={`mt-1.5 text-xs font-bold text-[#967bb6] transition-all duration-1000 sm:text-sm md:mt-2 md:text-base ${
                   titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
@@ -150,16 +152,16 @@ export default function KawaiiIslandLandingPage() {
           </div>
         </div>
 
-        <div className="mt-auto grid w-full max-w-[1120px] grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-7">
+        <div className="mt-auto grid w-full max-w-[960px] grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-7">
           {MENU_ITEMS.map((item) => (
             <a
               key={item.label}
               href={item.href}
-              className="group rounded-[30px] border-[4px] border-[#efd2de] bg-[linear-gradient(180deg,#fff8fc_0%,#fff0f7_100%)] px-4 py-5 shadow-[0_14px_24px_rgba(206,140,171,0.16),inset_0_2px_0_rgba(255,255,255,0.95)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_30px_rgba(206,140,171,0.22)] sm:py-6"
+              className="group rounded-[24px] border-[4px] border-[#efd2de] bg-[linear-gradient(180deg,#fff8fc_0%,#fff0f7_100%)] px-3 py-3 shadow-[0_10px_20px_rgba(206,140,171,0.16),inset_0_2px_0_rgba(255,255,255,0.95)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_24px_rgba(206,140,171,0.22)] sm:py-4"
             >
-              <div className="flex flex-col items-center justify-center gap-3">
-                <div className="text-4xl transition group-hover:scale-110">{item.emoji}</div>
-                <div className="text-base font-extrabold text-[#8f6b7d] sm:text-lg">{item.label}</div>
+              <div className="flex flex-col items-center justify-center gap-2">
+                <div className="text-3xl transition group-hover:scale-110">{item.emoji}</div>
+                <div className="text-sm font-extrabold text-[#8f6b7d] sm:text-base">{item.label}</div>
               </div>
             </a>
           ))}

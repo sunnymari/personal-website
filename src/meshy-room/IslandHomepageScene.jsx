@@ -110,7 +110,7 @@ function Cottage() {
         <boxGeometry args={[2.3, 1.95, 2.15]} />
         <meshStandardMaterial color="#eeb6d3" />
       </mesh>
-      <mesh castShadow receiveShadow position={[0, 2.48, 0]} rotation={[0, 0, Math.PI / 4]}>
+      <mesh castShadow receiveShadow position={[0, 2.48, 0]} rotation={[Math.PI / 2, 0, Math.PI / 4]}>
         <cylinderGeometry args={[1.25, 1.25, 1.9, 4]} />
         <meshStandardMaterial color={PALETTE.sakura} />
       </mesh>
