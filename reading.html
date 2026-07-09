@@ -5,87 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reading</title>
   <link href="/style.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Fredoka+One&family=Dancing+Script:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Roboto+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script type="module" src="/src/global-cursor.js"></script>
 </head>
 <body class="site-page">
-  <header>
-    <div class="billboard-container">
-      <span class="header-text">marissa codes 🌸</span>
-      <span class="header-text">✨ cozy dev</span>
-      <span class="header-text">💻 building things</span>
-      <span class="header-text">🎀 kawaii coder</span>
-      <span class="header-text">marissa codes 🌸</span>
-      <span class="header-text">✨ cozy dev</span>
-      <span class="header-text">💻 building things</span>
-      <span class="header-text">🎀 kawaii coder</span>
-    </div>
-  </header>
-  <nav class="nav-buttons">
+  <nav class="nav-buttons" style="margin-top: 1.5rem;">
+    <a href="/" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Home</span></span></a>
     <a href="/about" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">About</span></span></a>
     <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Projects</span></span></a>
     <a href="/reading" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Reading</span></span></a>
-    <a href="/work-with-me" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Work With Me</span></span></a>
     <a href="/blog" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Blog</span></span></a>
-    <a href="/pageant" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🎮 Play Pageant Sim</span></span></a>
+    <a href="/data-center-watch" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Data Center Watch</span></span></a>
   </nav>
-  <nav class="nav-buttons" style="margin-bottom: 2rem;">
-    <a href="/" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Home</span></span></a>
-  </nav>
-  <audio id="pop-sound" src="/pop.mp3" preload="auto"></audio>
-  <script>
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('mouseenter', function(event) {
-        const audio = document.getElementById('pop-sound');
-        if (audio) {
-          audio.currentTime = 0;
-          audio.play().catch(error => {
-            console.log('Audio play failed on hover:', error);
-          });
-        }
-      });
-      
-      link.addEventListener('click', function(event) {
-        event.preventDefault();
-        const audio = document.getElementById('pop-sound');
-        if (audio) {
-          audio.currentTime = 0;
-          audio.play().catch(error => {
-            console.log('Audio play failed on click:', error);
-          });
-          setTimeout(() => {
-            window.location.href = link.href;
-          }, 600);
-        } else {
-          window.location.href = link.href;
-        }
-      });
-    });
-  </script>
-  <div class="container">
-    <p style="text-align:center; font-weight:700; color:#c2185b; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:0.75rem;">
-      Coming soon
+  <div class="container" style="text-align:center; padding-top: 4rem; padding-bottom: 4rem;">
+    <p style="font-family:'Fredoka', 'Nunito', sans-serif; font-size:1.75rem; font-weight:600; color:#3A3A32; margin:0;">
+      Under construction
     </p>
-    <h1>About Us</h1>
-    <p>Welcome to our project. We are a team of engineers, researchers, and crypto enthusiasts building tools for the future of decentralized finance.</p>
-    
-    <p>Founded in 2025, our mission is to empower the digital asset ecosystem through innovative technology, transparency, and collaboration. We believe that by solving real problems and working with integrity, we can help shape a more open and efficient financial system.</p>
-
-    <p>We also contribute to the community through open-source projects like <strong>Sonic</strong>, which pushes the boundaries of high-performance trading infrastructure.</p>
-
-    <p>Whether you're here to collaborate, contribute, or learn more, we're glad you stopped by.</p>
   </div>
-  <footer>
-    <div class="billboard-container-reverse">
-      <span class="footer-text">marissa codes 🌸</span>
-      <span class="footer-text">✨ cozy dev</span>
-      <span class="footer-text">💻 building things</span>
-      <span class="footer-text">🎀 kawaii coder</span>
-      <span class="footer-text">marissa codes 🌸</span>
-      <span class="footer-text">✨ cozy dev</span>
-      <span class="footer-text">💻 building things</span>
-      <span class="footer-text">🎀 kawaii coder</span>
-    </div>
-  </footer>
 </body>
 </html>

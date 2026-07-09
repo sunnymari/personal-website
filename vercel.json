@@ -23,25 +23,44 @@
       "destination": "/blog.html"
     },
     {
-      "source": "/work-with-me",
-      "destination": "/work-with-me.html"
-    },
-    {
-      "source": "/pageant",
-      "destination": "/pageant.html"
-    },
-    {
-      "source": "/chibi",
-      "destination": "/chibi.html"
-    },
-    {
       "source": "/data-center-watch",
       "destination": "/data-center-watch.html"
     }
   ],
+  "redirects": [
+    {
+      "source": "/work-with-me",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/work-with-me.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/chibi",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/chibi.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/pageant",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/pageant.html",
+      "destination": "/",
+      "permanent": false
+    }
+  ],
   "functions": {
     "api/waitlist.js": {
-      "memory": 256,
       "maxDuration": 10
     }
   },

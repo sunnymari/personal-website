@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🌸 About Marissa 🌸</title>
+  <title>About Marissa</title>
   <link href="/style.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Fredoka+One&family=Dancing+Script:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Roboto+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script type="module" src="/src/global-cursor.js"></script>
   <style>
     .flip-container {
@@ -13,7 +13,7 @@
       width: 100%;
       max-width: 300px;
       height: 300px;
-      margin: 10px;
+      margin: 10px auto;
     }
     .flip-inner {
       position: relative;
@@ -36,100 +36,29 @@
     .flip-back {
       transform: rotateY(180deg);
     }
+    .flip-front img,
     .flip-back img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       border-radius: 10px;
     }
-    .flip-front img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-    @media (max-width: 768px) {
-      .flip-container {
-        max-width: 250px;
-        height: 250px;
-        position: relative !important;
-        transform: none !important;
-        margin: 20px auto !important;
-      }
-      .flip-container:first-child {
-        margin-bottom: 30px;
-      }
-    }
-    @media (max-width: 480px) {
-      .flip-container {
-        max-width: 200px;
-        height: 200px;
-      }
-    }
   </style>
 </head>
 <body class="site-page">
-  <header>
-    <div class="billboard-container">
-      <span class="header-text">marissa codes 🌸</span>
-      <span class="header-text">✨ cozy dev</span>
-      <span class="header-text">💻 building things</span>
-      <span class="header-text">🎀 kawaii coder</span>
-      <span class="header-text">marissa codes 🌸</span>
-      <span class="header-text">✨ cozy dev</span>
-      <span class="header-text">💻 building things</span>
-      <span class="header-text">🎀 kawaii coder</span>
-    </div>
-  </header>
-  <nav class="nav-buttons">
-    <a href="/about" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🌸 About</span></span></a>
-    <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🎀 Projects</span></span></a>
-    <a href="/reading" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">📚 Reading</span></span></a>
-    <a href="/work-with-me" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">☁️ Work With Me</span></span></a>
-    <a href="/blog" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">📝 Blog</span></span></a>
-    <a href="/pageant" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🎮 Play Pageant Sim</span></span></a>
+  <nav class="nav-buttons" style="margin-top: 1.5rem;">
+    <a href="/" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Home</span></span></a>
+    <a href="/about" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">About</span></span></a>
+    <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Projects</span></span></a>
+    <a href="/reading" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Reading</span></span></a>
+    <a href="/blog" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Blog</span></span></a>
+    <a href="/data-center-watch" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Data Center Watch</span></span></a>
   </nav>
-  <nav class="nav-buttons" style="margin-bottom: 2rem;">
-    <a href="/" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">🏠 Home</span></span></a>
-  </nav>
-  <audio id="pop-sound" src="/pop.mp3" preload="auto"></audio>
-  <script>
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('mouseenter', function(event) {
-        const audio = document.getElementById('pop-sound');
-        if (audio) {
-          audio.currentTime = 0;
-          audio.play().catch(error => {
-            console.log('Audio play failed on hover:', error);
-          });
-        }
-      });
-      
-      link.addEventListener('click', function(event) {
-        event.preventDefault();
-        const audio = document.getElementById('pop-sound');
-        if (audio) {
-          audio.currentTime = 0;
-          audio.play().catch(error => {
-            console.log('Audio play failed on click:', error);
-          });
-          setTimeout(() => {
-            window.location.href = link.href;
-          }, 600);
-        } else {
-          window.location.href = link.href;
-        }
-      });
-    });
-  </script>
   <div class="container">
-    <p style="text-align:center; font-weight:700; color:#c2185b; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:0.75rem;">
-      Coming soon
-    </p>
-    <h1 style="text-align: center;">🌸 About Me 🌸</h1>
-    <p style="text-align: center;">Hi I'm Marissa I am a Software Engineer</p>
-    <div style="max-width: 900px; margin: 30px auto; padding: 0 20px; display: flex; justify-content: center; align-items: center;">
-      <div class="flip-container" style="margin: 0 auto;">
+    <h1 style="text-align: center; font-family: 'Fredoka', 'Nunito', sans-serif;">About Me</h1>
+    <p style="text-align: center;">Hi I'm Marissa — Software Engineer</p>
+    <div style="max-width: 900px; margin: 30px auto; padding: 0 20px; display: flex; justify-content: center;">
+      <div class="flip-container">
         <div class="flip-inner">
           <div class="flip-front">
             <img src="/images/fffe1c84-55c6-41b1-bb0d-b126c15b0cc1.JPG" alt="Marissa">
@@ -140,33 +69,20 @@
         </div>
       </div>
     </div>
-    
-    <p>I'm currently pursuing my Master's degree at UC Berkeley in the MAS-E program while working as a backend Software Engineer. I'm passionate about becoming a full-stack developer and am actively working toward that goal. 🎓🚀</p>
 
-    <p>When I'm not coding or studying, I enjoy coding, reading, pilates, miniature house design, and creative coding. I'm particularly passionate about AI ethics, crypto, and sustainability, and love exploring new technologies. 🏠📚🧘‍♀️</p>
+    <p>I'm currently pursuing my Master's degree at UC Berkeley in the MAS-E program while working as a backend Software Engineer. I'm passionate about becoming a full-stack developer and am actively working toward that goal.</p>
 
-    <p>Currently, I'm focused on improving my full-stack and design skills. My career goal is to become a full-stack software engineer, and I'm also working on my personal goal of reading 50 books. 📖✨</p>
+    <p>When I'm not coding or studying, I enjoy reading, pilates, miniature house design, and creative coding. I'm particularly passionate about AI ethics, crypto, and sustainability.</p>
 
-    <h2>💌 Contact & Connect 💌</h2>
-    <p>Feel free to reach out if you'd like to connect or collaborate on projects! 🤝</p>
+    <p>Currently, I'm focused on improving my full-stack and design skills. My career goal is to become a full-stack software engineer, and I'm also working on my personal goal of reading 50 books.</p>
+
+    <h2 style="font-family: 'Fredoka', 'Nunito', sans-serif;">Contact &amp; Connect</h2>
+    <p>Feel free to reach out if you'd like to connect or collaborate on projects.</p>
     <ul style="list-style: none; padding: 0;">
-      <li style="margin: 10px 0;"><strong>📧 Email:</strong> <a href="mailto:marissacurry809@gmail.com" style="color: #ff69b4;">marissacurry809@gmail.com</a></li>
-      <li style="margin: 10px 0;"><strong>💼 LinkedIn:</strong> <a href="https://www.linkedin.com/in/marissa-curry-93674b33/" target="_blank" style="color: #ff69b4;">Marissa Curry</a></li>
-      <li style="margin: 10px 0;"><strong>🐙 GitHub:</strong> <a href="https://github.com/sunnymari" target="_blank" style="color: #ff69b4;">@sunnymari</a></li>
-      <li style="margin: 10px 0;"><strong>☕ Ko-fi:</strong> <a href="https://ko-fi.com/yourusername" target="_blank" style="color: #ff69b4;">Support my work with a coffee! ☕</a></li>
+      <li style="margin: 10px 0;"><strong>Email:</strong> <a href="mailto:marissacurry@berkeley.edu" style="color: #b45e89;">marissacurry@berkeley.edu</a></li>
+      <li style="margin: 10px 0;"><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/marissa-curry-93674b33/" target="_blank" rel="noopener noreferrer" style="color: #b45e89;">Marissa Curry</a></li>
+      <li style="margin: 10px 0;"><strong>GitHub:</strong> <a href="https://github.com/sunnymari" target="_blank" rel="noopener noreferrer" style="color: #b45e89;">@sunnymari</a></li>
     </ul>
   </div>
-  <footer>
-    <div class="billboard-container-reverse">
-      <span class="footer-text">marissa codes 🌸</span>
-      <span class="footer-text">✨ cozy dev</span>
-      <span class="footer-text">💻 building things</span>
-      <span class="footer-text">🎀 kawaii coder</span>
-      <span class="footer-text">marissa codes 🌸</span>
-      <span class="footer-text">✨ cozy dev</span>
-      <span class="footer-text">💻 building things</span>
-      <span class="footer-text">🎀 kawaii coder</span>
-    </div>
-  </footer>
 </body>
 </html>

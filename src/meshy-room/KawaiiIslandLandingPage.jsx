@@ -5,10 +5,7 @@ const MENU_ITEMS = [
   { emoji: '🌸', label: 'About', href: '/about.html' },
   { emoji: '🎀', label: 'Projects', href: '/projects.html' },
   { emoji: '📚', label: 'Reading', href: '/reading.html' },
-  { emoji: '☁️', label: 'Work With Me', href: '/work-with-me.html' },
   { emoji: '📝', label: 'Blog', href: '/blog.html' },
-  { emoji: '🎮', label: 'Pageant Sim', href: '/pageant.html' },
-  { emoji: '🏠', label: 'Dollhouse', href: '/chibi.html' },
   { emoji: '🌱', label: 'Data Center Watch', href: '/data-center-watch' },
 ];
 
