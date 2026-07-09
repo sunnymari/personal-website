@@ -5,6 +5,7 @@ import {
   downloadHardwareSignups,
   loadHardwareSignups,
   saveHardwareSignup,
+  submitWaitlist,
 } from "./hardwareInterest.js";
 
 const emptyForm = {
@@ -22,7 +23,9 @@ export default function HardwareInterest({ SproutIcon }) {
     typeof localStorage !== "undefined" ? loadHardwareSignups() : [],
   );
   const [submitted, setSubmitted] = useState(false);
+  const [statusMsg, setStatusMsg] = useState("");
   const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
 
   const count = signups.length;
   const hardwareLabel = useMemo(() => {
@@ -34,9 +37,10 @@ export default function HardwareInterest({ SproutIcon }) {
     setForm((prev) => ({ ...prev, [field]: value }));
     setError("");
     setSubmitted(false);
+    setStatusMsg("");
   }
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     const email = form.email.trim();
     const name = form.name.trim();
@@ -48,17 +52,36 @@ export default function HardwareInterest({ SproutIcon }) {
       setError("That email doesn’t look quite right.");
       return;
     }
-    const next = saveHardwareSignup({
+
+    const entry = {
       name,
       email,
       city: form.city.trim(),
       utility: form.utility.trim(),
       hardware: form.hardware,
       notes: form.notes.trim(),
-    });
-    setSignups(next);
-    setForm(emptyForm);
-    setSubmitted(true);
+    };
+
+    setSending(true);
+    setError("");
+    try {
+      const result = await submitWaitlist(entry);
+      const next = saveHardwareSignup({ ...entry, deliveredVia: result.via });
+      setSignups(next);
+      setForm(emptyForm);
+      setSubmitted(true);
+      setStatusMsg(
+        result.data?.message ||
+          "You’re on the list — we’ll email you when Sprout hardware is ready.",
+      );
+    } catch (err) {
+      setError(
+        err?.message ||
+          "Couldn’t send right now. Email marissacurry@berkeley.edu and we’ll add you.",
+      );
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -80,8 +103,11 @@ export default function HardwareInterest({ SproutIcon }) {
             Help us build the companion device
           </h2>
           <p className="text-sm font-semibold text-stone-600 mt-2 max-w-xl leading-relaxed">
-            Tell us what hardware you want so Sprout can ship a plug / display that mirrors this page’s
-            grid tips — and later the same CAISO / EIA live feed.
+            Leave your email and what you want. Signups go to{" "}
+            <a href="mailto:marissacurry@berkeley.edu" style={{ color: "#7A9464", fontWeight: 800 }}>
+              marissacurry@berkeley.edu
+            </a>{" "}
+            so we can actually follow up when Sprout ships.
           </p>
 
           <form className="mt-6 grid gap-4" onSubmit={onSubmit}>
@@ -179,21 +205,23 @@ export default function HardwareInterest({ SproutIcon }) {
             ) : null}
             {submitted ? (
               <p className="text-sm font-bold" style={{ color: "#4F6440" }}>
-                Saved on this device — thanks for helping Sprout ship.
+                {statusMsg}
               </p>
             ) : null}
 
             <button
               type="submit"
               className="dcw-tab justify-self-start"
+              disabled={sending}
               style={{
                 background: "linear-gradient(180deg, #FFF8F4 0%, #F2C6C2 100%)",
                 color: "#7A3B36",
                 boxShadow: "0 8px 18px rgba(242,198,194,0.4)",
                 border: "2px solid #E8A8A3",
+                opacity: sending ? 0.7 : 1,
               }}
             >
-              Join hardware waitlist
+              {sending ? "Sending…" : "Join hardware waitlist"}
             </button>
           </form>
         </div>
@@ -205,10 +233,10 @@ export default function HardwareInterest({ SproutIcon }) {
             color: "#FAF6F0",
           }}
         >
-          <div className="display-font text-xl font-bold">Collected on this browser</div>
+          <div className="display-font text-xl font-bold">Emails are collected</div>
           <p className="text-xs font-semibold mt-1" style={{ color: "#B9B4A6" }}>
-            {count} signup{count === 1 ? "" : "s"} stored locally. Export JSON to sync into the Sprout
-            project CRM / sheet. Nothing is sent to a server yet.
+            Each signup is emailed to marissacurry@berkeley.edu. A local copy stays on this browser
+            as backup ({count} here). First FormSubmit delivery may ask you to confirm the inbox once.
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -223,7 +251,7 @@ export default function HardwareInterest({ SproutIcon }) {
                 opacity: count ? 1 : 0.7,
               }}
             >
-              Export JSON
+              Export local JSON
             </button>
             <button
               type="button"
@@ -233,6 +261,7 @@ export default function HardwareInterest({ SproutIcon }) {
                 clearHardwareSignups();
                 setSignups([]);
                 setSubmitted(false);
+                setStatusMsg("");
               }}
               style={{
                 background: "transparent",
@@ -240,14 +269,14 @@ export default function HardwareInterest({ SproutIcon }) {
                 border: "1.5px solid #55554A",
               }}
             >
-              Clear
+              Clear local
             </button>
           </div>
 
           <ul className="mt-5 space-y-3 max-h-72 overflow-auto p-0 m-0 list-none">
             {signups.length === 0 ? (
               <li className="text-sm font-semibold" style={{ color: "#B9B4A6" }}>
-                No hardware interest yet — be the first.
+                No local backups yet — be the first signup.
               </li>
             ) : (
               signups.slice(0, 8).map((s) => (
@@ -266,6 +295,7 @@ export default function HardwareInterest({ SproutIcon }) {
                   <div className="text-xs font-semibold mt-1" style={{ color: "#B9B4A6" }}>
                     {hardwareLabel(s.hardware)}
                     {s.utility ? ` · ${s.utility}` : ""}
+                    {s.deliveredVia ? ` · via ${s.deliveredVia}` : ""}
                   </div>
                 </li>
               ))

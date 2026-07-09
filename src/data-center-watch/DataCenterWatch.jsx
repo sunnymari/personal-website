@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import UsClusterMap from "./UsClusterMap.jsx";
 import DailyEnergyFact from "./DailyEnergyFact.jsx";
 import HardwareInterest from "./HardwareInterest.jsx";
+import AboutProject, { AboutFooterBlurb } from "./AboutProject.jsx";
 
 const CLUSTERS = [
   { name: "Northern Virginia", lat: 38.95, lng: -77.45, size: "largest", note: "Largest data center market in the world · Ashburn" },
@@ -44,6 +45,7 @@ const TABS = [
   { id: "watch", label: "Watch" },
   { id: "fact", label: "Daily fact" },
   { id: "hardware", label: "Hardware" },
+  { id: "about", label: "About" },
   { id: "howto", label: "How to use" },
 ];
 
@@ -62,7 +64,7 @@ const HOW_TO_STEPS = [
   },
   {
     title: "Join the Hardware waitlist",
-    body: "Tell Sprout what device you want (smart plug, display, or both). Signups stay on this device until you export JSON into the Sprout project.",
+    body: "Tell Sprout what device you want (smart plug, display, or both). Your email is sent to marissacurry@berkeley.edu so we can follow up — a local backup also stays in this browser.",
   },
   {
     title: "Use the bill tip before big loads",
@@ -272,6 +274,30 @@ export default function DataCenterWatch() {
         .dcw-root .dcw-tablist {
           flex-wrap: wrap;
         }
+        .dcw-root .dcw-about-link {
+          text-decoration: underline;
+          text-underline-offset: 3px;
+          font-weight: 800;
+        }
+        .dcw-root .dcw-about-link:hover {
+          opacity: 0.85;
+        }
+        .dcw-root .dcw-sprout-dance {
+          width: clamp(96px, 18vw, 140px);
+          height: auto;
+          image-rendering: pixelated;
+          image-rendering: crisp-edges;
+          mix-blend-mode: multiply;
+          filter: drop-shadow(0 10px 18px rgba(143, 168, 118, 0.28));
+          animation: dcw-sprout-bob 1.1s ease-in-out infinite;
+        }
+        @keyframes dcw-sprout-bob {
+          0%, 100% { transform: translateY(0) rotate(-2deg); }
+          50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .dcw-root .dcw-sprout-dance { animation: none; }
+        }
       `}</style>
 
       {/* HERO */}
@@ -290,20 +316,26 @@ export default function DataCenterWatch() {
           ← Home
         </a>
 
-        <div className="flex items-center gap-2 text-sm font-bold" style={{ color: "#8FA876" }}>
-          <span className="float-soft inline-flex">
-            <SproutIcon size={20} />
-          </span>
-          <span className="uppercase display-font tracking-wide">
-            Sprout Companion · Marissa Codes
-          </span>
+        <div className="flex flex-col items-center text-center mb-6">
+          <img
+            src="/pixel_sprout_dancing.gif"
+            alt="Sprout dancing"
+            className="dcw-sprout-dance"
+            width={140}
+            height={140}
+          />
+          <div className="flex items-center justify-center gap-2 text-sm font-bold mt-1" style={{ color: "#8FA876" }}>
+            <span className="uppercase display-font tracking-wide">
+              Tiny Sprout Smarter Grid
+            </span>
+          </div>
         </div>
 
         <h1
-          className="display-font text-5xl sm:text-6xl font-semibold mt-4 leading-tight"
+          className="display-font text-5xl sm:text-6xl font-semibold mt-2 leading-tight text-center sm:text-left"
           style={{ color: "#3A3A32" }}
         >
-          Data Center Watch
+          Sprout Data Center Watch
         </h1>
         <p className="text-lg mt-3 max-w-2xl text-stone-600 font-semibold">
           Where major data center clusters sit on the grid, and what the current
@@ -364,6 +396,8 @@ export default function DataCenterWatch() {
       ) : null}
 
       {tab === "hardware" ? <HardwareInterest SproutIcon={SproutIcon} /> : null}
+
+      {tab === "about" ? <AboutProject InfoIcon={InfoIcon} /> : null}
 
       {tab === "howto" ? (
         <section className="max-w-5xl mx-auto px-6 pb-16" role="tabpanel" aria-label="How to use this page">
@@ -574,9 +608,7 @@ export default function DataCenterWatch() {
           </section>
       </div>
 
-      <footer className="text-center text-xs font-semibold text-stone-400 pb-10 px-6">
-        Data Center Watch · Sprout Companion · Marissa Codes · regional demand estimate, not live facility metering
-      </footer>
+      <AboutFooterBlurb />
     </div>
   );
 }

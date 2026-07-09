@@ -1,0 +1,32 @@
+{
+  "methodology": "Regional demand/price only — not per-facility data-center load.",
+  "reading": {
+    "timestamp": "2026-07-09T20:15:00Z",
+    "region": "CAISO",
+    "price_per_mwh": 74.2,
+    "demand_mw": 31245,
+    "capacity_mw": 48000,
+    "lmp_volatility": 12.4,
+    "grid_state": "moderate",
+    "stress_score": 0.48,
+    "source": "CAISO",
+    "source_detail": "OASIS PRG_LMP + demand",
+    "notes": null
+  },
+  "spike_event": {
+    "region": "CAISO",
+    "started_at": "2026-07-09T23:00:00Z",
+    "ended_at": "2026-07-10T02:10:00Z",
+    "duration_minutes": 190,
+    "peak_price_per_mwh": 156.0,
+    "peak_demand_mw": 35820,
+    "peak_stress_score": 0.91,
+    "peak_grid_state": "stressed",
+    "threshold_kind": "composite",
+    "threshold_value": 0.75,
+    "coincidence": "evening_ramp",
+    "coincidence_notes": "Late-afternoon human peak overlapping sustained high LMPs; heat advisory in inland valleys.",
+    "source": "CAISO",
+    "open": false
+  }
+}
