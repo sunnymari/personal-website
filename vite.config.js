@@ -6,6 +6,15 @@ import { resolve } from 'node:path';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   publicDir: 'public',
+  server: {
+    proxy: {
+      '/api/carbonbench': {
+        target: 'https://carbonbench.ai',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/carbonbench/, '/api'),
+      },
+    },
+  },
   build: {
     rollupOptions: {
       input: {
@@ -17,6 +26,7 @@ export default defineConfig({
         workWithMe: resolve(__dirname, 'work-with-me.html'),
         pageant: resolve(__dirname, 'pageant.html'),
         chibi: resolve(__dirname, 'chibi.html'),
+        dataCenterWatch: resolve(__dirname, 'data-center-watch.html'),
       },
     },
   },

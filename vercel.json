@@ -3,6 +3,10 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/api/carbonbench/:path*",
+      "destination": "https://carbonbench.ai/api/:path*"
+    },
+    {
       "source": "/about",
       "destination": "/about.html"
     },
@@ -29,6 +33,10 @@
     {
       "source": "/chibi",
       "destination": "/chibi.html"
+    },
+    {
+      "source": "/data-center-watch",
+      "destination": "/data-center-watch.html"
     }
   ],
   "headers": [
