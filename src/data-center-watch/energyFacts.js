@@ -1,5 +1,5 @@
 const CARBONBENCH = "/api/carbonbench";
-const CACHE_KEY = "dcw-daily-ai-energy-fact-v1";
+const CACHE_KEY = "dcw-daily-ai-energy-fact-v2";
 const MODEL_ROTATION = ["llama", "gpt", "claude", "mistral", "gemma", "qwen", "deepseek"];
 
 const FALLBACK_FACTS = [
@@ -38,7 +38,7 @@ function readCache() {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed?.day === dayKey() && parsed?.fact) return parsed.fact;
+    if (parsed?.day === dayKey() && parsed?.fact?.live) return parsed.fact;
   } catch {
     /* ignore */
   }
@@ -53,6 +53,15 @@ function writeCache(fact) {
   }
 }
 
+export function clearDailyFactCache() {
+  try {
+    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem("dcw-daily-ai-energy-fact-v1");
+  } catch {
+    /* ignore */
+  }
+}
+
 function latestIntensity(region) {
   const points = region?.data;
   if (!Array.isArray(points) || !points.length) return null;
@@ -61,14 +70,14 @@ function latestIntensity(region) {
 
 async function fetchRecommend(model) {
   const res = await fetch(
-    `${CARBONBENCH}/api/recommend?model=${encodeURIComponent(model)}`,
+    `${CARBONBENCH}/recommend?model=${encodeURIComponent(model)}`,
   );
   if (!res.ok) throw new Error(`recommend ${res.status}`);
   return res.json();
 }
 
 async function fetchCarbonAll() {
-  const res = await fetch(`${CARBONBENCH}/api/carbon/all`);
+  const res = await fetch(`${CARBONBENCH}/carbon/all`);
   if (!res.ok) throw new Error(`carbon/all ${res.status}`);
   return res.json();
 }
@@ -119,16 +128,25 @@ function buildFactFromApi({ recommend, carbonAll, model }) {
   };
 }
 
-export async function getDailyAiEnergyFact() {
+/**
+ * @param {{ force?: boolean }} [opts]
+ */
+export async function getDailyAiEnergyFact(opts = {}) {
+  if (opts.force) clearDailyFactCache();
+
   const cached = typeof localStorage !== "undefined" ? readCache() : null;
   if (cached) return { ...cached, fromCache: true };
 
   const model = pickModelForDay();
   try {
-    const [recommend, carbonAll] = await Promise.all([
-      fetchRecommend(model),
-      fetchCarbonAll(),
-    ]);
+    // Recommend is required; carbon/all is nice-to-have (don't fail the whole tip)
+    const recommend = await fetchRecommend(model);
+    let carbonAll = null;
+    try {
+      carbonAll = await fetchCarbonAll();
+    } catch {
+      carbonAll = null;
+    }
     const fact = buildFactFromApi({ recommend, carbonAll, model });
     if (typeof localStorage !== "undefined") writeCache(fact);
     return { ...fact, fromCache: false };

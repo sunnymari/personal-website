@@ -1,27 +1,24 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getDailyAiEnergyFact } from "./energyFacts.js";
 
 export default function DailyEnergyFact({ InfoIcon, LightbulbIcon, ZapIcon }) {
   const [fact, setFact] = useState(null);
   const [status, setStatus] = useState("loading");
 
-  useEffect(() => {
-    let cancelled = false;
+  const load = useCallback(async (force = false) => {
     setStatus("loading");
-    getDailyAiEnergyFact()
-      .then((f) => {
-        if (cancelled) return;
-        setFact(f);
-        setStatus(f.live ? "live" : "fallback");
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setStatus("error");
-      });
-    return () => {
-      cancelled = true;
-    };
+    try {
+      const f = await getDailyAiEnergyFact({ force });
+      setFact(f);
+      setStatus(f.live ? "live" : "fallback");
+    } catch {
+      setStatus("error");
+    }
   }, []);
+
+  useEffect(() => {
+    load(false);
+  }, [load]);
 
   return (
     <section className="max-w-5xl mx-auto px-6 pb-16" role="tabpanel" aria-label="Daily AI energy fact">
@@ -38,23 +35,41 @@ export default function DailyEnergyFact({ InfoIcon, LightbulbIcon, ZapIcon }) {
             <LightbulbIcon size={16} color="#8FA876" />
             Daily AI energy fact
           </div>
-          <span
-            className="text-xs font-bold rounded-full px-3 py-1"
-            style={{
-              background: status === "live" ? "rgba(143,168,118,0.25)" : "rgba(242,198,194,0.45)",
-              color: status === "live" ? "#4F6440" : "#7A3B36",
-            }}
-          >
-            {status === "loading"
-              ? "Fetching…"
-              : status === "live"
-                ? fact?.fromCache
-                  ? "Cached for today · Carbonbench"
-                  : "Live · Carbonbench"
-                : status === "fallback"
-                  ? "Offline tip · try again later"
-                  : "Couldn’t load"}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className="text-xs font-bold rounded-full px-3 py-1"
+              style={{
+                background: status === "live" ? "rgba(143,168,118,0.25)" : "rgba(242,198,194,0.45)",
+                color: status === "live" ? "#4F6440" : "#7A3B36",
+              }}
+            >
+              {status === "loading"
+                ? "Fetching…"
+                : status === "live"
+                  ? fact?.fromCache
+                    ? "Cached for today · Carbonbench"
+                    : "Live · Carbonbench"
+                  : status === "fallback"
+                    ? "Offline tip · try again"
+                    : "Couldn’t load"}
+            </span>
+            <button
+              type="button"
+              className="dcw-tab"
+              onClick={() => load(true)}
+              disabled={status === "loading"}
+              style={{
+                background: "linear-gradient(180deg, #FFF8F4 0%, #F2C6C2 100%)",
+                color: "#7A3B36",
+                border: "1.5px solid #E8A8A3",
+                padding: "0.4rem 0.85rem",
+                fontSize: "0.8rem",
+                opacity: status === "loading" ? 0.7 : 1,
+              }}
+            >
+              Refresh
+            </button>
+          </div>
         </div>
 
         <h2 className="display-font text-3xl font-semibold" style={{ color: "#3A3A32" }}>
