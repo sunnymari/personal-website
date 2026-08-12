@@ -687,8 +687,17 @@ footer {
   font-weight: 800;
   font-size: 2rem;
   letter-spacing: -0.02em;
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.75rem;
   text-shadow: none !important;
+}
+
+.site-page .blog-essay .blog-essay-hero {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 0.85rem;
+  border-radius: 18px;
+  object-fit: cover;
 }
 
 .site-page .blog-essay .blog-essay-meta {
