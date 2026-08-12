@@ -675,6 +675,59 @@ footer {
   color: var(--island-plum) !important;
 }
 
+/* Long-form essay: calmer body, bolder section breaks */
+.site-page .blog-essay {
+  line-height: 1.75;
+  max-width: 42rem;
+}
+
+.site-page .blog-essay h2 {
+  font-family: 'Nunito', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem;
+  text-shadow: none !important;
+}
+
+.site-page .blog-essay .blog-essay-meta {
+  color: var(--island-plum) !important;
+  font-size: 0.9rem;
+  margin: 0 0 1.35rem;
+  text-indent: 0;
+}
+
+.site-page .blog-essay h3 {
+  color: var(--island-berry);
+  font-family: 'Nunito', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
+  margin: 2.1rem 0 0.75rem;
+  text-shadow: none;
+}
+
+.site-page .blog-essay p {
+  margin: 0 0 0.95rem;
+  text-indent: 1.5em;
+}
+
+.site-page .blog-essay p:first-of-type,
+.site-page .blog-essay h3 + p {
+  text-indent: 0;
+}
+
+.site-page .blog-essay ul {
+  margin: 0.25rem 0 1.1rem 1.25rem;
+  padding: 0;
+}
+
+.site-page .blog-essay li {
+  margin-bottom: 0.35rem;
+}
+
 .site-page video,
 .site-page iframe,
 .site-page blockquote {
