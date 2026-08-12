@@ -656,6 +656,25 @@ footer {
   letter-spacing: 0.1em !important;
 }
 
+/* Center page titles: global h1 is inline-block, so margin:auto alone won't center it */
+.site-page .blog-intro {
+  text-align: center;
+  margin: 0 0 0.5rem;
+}
+
+.site-page .blog-intro h1 {
+  display: block;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.site-page .blog-intro p {
+  text-align: center;
+  margin: 0.75rem 0 0;
+}
+
 .site-page .blog-post {
   background:
     linear-gradient(180deg, rgba(255, 248, 239, 0.94) 0%, rgba(255, 244, 250, 0.92) 100%) !important;
