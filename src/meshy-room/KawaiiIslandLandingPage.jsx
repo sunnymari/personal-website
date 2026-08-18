@@ -8,6 +8,7 @@ const MENU_ITEMS = [
   { emoji: '📚', label: 'Reading', href: '/reading.html' },
   { emoji: '📝', label: 'Blog', href: '/blog.html' },
   { emoji: '🌱', label: 'Data Center Watch', href: '/data-center-watch' },
+  { emoji: '💾', label: 'Log On Log Off', href: 'https://logonlogoff.vercel.app', external: true },
 ];
 
 
@@ -156,6 +157,9 @@ export default function KawaiiIslandLandingPage() {
             <a
               key={item.label}
               href={item.href}
+              {...(item.external
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
               className="group shrink-0 snap-center rounded-[24px] border-[4px] border-[#efd2de] bg-[linear-gradient(180deg,#fff8fc_0%,#fff0f7_100%)] px-3 py-3 w-[120px] shadow-[0_10px_20px_rgba(206,140,171,0.16),inset_0_2px_0_rgba(255,255,255,0.95)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_24px_rgba(206,140,171,0.22)] sm:w-auto sm:py-4 lg:w-[130px]"
             >
               <div className="flex flex-col items-center justify-center gap-2">
@@ -503,6 +507,7 @@ export function runSmokeTests() {
   assert(PATH_STONES.length === 6, 'renders 6 path stones');
   assert(FLOWER_PATCHES.length === 6, 'renders 6 flower patches');
   assert(MENU_ITEMS.some((item) => item.label === 'Projects'), 'includes a "Projects" menu item');
+  assert(MENU_ITEMS.some((item) => item.label === 'Log On Log Off'), 'includes a "Log On Log Off" menu item');
   assert(MENU_ITEMS[0].label === 'About', 'starts menu with "About"');
 
   return results;
