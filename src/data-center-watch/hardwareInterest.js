@@ -58,6 +58,7 @@ async function postFormSubmit(entry) {
       _subject: `Sprout hardware waitlist — ${entry.name}`,
       _template: "table",
       _captcha: "false",
+      _replyto: entry.email,
       name: entry.name,
       email: entry.email,
       city: entry.city || "",
@@ -68,17 +69,20 @@ async function postFormSubmit(entry) {
     }),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
+  if (!res.ok || data.success === "false" || data.success === false) {
     throw new Error(data.message || "Email delivery failed");
   }
   return { ok: true, via: "formsubmit", data };
 }
 
 /**
- * Collect the signup for real: POST /api/waitlist (Vercel → email + optional Supabase),
- * with FormSubmit fallback for local Vite / if the API is down.
+ * Collect the signup for real: POST /api/waitlist (Vercel → Supabase + email),
+ * then always try browser FormSubmit if the API did not confirm email delivery
+ * (FormSubmit often rejects server-side calls without a browser Origin).
  */
 export async function submitWaitlist(entry) {
+  let apiResult = null;
+
   try {
     const res = await fetch("/api/waitlist", {
       method: "POST",
@@ -87,23 +91,60 @@ export async function submitWaitlist(entry) {
     });
     if (res.ok) {
       const data = await res.json().catch(() => ({}));
-      return { ok: true, via: "api", data };
-    }
-    // 404 on local Vite — fall through to FormSubmit
-    if (res.status !== 404) {
+      apiResult = { ok: true, via: "api", data };
+      if (data?.saved?.email) {
+        return apiResult;
+      }
+      // DB may have saved; still attempt browser email so you get the inbox ping
+    } else if (res.status !== 404) {
       const data = await res.json().catch(() => ({}));
-      if (data.error) throw new Error(data.error);
+      if (data.error) {
+        // validation errors should surface; still try FormSubmit as backup below
+        apiResult = { ok: false, error: data.error, data };
+      }
     }
   } catch (err) {
-    // Network / missing API — try direct FormSubmit
-    if (err instanceof TypeError || /fetch/i.test(String(err.message))) {
-      return postFormSubmit(entry);
-    }
-    // If API returned a real validation error, don't mask it
-    if (err.message && !/404|Failed to fetch/i.test(err.message)) {
-      // still try FormSubmit as backup for infra failures
+    if (!(err instanceof TypeError || /fetch/i.test(String(err?.message || "")))) {
+      apiResult = { ok: false, error: err.message };
     }
   }
 
-  return postFormSubmit(entry);
+  try {
+    const emailResult = await postFormSubmit(entry);
+    if (apiResult?.ok) {
+      return {
+        ok: true,
+        via: "api+formsubmit",
+        data: {
+          ...(apiResult.data || {}),
+          message:
+            "You’re on the list — check your inbox if FormSubmit asks you to confirm once.",
+          saved: {
+            ...(apiResult.data?.saved || {}),
+            email: true,
+            supabase: Boolean(apiResult.data?.saved?.supabase),
+          },
+        },
+      };
+    }
+    return emailResult;
+  } catch (emailErr) {
+    if (apiResult?.ok) {
+      // Supabase (or API) saved even if email failed
+      return {
+        ok: true,
+        via: "api",
+        data: {
+          ...(apiResult.data || {}),
+          message:
+            apiResult.data?.message ||
+            "Saved to the waitlist. If you don’t get an email, FormSubmit may need a one-time confirm — or email marissacurry@berkeley.edu.",
+        },
+      };
+    }
+    if (apiResult?.error) {
+      throw new Error(apiResult.error);
+    }
+    throw emailErr;
+  }
 }

@@ -60,11 +60,11 @@ const HOW_TO_STEPS = [
   },
   {
     title: "Check the Daily fact tab",
-    body: "Each day we pull a live AI energy-saving insight from Carbonbench (lowest-carbon model routing + Virginia grid intensity). It’s cached once per day in your browser.",
+    body: "Each day we show a green AI routing tip (lowest-carbon model region + Virginia grid context). When Carbonbench’s live API is up we use that; otherwise Sprout serves a curated snapshot so the tab still works.",
   },
   {
     title: "Join the Hardware waitlist",
-    body: "Tell Sprout what device you want (smart plug, display, or both). Your email is sent to marissacurry@berkeley.edu so we can follow up — a local backup also stays in this browser.",
+    body: "Tell Sprout what device you want (smart plug, display, or both). Signups are stored in our waitlist database and emailed to marissacurry@berkeley.edu — a local backup also stays in this browser.",
   },
   {
     title: "Use the bill tip before big loads",

@@ -183,7 +183,6 @@ async function upstream(path, search) {
   const target = `https://carbonbench.ai/api/${path}${search || ""}`;
   const res = await fetch(target, {
     headers: { Accept: "application/json" },
-    signal: AbortSignal.timeout(8000),
   });
   const text = await res.text();
   let data;

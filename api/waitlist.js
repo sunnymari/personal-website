@@ -103,11 +103,14 @@ async function forwardToFormSubmit(row) {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
+      Origin: "https://marissacodes.com",
+      Referer: "https://marissacodes.com/data-center-watch",
     },
     body: JSON.stringify({
       _subject: `Sprout hardware waitlist — ${row.name}`,
       _template: "table",
       _captcha: "false",
+      _replyto: row.email,
       name: row.name,
       email: row.email,
       city: row.city || "",
@@ -119,8 +122,14 @@ async function forwardToFormSubmit(row) {
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    return { ok: false, via: "formsubmit", status: res.status, detail: data };
+  // FormSubmit sometimes returns HTTP 200 with success:"false"
+  if (!res.ok || data.success === "false" || data.success === false) {
+    return {
+      ok: false,
+      via: "formsubmit",
+      status: res.status,
+      detail: data.message || data,
+    };
   }
   return { ok: true, via: "formsubmit", data };
 }

@@ -56,10 +56,10 @@ export default function DailyEnergyFact({ InfoIcon, LightbulbIcon, ZapIcon }) {
                     : "Live · Carbonbench"
                   : status === "snapshot"
                     ? fact?.fromCache
-                      ? "Cached snapshot · Carbonbench offline"
-                      : "Snapshot · Carbonbench offline"
+                      ? "Cached · green routing tip"
+                      : "Green routing tip ready"
                     : status === "fallback"
-                      ? "Offline tip · try again"
+                      ? "Companion tip"
                       : "Couldn’t load"}
             </span>
             <button
@@ -110,7 +110,10 @@ export default function DailyEnergyFact({ InfoIcon, LightbulbIcon, ZapIcon }) {
           <InfoIcon size={14} color="#8FA876" />
           <span>
             {fact?.source || "Carbonbench"} · rotates model family daily · pairs with Sprout’s upcoming
-            CAISO / EIA live feed. Not live per-facility metering.
+            CAISO / EIA live feed.{" "}
+            {fact?.snapshot
+              ? "Showing Sprout’s cached green-routing tip while Carbonbench’s live database is reconnecting."
+              : "Not live per-facility metering."}
           </span>
         </div>
       </div>

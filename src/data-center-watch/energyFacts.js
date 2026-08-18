@@ -1,7 +1,7 @@
 import { snapshotCarbonAll, snapshotRecommend } from "./carbonbenchSnapshot.js";
 
 const CARBONBENCH = "/api/carbonbench";
-const CACHE_KEY = "dcw-daily-ai-energy-fact-v3";
+const CACHE_KEY = "dcw-daily-ai-energy-fact-v4";
 const MODEL_ROTATION = ["llama", "gpt", "claude", "mistral", "gemma", "qwen", "deepseek"];
 
 const FALLBACK_FACTS = [
@@ -60,6 +60,7 @@ function writeCache(fact) {
 export function clearDailyFactCache() {
   try {
     localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem("dcw-daily-ai-energy-fact-v3");
     localStorage.removeItem("dcw-daily-ai-energy-fact-v2");
     localStorage.removeItem("dcw-daily-ai-energy-fact-v1");
   } catch {
