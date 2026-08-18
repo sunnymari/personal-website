@@ -10,7 +10,7 @@ export default function DailyEnergyFact({ InfoIcon, LightbulbIcon, ZapIcon }) {
     try {
       const f = await getDailyAiEnergyFact({ force });
       setFact(f);
-      setStatus(f.live ? "live" : "fallback");
+      setStatus(f.live ? "live" : f.snapshot ? "snapshot" : "fallback");
     } catch {
       setStatus("error");
     }
@@ -39,8 +39,13 @@ export default function DailyEnergyFact({ InfoIcon, LightbulbIcon, ZapIcon }) {
             <span
               className="text-xs font-bold rounded-full px-3 py-1"
               style={{
-                background: status === "live" ? "rgba(143,168,118,0.25)" : "rgba(242,198,194,0.45)",
-                color: status === "live" ? "#4F6440" : "#7A3B36",
+                background:
+                  status === "live"
+                    ? "rgba(143,168,118,0.25)"
+                    : status === "snapshot"
+                      ? "rgba(143,168,118,0.18)"
+                      : "rgba(242,198,194,0.45)",
+                color: status === "live" || status === "snapshot" ? "#4F6440" : "#7A3B36",
               }}
             >
               {status === "loading"
@@ -49,9 +54,13 @@ export default function DailyEnergyFact({ InfoIcon, LightbulbIcon, ZapIcon }) {
                   ? fact?.fromCache
                     ? "Cached for today · Carbonbench"
                     : "Live · Carbonbench"
-                  : status === "fallback"
-                    ? "Offline tip · try again"
-                    : "Couldn’t load"}
+                  : status === "snapshot"
+                    ? fact?.fromCache
+                      ? "Cached snapshot · Carbonbench offline"
+                      : "Snapshot · Carbonbench offline"
+                    : status === "fallback"
+                      ? "Offline tip · try again"
+                      : "Couldn’t load"}
             </span>
             <button
               type="button"

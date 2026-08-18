@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/api/carbonbench/:path*",
-      "destination": "https://carbonbench.ai/api/:path*"
+      "destination": "/api/carbonbench-proxy?path=:path*"
     },
     {
       "source": "/about",
@@ -66,6 +66,9 @@
   "functions": {
     "api/waitlist.js": {
       "maxDuration": 10
+    },
+    "api/carbonbench-proxy.js": {
+      "maxDuration": 15
     }
   },
   "headers": [

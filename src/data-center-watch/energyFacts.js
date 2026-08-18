@@ -1,5 +1,7 @@
+import { snapshotCarbonAll, snapshotRecommend } from "./carbonbenchSnapshot.js";
+
 const CARBONBENCH = "/api/carbonbench";
-const CACHE_KEY = "dcw-daily-ai-energy-fact-v2";
+const CACHE_KEY = "dcw-daily-ai-energy-fact-v3";
 const MODEL_ROTATION = ["llama", "gpt", "claude", "mistral", "gemma", "qwen", "deepseek"];
 
 const FALLBACK_FACTS = [
@@ -38,7 +40,9 @@ function readCache() {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed?.day === dayKey() && parsed?.fact?.live) return parsed.fact;
+    if (parsed?.day === dayKey() && parsed?.fact && (parsed.fact.live || parsed.fact.snapshot)) {
+      return parsed.fact;
+    }
   } catch {
     /* ignore */
   }
@@ -56,6 +60,7 @@ function writeCache(fact) {
 export function clearDailyFactCache() {
   try {
     localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem("dcw-daily-ai-energy-fact-v2");
     localStorage.removeItem("dcw-daily-ai-energy-fact-v1");
   } catch {
     /* ignore */
@@ -82,13 +87,17 @@ async function fetchCarbonAll() {
   return res.json();
 }
 
-function buildFactFromApi({ recommend, carbonAll, model }) {
+function buildFactFromApi({ recommend, carbonAll, model, mode = "live" }) {
   const insight = recommend?.insight?.trim();
   const rec = recommend?.recommendation;
   const virginia = Array.isArray(carbonAll?.data)
     ? carbonAll.data.find((r) => r.id === "us-east-1" || /virginia/i.test(r.label || ""))
     : null;
   const intensity = latestIntensity(virginia);
+  const fromSnapshot =
+    mode === "snapshot" ||
+    recommend?.meta?.source === "sprout-snapshot" ||
+    carbonAll?.meta?.source === "sprout-snapshot";
 
   const headline = rec
     ? `Today’s greener pick: ${rec.displayName}`
@@ -103,7 +112,9 @@ function buildFactFromApi({ recommend, carbonAll, model }) {
   }
   if (intensity != null) {
     parts.push(
-      `Northern Virginia grid intensity is roughly ${Math.round(intensity)} gCO₂eq/kWh right now — useful context for the Ashburn cluster on the map.`,
+      fromSnapshot
+        ? `Northern Virginia grid intensity in our snapshot is roughly ${Math.round(intensity)} gCO₂eq/kWh — useful context for the Ashburn cluster on the map.`
+        : `Northern Virginia grid intensity is roughly ${Math.round(intensity)} gCO₂eq/kWh right now — useful context for the Ashburn cluster on the map.`,
     );
   }
   if (!parts.length) {
@@ -115,7 +126,9 @@ function buildFactFromApi({ recommend, carbonAll, model }) {
   return {
     headline,
     body: parts.join(" "),
-    source: "Carbonbench · Electricity Maps + AI Energy Score",
+    source: fromSnapshot
+      ? "Sprout snapshot · Carbonbench offline (Electricity Maps + AI Energy Score patterns)"
+      : "Carbonbench · Electricity Maps + AI Energy Score",
     metric:
       intensity != null
         ? { label: "VA grid intensity", value: `${Math.round(intensity)} gCO₂eq/kWh` }
@@ -124,7 +137,8 @@ function buildFactFromApi({ recommend, carbonAll, model }) {
           : null,
     model,
     updatedAt: rec?.calculatedAt || new Date().toISOString(),
-    live: true,
+    live: !fromSnapshot,
+    snapshot: fromSnapshot,
   };
 }
 
@@ -145,20 +159,38 @@ export async function getDailyAiEnergyFact(opts = {}) {
     try {
       carbonAll = await fetchCarbonAll();
     } catch {
-      carbonAll = null;
+      carbonAll = snapshotCarbonAll();
     }
-    const fact = buildFactFromApi({ recommend, carbonAll, model });
+    const mode =
+      recommend?.meta?.source === "sprout-snapshot" ||
+      carbonAll?.meta?.source === "sprout-snapshot"
+        ? "snapshot"
+        : "live";
+    const fact = buildFactFromApi({ recommend, carbonAll, model, mode });
     if (typeof localStorage !== "undefined") writeCache(fact);
     return { ...fact, fromCache: false };
   } catch {
-    const fallback = FALLBACK_FACTS[new Date().getDate() % FALLBACK_FACTS.length];
-    return {
-      ...fallback,
-      model,
-      updatedAt: new Date().toISOString(),
-      live: false,
-      fromCache: false,
-    };
+    // Local Vite still proxies straight to Carbonbench — use curated snapshot there too
+    try {
+      const fact = buildFactFromApi({
+        recommend: snapshotRecommend(model),
+        carbonAll: snapshotCarbonAll(),
+        model,
+        mode: "snapshot",
+      });
+      if (typeof localStorage !== "undefined") writeCache(fact);
+      return { ...fact, fromCache: false };
+    } catch {
+      const fallback = FALLBACK_FACTS[new Date().getDate() % FALLBACK_FACTS.length];
+      return {
+        ...fallback,
+        model,
+        updatedAt: new Date().toISOString(),
+        live: false,
+        snapshot: false,
+        fromCache: false,
+      };
+    }
   }
 }
 
