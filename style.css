@@ -675,6 +675,35 @@ footer {
   margin: 0.75rem 0 0;
 }
 
+.site-page .growth-section {
+  margin: 2rem 0 0;
+}
+
+.site-page .growth-section p {
+  text-indent: 0;
+  max-width: 42rem;
+}
+
+.site-page .growth-proof {
+  margin: 1.5rem 0 0;
+  max-width: 36rem;
+}
+
+.site-page .growth-proof img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  border: 3px solid var(--island-pink-border);
+  box-shadow: 0 12px 28px rgba(90, 126, 152, 0.14);
+}
+
+.site-page .growth-proof figcaption {
+  margin-top: 0.55rem;
+  font-size: 0.92rem;
+  color: var(--island-plum);
+}
+
 .site-page .blog-post {
   background:
     linear-gradient(180deg, rgba(255, 248, 239, 0.94) 0%, rgba(255, 244, 250, 0.92) 100%) !important;

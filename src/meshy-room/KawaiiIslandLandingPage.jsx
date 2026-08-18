@@ -4,6 +4,7 @@ import IslandHomepageScene from './IslandHomepageScene.jsx';
 const MENU_ITEMS = [
   { emoji: '🌸', label: 'About', href: '/about.html' },
   { emoji: '🎀', label: 'Projects', href: '/projects.html' },
+  { emoji: '📈', label: 'Growth', href: '/growth' },
   { emoji: '📚', label: 'Reading', href: '/reading.html' },
   { emoji: '📝', label: 'Blog', href: '/blog.html' },
   { emoji: '🌱', label: 'Data Center Watch', href: '/data-center-watch' },

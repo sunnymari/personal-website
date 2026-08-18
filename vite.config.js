@@ -23,6 +23,7 @@ export default defineConfig({
         blog: resolve(__dirname, 'blog.html'),
         reading: resolve(__dirname, 'reading.html'),
         projects: resolve(__dirname, 'projects.html'),
+        growth: resolve(__dirname, 'growth.html'),
         dataCenterWatch: resolve(__dirname, 'data-center-watch.html'),
       },
     },

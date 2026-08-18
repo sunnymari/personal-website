@@ -15,6 +15,10 @@
       "destination": "/projects.html"
     },
     {
+      "source": "/growth",
+      "destination": "/growth.html"
+    },
+    {
       "source": "/reading",
       "destination": "/reading.html"
     },
