@@ -24,6 +24,7 @@ export default defineConfig({
         reading: resolve(__dirname, 'reading.html'),
         projects: resolve(__dirname, 'projects.html'),
         growth: resolve(__dirname, 'growth.html'),
+        lockIn: resolve(__dirname, 'lock-in.html'),
         dataCenterWatch: resolve(__dirname, 'data-center-watch.html'),
       },
     },

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 Lock-In — Marissa Curry</title>
+  <link href="/style.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script type="module" src="/src/global-cursor.js"></script>
+</head>
+<body class="site-page">
+  <nav class="nav-buttons" style="margin-top: 1.5rem;">
+    <a href="/" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Home</span></span></a>
+    <a href="/about" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">About</span></span></a>
+    <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Projects</span></span></a>
+    <a href="/growth" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Growth</span></span></a>
+    <a href="/lock-in" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Lock-In</span></span></a>
+    <a href="/reading" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Reading</span></span></a>
+    <a href="/blog" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Blog</span></span></a>
+    <a href="/data-center-watch" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Data Center Watch</span></span></a>
+    <a href="https://logonlogoff.vercel.app" class="nav-link" target="_blank" rel="noopener noreferrer"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Log On Log Off</span></span></a>
+  </nav>
+
+  <div class="container lock-in-page">
+    <header class="blog-intro lock-in-hero">
+      <p class="lock-in-kicker">Year of no half-measures</p>
+      <h1 style="font-family: 'Fredoka', 'Nunito', sans-serif;">2026 Lock-In</h1>
+      <p>
+        Gym. Math. Coding. Reading. LSAT. Grad school.
+        Six lanes, one year — show up, stack reps, keep going.
+      </p>
+    </header>
+
+    <p class="lock-in-updated">Last updated · August 2026 · edit the numbers anytime</p>
+
+    <div id="lock-in-tracks" class="lock-in-tracks" aria-live="polite"></div>
+  </div>
+
+  <script type="module">
+    /**
+     * Update these numbers anytime — the page redraws from this list.
+     * percent: 0–100 visual fill
+     */
+    const TRACKS = [
+      {
+        id: "gym",
+        title: "Gym",
+        tagline: "Strength + consistency over vibes",
+        percent: 38,
+        metric: "18 / 48 training weeks",
+        detail:
+          "Pilates and strength work locked into the week. Not chasing perfection — chasing showing up when life is loud.",
+        wins: [
+          "Weekly sessions on the calendar (non-negotiable blocks)",
+          "Focus on mobility + posterior chain after a hard health year",
+          "Recovery treated as part of training, not a reward",
+        ],
+        next: "Hit 24 training weeks before year-end and keep a simple lift log.",
+      },
+      {
+        id: "math",
+        title: "Math",
+        tagline: "Proofs, practice, and patience",
+        percent: 32,
+        metric: "Core refresh in progress",
+        detail:
+          "Rebuilding quantitative fluency for LSAT logical reasoning carryover and grad-level work — slow is smooth, smooth is fast.",
+        wins: [
+          "Daily problem sets over binge weekends",
+          "Error log for every miss (why it broke, how to fix)",
+          "Mixing discrete / algebra drills with timed sets",
+        ],
+        next: "Finish the current problem bank chapter and time a full mixed set weekly.",
+      },
+      {
+        id: "coding",
+        title: "Coding",
+        tagline: "Ship in public, learn in public",
+        percent: 55,
+        metric: "Shipped · Sprout · Growth · site rebuilds",
+        detail:
+          "Full-stack muscle: personal site, Sprout Data Center Watch, growth engineering experiments, and AI-for-education prototypes.",
+        wins: [
+          "Sprout Data Center Watch live on marissacodes.com",
+          "Growth page + creator analytics story",
+          "Education & AI tooling prototypes (RAG grading dashboard)",
+          "Backend SE work while leveling full-stack skills",
+        ],
+        next: "One meaningful ship per month — feature, essay tooling, or open research demo.",
+      },
+      {
+        id: "reading",
+        title: "Reading",
+        tagline: "50 books. Full volume.",
+        percent: 28,
+        metric: "Toward 50 books in 2026",
+        detail:
+          "Reading is training for attention. Mix of grit memoirs, systems thinking, and whatever resets the nervous system.",
+        wins: [
+          "Goal locked: 50 books this year",
+          "Can't Hurt Me finished and written up on the blog",
+          "Reading page on the site as a living shelf",
+        ],
+        next: "Keep a simple finished-book list and protect nightly reading time.",
+      },
+      {
+        id: "lsat",
+        title: "LSAT prep",
+        tagline: "Logic under the clock",
+        percent: 22,
+        metric: "Diagnostic → drill cycle",
+        detail:
+          "Treat LSAT like a sport: timed sections, review every miss, build stamina. No romanticizing the grind — just reps.",
+        wins: [
+          "Study blocks scheduled around work + MAS-E",
+          "Section drills with a written miss journal",
+          "Focus on LR patterns before speed panic",
+        ],
+        next: "One timed section 3× per week + full practice test monthly.",
+      },
+      {
+        id: "grad",
+        title: "Grad school",
+        tagline: "MAS-E now · applications ahead",
+        percent: 45,
+        metric: "UC Berkeley MAS-E · PhD track research",
+        detail:
+          "Enrolled in Berkeley’s MAS-E program while building research-shaped work (AI × energy × education). Applications are a project — SOP, recommenders, deadlines.",
+        wins: [
+          "Actively in the MAS-E program at UC Berkeley",
+          "Sprout framed as research prototype + PhD narrative",
+          "Application materials outline started (story, research arc, why now)",
+        ],
+        next: "Lock recommender list, draft SOP v1, and calendar every hard deadline.",
+      },
+    ];
+
+    const root = document.getElementById("lock-in-tracks");
+
+    root.innerHTML = TRACKS.map(
+      (t, i) => `
+      <section class="lock-in-track" style="--delay: ${0.05 * i}s" id="${t.id}">
+        <div class="lock-in-track-head">
+          <div>
+            <h2 style="font-family: 'Fredoka', 'Nunito', sans-serif;">${t.title}</h2>
+            <p class="lock-in-tagline">${t.tagline}</p>
+          </div>
+          <div class="lock-in-metric" aria-label="Progress metric">${t.metric}</div>
+        </div>
+        <div class="lock-in-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${t.percent}" aria-label="${t.title} progress">
+          <span class="lock-in-bar-fill" data-pct="${t.percent}"></span>
+        </div>
+        <p class="lock-in-detail">${t.detail}</p>
+        <ul class="lock-in-wins">
+          ${t.wins.map((w) => `<li>${w}</li>`).join("")}
+        </ul>
+        <p class="lock-in-next"><span>Next</span> ${t.next}</p>
+      </section>
+    `,
+    ).join("");
+
+    requestAnimationFrame(() => {
+      document.querySelectorAll(".lock-in-bar-fill").forEach((el) => {
+        el.style.width = `${el.getAttribute("data-pct")}%`;
+      });
+    });
+  </script>
+</body>
+</html>

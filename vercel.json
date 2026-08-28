@@ -19,6 +19,10 @@
       "destination": "/growth.html"
     },
     {
+      "source": "/lock-in",
+      "destination": "/lock-in.html"
+    },
+    {
       "source": "/reading",
       "destination": "/reading.html"
     },

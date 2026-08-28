@@ -704,6 +704,153 @@ footer {
   color: var(--island-plum);
 }
 
+/* —— 2026 Lock-In —— */
+.site-page .lock-in-page {
+  max-width: 720px;
+}
+
+.site-page .lock-in-kicker {
+  margin: 0 0 0.35rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--island-berry);
+}
+
+.site-page .lock-in-updated {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--island-plum);
+  margin: 0.25rem 0 1.75rem;
+  opacity: 0.9;
+}
+
+.site-page .lock-in-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  margin-bottom: 3rem;
+}
+
+.site-page .lock-in-track {
+  padding: 1.35rem 1.4rem 1.45rem;
+  border: 3px solid var(--island-pink-border);
+  border-radius: 24px;
+  background:
+    linear-gradient(165deg, rgba(255, 252, 248, 0.96) 0%, rgba(255, 236, 246, 0.9) 100%);
+  box-shadow: 0 12px 28px rgba(90, 126, 152, 0.1);
+  animation: lockInRise 0.55s ease both;
+  animation-delay: var(--delay, 0s);
+}
+
+.site-page .lock-in-track-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.site-page .lock-in-track h2 {
+  margin: 0;
+  font-size: 1.65rem;
+  color: var(--island-pink);
+}
+
+.site-page .lock-in-tagline {
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--island-plum);
+}
+
+.site-page .lock-in-metric {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--island-berry);
+  background: rgba(255, 255, 255, 0.75);
+  border: 2px solid var(--island-pink-border);
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  white-space: nowrap;
+}
+
+.site-page .lock-in-bar {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(143, 95, 121, 0.12);
+  border: 2px solid rgba(240, 191, 212, 0.7);
+  overflow: hidden;
+  margin-bottom: 0.95rem;
+}
+
+.site-page .lock-in-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--island-mint) 0%, var(--island-pink) 100%);
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-page .lock-in-detail {
+  margin: 0 0 0.85rem;
+  max-width: none;
+  line-height: 1.65;
+}
+
+.site-page .lock-in-wins {
+  margin: 0 0 0.95rem;
+  padding: 0 0 0 1.15rem;
+  color: var(--island-plum);
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.site-page .lock-in-wins li {
+  margin-bottom: 0.35rem;
+}
+
+.site-page .lock-in-next {
+  margin: 0;
+  font-weight: 700;
+  color: var(--island-berry);
+  line-height: 1.5;
+}
+
+.site-page .lock-in-next span {
+  display: inline-block;
+  margin-right: 0.4rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--island-pink);
+}
+
+@keyframes lockInRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-page .lock-in-track {
+    animation: none;
+  }
+  .site-page .lock-in-bar-fill {
+    transition: none;
+  }
+}
+
 .site-page .blog-post {
   background:
     linear-gradient(180deg, rgba(255, 248, 239, 0.94) 0%, rgba(255, 244, 250, 0.92) 100%) !important;
