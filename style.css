@@ -704,6 +704,79 @@ footer {
   color: var(--island-plum);
 }
 
+/* —— Dream companies —— */
+.site-page .dream-company {
+  margin: 2rem auto 0;
+  max-width: 40rem;
+  padding: 1.35rem 1.4rem 1.45rem;
+  border: 3px solid var(--island-pink-border);
+  border-radius: 24px;
+  background:
+    linear-gradient(165deg, rgba(255, 252, 248, 0.96) 0%, rgba(255, 236, 246, 0.9) 100%);
+  box-shadow: 0 12px 28px rgba(90, 126, 152, 0.1);
+  text-align: left;
+  animation: lockInRise 0.55s ease both;
+}
+
+.site-page .dream-company-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.site-page .dream-company h2 {
+  margin: 0;
+  font-size: 1.65rem;
+  color: var(--island-pink);
+  text-align: left;
+}
+
+.site-page .dream-company-badge {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--island-berry);
+  background: rgba(255, 255, 255, 0.75);
+  border: 2px solid var(--island-pink-border);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+}
+
+.site-page .dream-company-why {
+  text-indent: 0;
+  margin: 0 0 1rem;
+  line-height: 1.65;
+  text-align: left;
+}
+
+.site-page .dream-company-points {
+  margin: 0 0 1.1rem;
+  padding-left: 1.25rem;
+  color: var(--island-plum);
+  text-align: left;
+}
+
+.site-page .dream-company-points li {
+  margin: 0.35rem 0;
+}
+
+.site-page .dream-company-cta {
+  margin: 0;
+  text-align: left;
+}
+
+.site-page .dream-company-note {
+  margin: 2.5rem auto 0;
+  max-width: 40rem;
+  font-size: 0.95rem;
+  color: var(--island-plum);
+  font-style: italic;
+  text-align: center;
+}
+
 /* —— 2026 Lock-In —— */
 .site-page .lock-in-page {
   max-width: 720px;
@@ -725,6 +798,96 @@ footer {
   color: var(--island-plum);
   margin: 0.25rem 0 1.75rem;
   opacity: 0.9;
+}
+
+.site-page .lock-in-overview {
+  margin: 1.25rem 0 1rem;
+  padding: 1.25rem 1.35rem;
+  border: 3px solid var(--island-pink-border);
+  border-radius: 24px;
+  background:
+    linear-gradient(160deg, rgba(255, 248, 252, 0.95) 0%, rgba(232, 246, 255, 0.88) 100%);
+  box-shadow: 0 12px 28px rgba(90, 126, 152, 0.1);
+}
+
+.site-page .lock-in-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.site-page .lock-in-stat {
+  text-align: center;
+}
+
+.site-page .lock-in-stat-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--island-plum);
+  margin-bottom: 0.25rem;
+}
+
+.site-page .lock-in-stat-value {
+  display: block;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  font-weight: 700;
+  color: var(--island-pink);
+  line-height: 1.1;
+}
+
+.site-page .lock-in-stat-note {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--island-plum);
+}
+
+.site-page .lock-in-bar-year {
+  margin-bottom: 0;
+}
+
+.site-page .lock-in-jump {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem 0.65rem;
+  margin: 1.1rem 0 0.35rem;
+}
+
+.site-page .lock-in-jump a {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--island-berry);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 0.1rem;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.site-page .lock-in-jump a:hover {
+  color: var(--island-pink);
+  border-bottom-color: var(--island-pink);
+}
+
+.site-page .lock-in-pct {
+  margin: -0.35rem 0 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--island-berry);
+}
+
+@media (max-width: 640px) {
+  .site-page .lock-in-overview-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
 .site-page .lock-in-tracks {

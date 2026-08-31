@@ -15,6 +15,7 @@
     <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Projects</span></span></a>
     <a href="/growth" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Growth</span></span></a>
     <a href="/lock-in" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Lock-In</span></span></a>
+    <a href="/dream-companies" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Dream Cos</span></span></a>
     <a href="/reading" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Reading</span></span></a>
     <a href="/blog" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Blog</span></span></a>
     <a href="/data-center-watch" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Data Center Watch</span></span></a>
@@ -31,14 +32,25 @@
       </p>
     </header>
 
-    <p class="lock-in-updated">Last updated · August 2026 · edit the numbers anytime</p>
+    <div class="lock-in-overview" id="lock-in-overview" aria-live="polite"></div>
+
+    <nav class="lock-in-jump" aria-label="Jump to a lock-in track">
+      <a href="#gym">Gym</a>
+      <a href="#math">Math</a>
+      <a href="#coding">Coding</a>
+      <a href="#reading">Reading</a>
+      <a href="#lsat">LSAT</a>
+      <a href="#grad">Grad school</a>
+    </nav>
+
+    <p class="lock-in-updated">Last updated · August 28, 2026 · numbers live in one editable list below</p>
 
     <div id="lock-in-tracks" class="lock-in-tracks" aria-live="polite"></div>
   </div>
 
   <script type="module">
     /**
-     * Update these numbers anytime — the page redraws from this list.
+     * Update these anytime — the page redraws from this list.
      * percent: 0–100 visual fill
      */
     const TRACKS = [
@@ -64,7 +76,7 @@
         percent: 32,
         metric: "Core refresh in progress",
         detail:
-          "Rebuilding quantitative fluency for LSAT logical reasoning carryover and grad-level work — slow is smooth, smooth is fast.",
+          "Rebuilding quantitative fluency for LSAT carryover and grad-level work — slow is smooth, smooth is fast.",
         wins: [
           "Daily problem sets over binge weekends",
           "Error log for every miss (why it broke, how to fix)",
@@ -77,7 +89,7 @@
         title: "Coding",
         tagline: "Ship in public, learn in public",
         percent: 55,
-        metric: "Shipped · Sprout · Growth · site rebuilds",
+        metric: "Shipped · Sprout · Growth · site",
         detail:
           "Full-stack muscle: personal site, Sprout Data Center Watch, growth engineering experiments, and AI-for-education prototypes.",
         wins: [
@@ -123,7 +135,7 @@
         title: "Grad school",
         tagline: "MAS-E now · applications ahead",
         percent: 45,
-        metric: "UC Berkeley MAS-E · PhD track research",
+        metric: "UC Berkeley MAS-E · PhD track",
         detail:
           "Enrolled in Berkeley’s MAS-E program while building research-shaped work (AI × energy × education). Applications are a project — SOP, recommenders, deadlines.",
         wins: [
@@ -135,9 +147,38 @@
       },
     ];
 
-    const root = document.getElementById("lock-in-tracks");
+    const avg = Math.round(
+      TRACKS.reduce((sum, t) => sum + t.percent, 0) / TRACKS.length,
+    );
+    const now = new Date();
+    const start = new Date(Date.UTC(now.getUTCFullYear(), 0, 0));
+    const dayOfYear = Math.floor((now - start) / 86400000);
+    const yearPct = Math.min(100, Math.round((dayOfYear / 365) * 100));
 
-    root.innerHTML = TRACKS.map(
+    document.getElementById("lock-in-overview").innerHTML = `
+      <div class="lock-in-overview-grid">
+        <div class="lock-in-stat">
+          <span class="lock-in-stat-label">Lock-in average</span>
+          <span class="lock-in-stat-value">${avg}%</span>
+          <span class="lock-in-stat-note">Across all six lanes</span>
+        </div>
+        <div class="lock-in-stat">
+          <span class="lock-in-stat-label">Year clock</span>
+          <span class="lock-in-stat-value">${yearPct}%</span>
+          <span class="lock-in-stat-note">Day ${dayOfYear} of 2026</span>
+        </div>
+        <div class="lock-in-stat">
+          <span class="lock-in-stat-label">Lanes active</span>
+          <span class="lock-in-stat-value">6 / 6</span>
+          <span class="lock-in-stat-note">Nothing on mute</span>
+        </div>
+      </div>
+      <div class="lock-in-bar lock-in-bar-year" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${yearPct}" aria-label="Year progress">
+        <span class="lock-in-bar-fill" data-pct="${yearPct}"></span>
+      </div>
+    `;
+
+    document.getElementById("lock-in-tracks").innerHTML = TRACKS.map(
       (t, i) => `
       <section class="lock-in-track" style="--delay: ${0.05 * i}s" id="${t.id}">
         <div class="lock-in-track-head">
@@ -150,6 +191,7 @@
         <div class="lock-in-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${t.percent}" aria-label="${t.title} progress">
           <span class="lock-in-bar-fill" data-pct="${t.percent}"></span>
         </div>
+        <p class="lock-in-pct">${t.percent}% locked</p>
         <p class="lock-in-detail">${t.detail}</p>
         <ul class="lock-in-wins">
           ${t.wins.map((w) => `<li>${w}</li>`).join("")}
