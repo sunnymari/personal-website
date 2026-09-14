@@ -238,6 +238,9 @@ async function upsertLog(cfg, row) {
 
 export default async function handler(req, res) {
   try {
+    console.log('[sprout-logs] Handler invoked, method:', req.method);
+    console.log('[sprout-logs] fetch available:', typeof fetch !== 'undefined');
+    
     if (req.method === "OPTIONS") {
       res.statusCode = 204;
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -248,13 +251,16 @@ export default async function handler(req, res) {
     }
 
     const cfg = supabaseConfig();
+    console.log('[sprout-logs] Config loaded, has config:', cfg !== null);
 
   if (req.method === "GET") {
+    console.log('[sprout-logs] Processing GET request');
     let dbRows = [];
     let live = false;
     let note = null;
 
     if (cfg) {
+      console.log('[sprout-logs] Fetching from DB');
       const result = await fetchResearchLogs(cfg);
       if (result.ok) {
         dbRows = result.rows;
@@ -269,7 +275,10 @@ export default async function handler(req, res) {
       note = "Showing seed milestones until Supabase is linked.";
     }
 
+    console.log('[sprout-logs] About to fetch waitlist signals, cfg:', cfg !== null);
     const waitlistSignals = await fetchWaitlistDateSignals(cfg);
+    console.log('[sprout-logs] Waitlist signals fetched, count:', waitlistSignals.length);
+    
     json(res, 200, {
       ok: true,
       live,
@@ -315,6 +324,8 @@ export default async function handler(req, res) {
     json(res, 500, {
       error: "Internal server error",
       message: err.message,
+      name: err.name,
+      cause: err.cause?.message,
       stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
     });
   }
