@@ -276,7 +276,8 @@ export default async function handler(req, res) {
     }
 
     console.log('[sprout-logs] About to fetch waitlist signals, cfg:', cfg !== null);
-    const waitlistSignals = await fetchWaitlistDateSignals(cfg);
+    // Temporarily disable waitlist signals to test
+    const waitlistSignals = []; // await fetchWaitlistDateSignals(cfg);
     console.log('[sprout-logs] Waitlist signals fetched, count:', waitlistSignals.length);
     
     json(res, 200, {
