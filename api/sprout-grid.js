@@ -98,31 +98,122 @@ function aggregateForTrends(readings, bucketHours = 6) {
       buckets.set(bucketKey, {
         timestamp: new Date(bucketKey).toISOString(),
         count: 0,
-        totalStress: 0,
-        totalPrice: 0,
-        totalDemand: 0,
+        prices: [],
+        stresses: [],
+        demands: [],
         stressedCount: 0,
       });
     }
     
     const bucket = buckets.get(bucketKey);
     bucket.count++;
-    bucket.totalStress += r.stress_score || 0;
-    bucket.totalPrice += r.price_per_mwh || 0;
-    bucket.totalDemand += r.demand_mw || 0;
+    if (r.stress_score != null) bucket.stresses.push(r.stress_score);
+    if (r.price_per_mwh != null) bucket.prices.push(r.price_per_mwh);
+    if (r.demand_mw != null) bucket.demands.push(r.demand_mw);
     if (r.grid_state === 'stressed') bucket.stressedCount++;
   });
 
   return Array.from(buckets.values())
     .map(b => ({
       timestamp: b.timestamp,
-      avgStress: b.count > 0 ? b.totalStress / b.count : 0,
-      avgPrice: b.count > 0 ? b.totalPrice / b.count : 0,
-      avgDemand: b.count > 0 ? b.totalDemand / b.count : 0,
+      avgStress: b.stresses.length > 0 ? b.stresses.reduce((a,c) => a+c, 0) / b.stresses.length : 0,
+      minStress: b.stresses.length > 0 ? Math.min(...b.stresses) : 0,
+      maxStress: b.stresses.length > 0 ? Math.max(...b.stresses) : 0,
+      avgPrice: b.prices.length > 0 ? b.prices.reduce((a,c) => a+c, 0) / b.prices.length : 0,
+      minPrice: b.prices.length > 0 ? Math.min(...b.prices) : 0,
+      maxPrice: b.prices.length > 0 ? Math.max(...b.prices) : 0,
+      avgDemand: b.demands.length > 0 ? b.demands.reduce((a,c) => a+c, 0) / b.demands.length : 0,
+      minDemand: b.demands.length > 0 ? Math.min(...b.demands) : 0,
+      maxDemand: b.demands.length > 0 ? Math.max(...b.demands) : 0,
       stressedPct: b.count > 0 ? b.stressedCount / b.count : 0,
       count: b.count,
     }))
     .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+}
+
+function aggregateHourlyProfile(readings) {
+  // Hour-of-day average profile (0-23)
+  const hours = Array(24).fill(null).map(() => ({
+    prices: [],
+    stresses: [],
+    demands: [],
+    count: 0,
+  }));
+
+  readings.forEach(r => {
+    const hour = new Date(r.timestamp).getUTCHours();
+    const bucket = hours[hour];
+    bucket.count++;
+    if (r.price_per_mwh != null) bucket.prices.push(r.price_per_mwh);
+    if (r.stress_score != null) bucket.stresses.push(r.stress_score);
+    if (r.demand_mw != null) bucket.demands.push(r.demand_mw);
+  });
+
+  return hours.map((h, hour) => ({
+    hour,
+    avgPrice: h.prices.length > 0 ? h.prices.reduce((a,c) => a+c, 0) / h.prices.length : 0,
+    avgStress: h.stresses.length > 0 ? h.stresses.reduce((a,c) => a+c, 0) / h.stresses.length : 0,
+    avgDemand: h.demands.length > 0 ? h.demands.reduce((a,c) => a+c, 0) / h.demands.length : 0,
+    count: h.count,
+  }));
+}
+
+function getStressDistribution(readings) {
+  // Histogram bins for stress scores
+  const bins = Array(10).fill(0); // 0-0.1, 0.1-0.2, ..., 0.9-1.0
+  let validCount = 0;
+
+  readings.forEach(r => {
+    if (r.stress_score != null) {
+      validCount++;
+      const bin = Math.min(Math.floor(r.stress_score * 10), 9);
+      bins[bin]++;
+    }
+  });
+
+  return bins.map((count, i) => ({
+    bin: `${(i/10).toFixed(1)}-${((i+1)/10).toFixed(1)}`,
+    binStart: i / 10,
+    count,
+    pct: validCount > 0 ? count / validCount : 0,
+  }));
+}
+
+function getTopSpikeHours(readings, limit = 10) {
+  // Find hours with highest average stress
+  const hourBuckets = new Map();
+
+  readings.forEach(r => {
+    if (r.stress_score == null) return;
+    const ts = new Date(r.timestamp);
+    const hourKey = `${ts.toISOString().slice(0,13)}:00:00Z`;
+    
+    if (!hourBuckets.has(hourKey)) {
+      hourBuckets.set(hourKey, {
+        timestamp: hourKey,
+        stresses: [],
+        prices: [],
+        demands: [],
+      });
+    }
+    
+    const bucket = hourBuckets.get(hourKey);
+    bucket.stresses.push(r.stress_score);
+    if (r.price_per_mwh != null) bucket.prices.push(r.price_per_mwh);
+    if (r.demand_mw != null) bucket.demands.push(r.demand_mw);
+  });
+
+  return Array.from(hourBuckets.values())
+    .map(h => ({
+      timestamp: h.timestamp,
+      avgStress: h.stresses.reduce((a,c) => a+c, 0) / h.stresses.length,
+      maxStress: Math.max(...h.stresses),
+      avgPrice: h.prices.length > 0 ? h.prices.reduce((a,c) => a+c, 0) / h.prices.length : 0,
+      avgDemand: h.demands.length > 0 ? h.demands.reduce((a,c) => a+c, 0) / h.demands.length : 0,
+      count: h.stresses.length,
+    }))
+    .sort((a, b) => b.avgStress - a.avgStress)
+    .slice(0, limit);
 }
 
 export default async function handler(req, res) {
@@ -173,14 +264,29 @@ export default async function handler(req, res) {
 
     const heatmap = aggregateForHeatmap(result.readings);
     const trends = aggregateForTrends(result.readings, 6);
+    const hourlyProfile = aggregateHourlyProfile(result.readings);
+    const stressDistribution = getStressDistribution(result.readings);
+    const topSpikes = getTopSpikeHours(result.readings, 10);
+
+    // Data provenance
+    const seedCount = result.readings.filter(r => r.source === 'SEED').length;
+    const liveCount = result.readings.length - seedCount;
 
     json(res, 200, {
       ok: true,
       region,
       dataPoints: result.readings.length,
       hoursCovered: hours,
+      provenance: {
+        seed: seedCount,
+        live: liveCount,
+        pctLive: result.readings.length > 0 ? liveCount / result.readings.length : 0,
+      },
       heatmap,
       trends,
+      hourlyProfile,
+      stressDistribution,
+      topSpikes,
       readings: result.readings.slice(-100), // Last 100 raw points for detail view
     });
 
