@@ -138,6 +138,9 @@ function mergeLogs(...groups) {
 }
 
 async function fetchResearchLogs(cfg) {
+  if (typeof fetch === 'undefined') {
+    return { ok: false, status: 503, detail: 'fetch API not available in this runtime', rows: [] };
+  }
   const res = await fetch(
     `${cfg.url}/rest/v1/sprout_research_logs?select=*&order=log_date.desc,created_at.desc&limit=120`,
     {
@@ -159,6 +162,7 @@ async function fetchWaitlistDateSignals(cfg) {
   // Aggregate signup dates only — never return emails/names.
   const writeCfg = supabaseConfig({ write: true });
   if (!writeCfg?.canWrite) return [];
+  if (typeof fetch === 'undefined') return [];
 
   const res = await fetch(
     `${writeCfg.url}/rest/v1/sprout_hardware_waitlist?select=created_at&order=created_at.asc`,
@@ -198,6 +202,9 @@ async function upsertLog(cfg, row) {
   const writeCfg = supabaseConfig({ write: true });
   if (!writeCfg?.canWrite) {
     return { ok: false, status: 503, detail: "Service role key required to write logs." };
+  }
+  if (typeof fetch === 'undefined') {
+    return { ok: false, status: 503, detail: "fetch API not available in this runtime." };
   }
 
   const res = await fetch(`${writeCfg.url}/rest/v1/sprout_research_logs`, {
