@@ -37,6 +37,10 @@
     {
       "source": "/data-center-watch",
       "destination": "/data-center-watch.html"
+    },
+    {
+      "source": "/sprout",
+      "destination": "/data-center-watch.html"
     }
   ],
   "redirects": [
@@ -77,6 +81,9 @@
     },
     "api/carbonbench-proxy.js": {
       "maxDuration": 15
+    },
+    "api/sprout-logs.js": {
+      "maxDuration": 10
     }
   },
   "headers": [

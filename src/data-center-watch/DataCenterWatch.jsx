@@ -3,6 +3,8 @@ import UsClusterMap from "./UsClusterMap.jsx";
 import DailyEnergyFact from "./DailyEnergyFact.jsx";
 import HardwareInterest from "./HardwareInterest.jsx";
 import AboutProject, { AboutFooterBlurb } from "./AboutProject.jsx";
+import LiveDataTracker from "./LiveDataTracker.jsx";
+import { logGridSnapshotEvent } from "./researchLog.js";
 
 const CLUSTERS = [
   { name: "Northern Virginia", lat: 38.95, lng: -77.45, size: "largest", note: "Largest data center market in the world · Ashburn" },
@@ -44,6 +46,7 @@ const GRID_STATES = [
 const TABS = [
   { id: "watch", label: "Watch" },
   { id: "fact", label: "Daily fact" },
+  { id: "tracker", label: "Live tracker" },
   { id: "hardware", label: "Hardware" },
   { id: "about", label: "About" },
   { id: "howto", label: "How to use" },
@@ -61,6 +64,10 @@ const HOW_TO_STEPS = [
   {
     title: "Check the Daily fact tab",
     body: "Each day we show a green AI routing tip (lowest-carbon model region + Virginia grid context). When Carbonbench’s live API is up we use that; otherwise Sprout serves a curated snapshot so the tab still works.",
+  },
+  {
+    title: "Open the Live tracker",
+    body: "The Live tracker lists dated research logs: milestones, daily AI energy facts, grid snapshots, and waitlist interest by day, plus a clear note on why each signal matters.",
   },
   {
     title: "Join the Hardware waitlist",
@@ -184,6 +191,12 @@ export default function DataCenterWatch() {
   const [hovered, setHovered] = useState(null);
   const [tab, setTab] = useState("watch");
   const onHoverChange = useCallback((name) => setHovered(name), []);
+
+  useEffect(() => {
+    logGridSnapshotEvent(GRID_STATES[idx]);
+    // Log once per page load (title is day-unique), not on every ticker tick.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div
@@ -335,7 +348,7 @@ export default function DataCenterWatch() {
           className="display-font text-5xl sm:text-6xl font-semibold mt-2 leading-tight text-center sm:text-left"
           style={{ color: "#3A3A32" }}
         >
-          Sprout Data Center Watch
+          Sprout
         </h1>
         <p className="text-lg mt-3 max-w-2xl text-stone-600 font-semibold">
           Where major data center clusters sit on the grid, and what the current
@@ -360,7 +373,7 @@ export default function DataCenterWatch() {
           className="dcw-tablist mt-6 inline-flex gap-1 p-1.5 rounded-full"
           style={{ background: "rgba(241,237,228,0.9)", border: "1.5px solid rgba(242,198,194,0.55)" }}
           role="tablist"
-          aria-label="Data Center Watch sections"
+          aria-label="Sprout sections"
         >
           {TABS.map((t) => {
             const active = tab === t.id;
@@ -395,6 +408,8 @@ export default function DataCenterWatch() {
         />
       ) : null}
 
+      {tab === "tracker" ? <LiveDataTracker InfoIcon={InfoIcon} /> : null}
+
       {tab === "hardware" ? <HardwareInterest SproutIcon={SproutIcon} /> : null}
 
       {tab === "about" ? <AboutProject InfoIcon={InfoIcon} /> : null}
@@ -417,8 +432,8 @@ export default function DataCenterWatch() {
               A quick walkthrough
             </h2>
             <p className="text-sm font-semibold text-stone-600 mt-2 max-w-2xl">
-              Use Data Center Watch to decide when to run high-draw appliances based on
-              regional grid stress near major data center hubs — and help Sprout ship hardware.
+              Use Sprout to decide when to run high-draw appliances based on
+              regional grid stress near major data center hubs, and help ship hardware.
             </p>
 
             <ol className="mt-8 space-y-4 list-none p-0 m-0">

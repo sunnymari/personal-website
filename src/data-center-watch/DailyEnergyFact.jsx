@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getDailyAiEnergyFact } from "./energyFacts.js";
+import { logDailyFactEvent } from "./researchLog.js";
 
 export default function DailyEnergyFact({ InfoIcon, LightbulbIcon, ZapIcon }) {
   const [fact, setFact] = useState(null);
@@ -11,6 +12,7 @@ export default function DailyEnergyFact({ InfoIcon, LightbulbIcon, ZapIcon }) {
       const f = await getDailyAiEnergyFact({ force });
       setFact(f);
       setStatus(f.live ? "live" : f.snapshot ? "snapshot" : "fallback");
+      logDailyFactEvent(f);
     } catch {
       setStatus("error");
     }
