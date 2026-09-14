@@ -5,6 +5,48 @@ export const WHY_TRACKER_MATTERS = {
   body: "AI data centers are reshaping electricity demand, but most people only see headlines. Sprout logs dated research signals so the experiment has a memory: what we measured, when we measured it, and why that day matters for grid salience and household behavior.",
 };
 
+export const SEED_LOGS = [
+  {
+    id: "seed-launch",
+    log_date: "2026-08-28",
+    kind: "milestone",
+    title: "Sprout goes live on marissacodes.com",
+    summary:
+      "Public companion map of known U.S. data center hubs with grid-stress guidance and a hardware waitlist.",
+    why_important:
+      "A living research surface: when AI demand is visible to regular people, we can study whether salience changes household timing of high-draw appliances.",
+    meta: { phase: "launch", seed: true },
+    source: "sprout",
+    created_at: "2026-08-28T12:00:00.000Z",
+  },
+  {
+    id: "seed-instrument",
+    log_date: "2026-08-31",
+    kind: "milestone",
+    title: "Hardware waitlist + Carbonbench daily fact wired",
+    summary:
+      "Waitlist signups persist to Supabase and email. Daily AI energy tips pull Carbonbench with a curated snapshot fallback.",
+    why_important:
+      "Logging interest and daily energy tips creates a dated research trail instead of only ephemeral on-screen state.",
+    meta: { phase: "instrumentation", seed: true },
+    source: "sprout",
+    created_at: "2026-08-31T12:00:00.000Z",
+  },
+  {
+    id: "seed-tracker",
+    log_date: "2026-09-14",
+    kind: "milestone",
+    title: "Live data tracker opened",
+    summary:
+      "Sprout now keeps a public, dated log of research signals so history is visible: daily facts, grid snapshots, and waitlist interest.",
+    why_important:
+      "Without dates, demos reset. A dated tracker proves the experiment is running over time and clarifies why the thesis matters.",
+    meta: { phase: "tracker", seed: true },
+    source: "sprout",
+    created_at: "2026-09-14T12:00:00.000Z",
+  },
+];
+
 function dayKey(d = new Date()) {
   return d.toISOString().slice(0, 10);
 }
@@ -42,14 +84,32 @@ export async function fetchResearchLogs() {
   const local = readLocal();
   try {
     const res = await fetch("/api/sprout-logs");
+    if (!res.ok) {
+      const fallback = mergeClientLogs(SEED_LOGS, local);
+      return {
+        ok: true,
+        live: false,
+        logs: fallback,
+        note: res.status === 404
+          ? "API endpoint not yet deployed. Showing seed milestones + local entries as fallback."
+          : `API error (${res.status}). Showing seed milestones + local entries as fallback.`,
+      };
+    }
     const data = await res.json();
-    if (!res.ok || !data?.ok) {
-      return { ok: true, live: false, logs: local, note: data?.error || "Using local log cache." };
+    if (!data?.ok) {
+      const fallback = mergeClientLogs(SEED_LOGS, local);
+      return { ok: true, live: false, logs: fallback, note: data?.error || "Using seed + local fallback." };
     }
     const merged = mergeClientLogs(data.logs || [], local);
     return { ok: true, live: Boolean(data.live), logs: merged, note: data.note || null };
-  } catch {
-    return { ok: true, live: false, logs: local, note: "Offline: showing local research log cache." };
+  } catch (err) {
+    const fallback = mergeClientLogs(SEED_LOGS, local);
+    return {
+      ok: true,
+      live: false,
+      logs: fallback,
+      note: "Network error. Showing seed milestones + local entries as fallback.",
+    };
   }
 }
 
