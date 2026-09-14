@@ -141,21 +141,25 @@ async function fetchResearchLogs(cfg) {
   if (typeof fetch === 'undefined') {
     return { ok: false, status: 503, detail: 'fetch API not available in this runtime', rows: [] };
   }
-  const res = await fetch(
-    `${cfg.url}/rest/v1/sprout_research_logs?select=*&order=log_date.desc,created_at.desc&limit=120`,
-    {
-      headers: {
-        apikey: cfg.key,
-        Authorization: `Bearer ${cfg.key}`,
-      },
+  try {
+    const res = await fetch(
+      `${cfg.url}/rest/v1/sprout_research_logs?select=*&order=log_date.desc,created_at.desc&limit=120`,
+      {
+        headers: {
+          apikey: cfg.key,
+          Authorization: `Bearer ${cfg.key}`,
+        },
+      }
+    );
+    if (!res.ok) {
+      const text = await res.text();
+      return { ok: false, status: res.status, detail: text.slice(0, 300), rows: [] };
     }
-  );
-  if (!res.ok) {
-    const text = await res.text();
-    return { ok: false, status: res.status, detail: text.slice(0, 300), rows: [] };
+    const rows = await res.json();
+    return { ok: true, rows: Array.isArray(rows) ? rows : [] };
+  } catch (err) {
+    return { ok: false, status: 503, detail: `Database connection failed: ${err.message}`, rows: [] };
   }
-  const rows = await res.json();
-  return { ok: true, rows: Array.isArray(rows) ? rows : [] };
 }
 
 async function fetchWaitlistDateSignals(cfg) {
@@ -164,38 +168,43 @@ async function fetchWaitlistDateSignals(cfg) {
   if (!writeCfg?.canWrite) return [];
   if (typeof fetch === 'undefined') return [];
 
-  const res = await fetch(
-    `${writeCfg.url}/rest/v1/sprout_hardware_waitlist?select=created_at&order=created_at.asc`,
-    {
-      headers: {
-        apikey: writeCfg.key,
-        Authorization: `Bearer ${writeCfg.key}`,
-      },
+  try {
+    const res = await fetch(
+      `${writeCfg.url}/rest/v1/sprout_hardware_waitlist?select=created_at&order=created_at.asc`,
+      {
+        headers: {
+          apikey: writeCfg.key,
+          Authorization: `Bearer ${writeCfg.key}`,
+        },
+      }
+    );
+    if (!res.ok) return [];
+    const rows = await res.json();
+    if (!Array.isArray(rows) || !rows.length) return [];
+
+    const counts = new Map();
+    for (const row of rows) {
+      const day = String(row.created_at || "").slice(0, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) continue;
+      counts.set(day, (counts.get(day) || 0) + 1);
     }
-  );
-  if (!res.ok) return [];
-  const rows = await res.json();
-  if (!Array.isArray(rows) || !rows.length) return [];
 
-  const counts = new Map();
-  for (const row of rows) {
-    const day = String(row.created_at || "").slice(0, 10);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) continue;
-    counts.set(day, (counts.get(day) || 0) + 1);
+    return [...counts.entries()].map(([log_date, count]) => ({
+      id: `waitlist-${log_date}`,
+      log_date,
+      kind: "waitlist_signal",
+      title: `Hardware waitlist interest · ${count} signup${count === 1 ? "" : "s"}`,
+      summary: `${count} person${count === 1 ? "" : "s"} joined the Sprout hardware waitlist on this date (names and emails stay private).`,
+      why_important:
+        "Waitlist dates show real demand for grid-aware hardware. That interest signal is part of the research record, not just a marketing list.",
+      meta: { count, no_pii: true },
+      source: "sprout",
+      created_at: `${log_date}T12:00:00.000Z`,
+    }));
+  } catch (err) {
+    console.error('[sprout-logs] Waitlist fetch error:', err.message);
+    return [];
   }
-
-  return [...counts.entries()].map(([log_date, count]) => ({
-    id: `waitlist-${log_date}`,
-    log_date,
-    kind: "waitlist_signal",
-    title: `Hardware waitlist interest · ${count} signup${count === 1 ? "" : "s"}`,
-    summary: `${count} person${count === 1 ? "" : "s"} joined the Sprout hardware waitlist on this date (names and emails stay private).`,
-    why_important:
-      "Waitlist dates show real demand for grid-aware hardware. That interest signal is part of the research record, not just a marketing list.",
-    meta: { count, no_pii: true },
-    source: "sprout",
-    created_at: `${log_date}T12:00:00.000Z`,
-  }));
 }
 
 async function upsertLog(cfg, row) {
@@ -276,8 +285,7 @@ export default async function handler(req, res) {
     }
 
     console.log('[sprout-logs] About to fetch waitlist signals, cfg:', cfg !== null);
-    // Temporarily disable waitlist signals to test
-    const waitlistSignals = []; // await fetchWaitlistDateSignals(cfg);
+    const waitlistSignals = await fetchWaitlistDateSignals(cfg);
     console.log('[sprout-logs] Waitlist signals fetched, count:', waitlistSignals.length);
     
     json(res, 200, {
