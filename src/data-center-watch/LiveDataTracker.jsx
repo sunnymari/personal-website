@@ -116,7 +116,7 @@ export default function LiveDataTracker({ InfoIcon }) {
             <p className="text-sm font-semibold text-stone-700 leading-relaxed">
               {live
                 ? "Connected to Supabase. Showing live research logs + seed milestones."
-                : "API not yet live. Showing seed milestones + any local entries as fallback."}
+                : note || "API online. Database not linked yet — showing seed milestones + local entries."}
             </p>
           </div>
 
@@ -191,7 +191,7 @@ export default function LiveDataTracker({ InfoIcon }) {
           </div>
         </div>
 
-        {note ? (
+        {note && !live ? (
           <div
             className="mt-5 rounded-2xl p-4 text-sm font-semibold leading-relaxed"
             style={{ background: "rgba(217,164,65,0.15)", color: "#8a6a20", border: "1.5px solid rgba(217,164,65,0.3)" }}
