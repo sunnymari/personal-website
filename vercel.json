@@ -84,6 +84,9 @@
     },
     "api/sprout-logs.js": {
       "maxDuration": 10
+    },
+    "api/sprout-grid.js": {
+      "maxDuration": 10
     }
   },
   "headers": [

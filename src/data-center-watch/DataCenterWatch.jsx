@@ -4,6 +4,7 @@ import DailyEnergyFact from "./DailyEnergyFact.jsx";
 import HardwareInterest from "./HardwareInterest.jsx";
 import AboutProject, { AboutFooterBlurb } from "./AboutProject.jsx";
 import LiveDataTracker from "./LiveDataTracker.jsx";
+import GridTrends from "./GridTrends.jsx";
 import { logGridSnapshotEvent } from "./researchLog.js";
 
 const CLUSTERS = [
@@ -46,6 +47,7 @@ const GRID_STATES = [
 const TABS = [
   { id: "watch", label: "Watch" },
   { id: "fact", label: "Daily fact" },
+  { id: "trends", label: "Trends" },
   { id: "tracker", label: "Live tracker" },
   { id: "hardware", label: "Hardware" },
   { id: "about", label: "About" },
@@ -68,6 +70,10 @@ const HOW_TO_STEPS = [
   {
     title: "Open the Live tracker",
     body: "The Live tracker lists dated research logs: milestones, daily AI energy facts, grid snapshots, and waitlist interest by day, plus a clear note on why each signal matters.",
+  },
+  {
+    title: "Explore the Trends heatmap",
+    body: "The Trends tab shows when grid stress peaks (day × hour heatmap) and how price/demand evolved over the past week. Compare regions (CAISO, ERCOT, PJM) to see different grid patterns — based on public feeds, not per-facility data.",
   },
   {
     title: "Join the Hardware waitlist",
@@ -407,6 +413,8 @@ export default function DataCenterWatch() {
           ZapIcon={ZapIcon}
         />
       ) : null}
+
+      {tab === "trends" ? <GridTrends InfoIcon={InfoIcon} /> : null}
 
       {tab === "tracker" ? <LiveDataTracker InfoIcon={InfoIcon} /> : null}
 
