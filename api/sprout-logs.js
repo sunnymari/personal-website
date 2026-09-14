@@ -230,16 +230,17 @@ async function upsertLog(cfg, row) {
 }
 
 export default async function handler(req, res) {
-  if (req.method === "OPTIONS") {
-    res.statusCode = 204;
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.end();
-    return;
-  }
+  try {
+    if (req.method === "OPTIONS") {
+      res.statusCode = 204;
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.end();
+      return;
+    }
 
-  const cfg = supabaseConfig();
+    const cfg = supabaseConfig();
 
   if (req.method === "GET") {
     let dbRows = [];
@@ -301,5 +302,13 @@ export default async function handler(req, res) {
     return;
   }
 
-  json(res, 405, { error: "GET or POST only" });
+    json(res, 405, { error: "GET or POST only" });
+  } catch (err) {
+    console.error("Handler error:", err);
+    json(res, 500, {
+      error: "Internal server error",
+      message: err.message,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
+  }
 }
