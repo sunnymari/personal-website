@@ -16,6 +16,25 @@ const PALETTE = {
   trunk: '#a97d6d',
 };
 
+/**
+ * Clear ring around the cottage — waypoints stay outside the house and yard props
+ * so we never need per-frame collision pushes (those caused position/rotation glitches).
+ */
+const PRINCESS_ROUTE = [
+  new THREE.Vector3(-3.9, 0.08, 2.55),
+  new THREE.Vector3(0.1, 0.08, 4.15),
+  new THREE.Vector3(4.0, 0.08, 2.55),
+  new THREE.Vector3(4.7, 0.08, -0.15),
+  new THREE.Vector3(3.7, 0.08, -3.35),
+  new THREE.Vector3(0.1, 0.08, -4.45),
+  new THREE.Vector3(-3.6, 0.08, -3.35),
+  new THREE.Vector3(-4.6, 0.08, -0.15),
+];
+
+const WALK_SPEED = 1.25;
+const ARRIVE_DIST = 0.12;
+const WAVE_EVERY = 2;
+
 function SkyLayer() {
   return (
     <>
@@ -232,7 +251,8 @@ function PrincessChibi() {
   const pathIndexRef = useRef(0);
   const modeRef = useRef('walk');
   const modeTimerRef = useRef(0);
-  const targetRef = useRef(new THREE.Vector3(-1.9, 0.08, 1.5));
+  const waveCountRef = useRef(0);
+  const targetRef = useRef(PRINCESS_ROUTE[0].clone());
   const lastFacingRef = useRef(0);
 
   const waveGltf = useGLTF('/Meshy_AI_Pink_Princess_in_a_St_biped_Animation_Wave_One_Hand_withSkin.glb');
@@ -276,67 +296,73 @@ function PrincessChibi() {
 
   useEffect(() => {
     if (!actions || !walkName) return;
-    actions[walkName]?.reset().fadeIn(0.25).play();
+    Object.values(actions).forEach((action) => {
+      action?.stop();
+    });
+    actions[walkName]?.reset().fadeIn(0.2).play();
     modeRef.current = 'walk';
     modeTimerRef.current = 0;
+    pathIndexRef.current = 0;
+    waveCountRef.current = 0;
+    targetRef.current.copy(PRINCESS_ROUTE[0]);
   }, [actions, walkName]);
 
   useFrame((_, delta) => {
     if (!group.current) return;
-    if (mixer) mixer.update(delta);
+    const dt = Math.min(delta, 0.05);
+    if (mixer) mixer.update(dt);
 
-    const route = [
-      new THREE.Vector3(-2.1, 0.08, 1.8),  // Front-left
-      new THREE.Vector3(0.0, 0.08, 2.6),   // Front-center
-      new THREE.Vector3(2.1, 0.08, 1.8),   // Front-right (avoid mailbox at 2.9)
-      new THREE.Vector3(2.5, 0.08, -0.5),  // Right (avoid house at center)
-      new THREE.Vector3(1.0, 0.08, -2.5),  // Back-right
-      new THREE.Vector3(-1.0, 0.08, -2.5), // Back-left
-      new THREE.Vector3(-2.5, 0.08, -0.5), // Left (avoid bench at -2.7)
-    ];
-
-    modeTimerRef.current += delta;
+    const route = PRINCESS_ROUTE;
+    modeTimerRef.current += dt;
 
     if (modeRef.current === 'walk') {
       const current = group.current.position;
       const target = targetRef.current;
-      current.lerp(target, Math.min(0.03 + delta * 1.4, 0.12));
-
       const dx = target.x - current.x;
       const dz = target.z - current.z;
       const dist = Math.hypot(dx, dz);
 
-      if (dist > 0.02) {
-        const desiredRot = Math.atan2(dx, dz);
-        lastFacingRef.current = desiredRot;
-        group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, desiredRot, 0.16);
-      }
+      if (dist > ARRIVE_DIST) {
+        const step = Math.min(WALK_SPEED * dt, dist);
+        current.x += (dx / dist) * step;
+        current.z += (dz / dist) * step;
+        current.y = 0.08;
 
-      if (dist <= 0.24 && modeTimerRef.current > 2.2) {
-        modeRef.current = 'wave';
-        modeTimerRef.current = 0;
-        if (actions?.[walkName] && actions?.[waveName]) {
-          actions[walkName].fadeOut(0.25);
-          actions[waveName].reset().fadeIn(0.25).play();
+        const desiredRot = Math.atan2(dx, dz);
+        let rotDiff = desiredRot - group.current.rotation.y;
+        while (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
+        while (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
+        group.current.rotation.y += rotDiff * Math.min(1, 7 * dt);
+        lastFacingRef.current = group.current.rotation.y;
+      } else {
+        current.copy(target);
+        pathIndexRef.current = (pathIndexRef.current + 1) % route.length;
+        targetRef.current.copy(route[pathIndexRef.current]);
+        waveCountRef.current += 1;
+
+        if (waveCountRef.current % WAVE_EVERY === 0 && actions?.[walkName] && actions?.[waveName]) {
+          modeRef.current = 'wave';
+          modeTimerRef.current = 0;
+          actions[walkName].fadeOut(0.2);
+          actions[waveName].reset().fadeIn(0.2).play();
         }
       }
     } else {
       group.current.rotation.y = lastFacingRef.current;
-      if (modeTimerRef.current > 2.8) {
+      if (modeTimerRef.current > 2.4) {
         modeRef.current = 'walk';
         modeTimerRef.current = 0;
-        pathIndexRef.current = (pathIndexRef.current + 1) % route.length;
-        targetRef.current.copy(route[pathIndexRef.current]);
         if (actions?.[walkName] && actions?.[waveName]) {
           actions[waveName].fadeOut(0.2);
-          actions[walkName].reset().fadeIn(0.25).play();
+          actions[walkName].reset().fadeIn(0.2).play();
         }
       }
     }
   });
 
+  const start = PRINCESS_ROUTE[0];
   return (
-    <group ref={group} position={[-2.1, 0.08, 1.8]}>
+    <group ref={group} position={[start.x, start.y, start.z]}>
       <primitive object={princessModel} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
         <ringGeometry args={[0.22, 0.3, 24]} />

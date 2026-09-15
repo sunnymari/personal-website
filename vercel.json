@@ -27,6 +27,10 @@
       "destination": "/dream-companies.html"
     },
     {
+      "source": "/modeling",
+      "destination": "/modeling.html"
+    },
+    {
       "source": "/reading",
       "destination": "/reading.html"
     },

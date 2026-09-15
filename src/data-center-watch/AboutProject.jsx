@@ -60,8 +60,8 @@ export default function AboutProject({ InfoIcon }) {
           About This Project
         </h2>
         <p className="text-base font-semibold text-stone-600 mt-3 leading-relaxed max-w-3xl">
-          <strong style={{ color: "#3A3A32" }}>Sprout Data Center Watch</strong> (and its companion
-          hardware, Sprout) started as a simple question: as AI reshapes electricity demand, can
+          <strong style={{ color: "#3A3A32" }}>Sprout</strong> (and its companion
+          hardware) started as a simple question: as AI reshapes electricity demand, can
           making that demand visible actually change how people use energy at home? This site is both
           a working tool and an open research question.
         </p>
@@ -104,7 +104,7 @@ export default function AboutProject({ InfoIcon }) {
           investors (capacity buildout, siting). None of them close the loop back to an individual
           household, connecting <em>this data center demand exists</em> to{" "}
           <em>here&apos;s what you can actually do about your bill tonight</em>. That&apos;s the gap
-          Sprout Data Center Watch is testing.
+          Sprout is testing.
         </p>
 
         <h3 className="display-font text-2xl font-semibold mt-10" style={{ color: "#3A3A32" }}>
@@ -143,7 +143,7 @@ export function AboutFooterBlurb() {
   return (
     <div className="max-w-3xl mx-auto px-6 pb-10 text-center">
       <p className="text-xs font-semibold leading-relaxed text-stone-500">
-        <strong style={{ color: "#6b6358" }}>Sprout Data Center Watch</strong> is a research
+        <strong style={{ color: "#6b6358" }}>Sprout</strong> is a research
         prototype exploring whether visualizing AI-driven grid demand changes how people use energy
         at home. Part of ongoing PhD-track research in AI-energy market design. Questions or ideas?{" "}
         <a
