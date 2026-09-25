@@ -1264,8 +1264,28 @@ footer {
 }
 
 .site-page .blog-essay p:first-of-type,
-.site-page .blog-essay h3 + p {
+.site-page .blog-essay h3 + p,
+.site-page .blog-essay .blog-essay-lede,
+.site-page .blog-essay blockquote {
   text-indent: 0;
+}
+
+.site-page .blog-essay blockquote {
+  margin: 1.15rem 0 1.25rem;
+  padding: 0.9rem 1.15rem;
+  border-left: 4px solid var(--island-pink);
+  background: rgba(255, 217, 234, 0.38);
+  border-radius: 0 18px 18px 0 !important;
+  font-style: italic;
+}
+
+.site-page .blog-essay .blog-tweet {
+  margin: 1.15rem 0 1.4rem;
+  text-indent: 0;
+}
+
+.site-page .blog-essay .blog-tweet a {
+  font-weight: 800;
 }
 
 .site-page .blog-essay ul {

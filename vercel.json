@@ -43,6 +43,10 @@
       "destination": "/data-center-watch.html"
     },
     {
+      "source": "/art",
+      "destination": "/art.html"
+    },
+    {
       "source": "/sprout",
       "destination": "/data-center-watch.html"
     }

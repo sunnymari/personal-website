@@ -28,6 +28,7 @@ export default defineConfig({
         dreamCompanies: resolve(__dirname, 'dream-companies.html'),
         modeling: resolve(__dirname, 'modeling.html'),
         dataCenterWatch: resolve(__dirname, 'data-center-watch.html'),
+        art: resolve(__dirname, 'art.html'),
       },
     },
   },
