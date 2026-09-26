@@ -13,7 +13,7 @@ const CRITERIA = [
     question: "Does it actually work?",
     lead: "Yes. It runs on real data today: the grid reading comes from CAISO's live public feed, and Gemini writes the plan.",
     working: [
-      "Live grid reading from CAISO's public real-time demand feed, refreshed every 5 minutes, with a labelled demo fallback if the feed is down.",
+      "Live grid reading from CAISO's public feeds: real-time demand plus the real-time wholesale price, refreshed every 5 minutes, with a labelled demo fallback if the feed is down.",
       "Ask Sprout: Gemini turns that reading, your utility, and your plan into a run-now-or-wait schedule.",
       "3D satellite map of seven real U.S. data center hubs, from Northern Virginia to Phoenix.",
       "Daily AI energy fact from Carbonbench's API, with an automatic fallback so it never breaks.",

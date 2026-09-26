@@ -593,6 +593,14 @@ export default function DataCenterWatch() {
                   ? `CAISO demand now · ${live.pctOfPeak}% of today's forecast peak · ${live.asOf}`
                   : "est. regional marginal price · demo cycle"}
               </div>
+              {live?.price ? (
+                <div className="mt-2 text-sm font-bold" style={{ color: "#F2C6C2" }}>
+                  Wholesale price now: ${live.price.usdPerMWh.toFixed(2)}/MWh
+                  <span className="block text-xs font-semibold mt-0.5" style={{ color: "#B9B4A6" }}>
+                    CAISO {live.price.hub} hub, 5-minute real-time. Wholesale, not your retail rate.
+                  </span>
+                </div>
+              ) : null}
 
               <div className="mt-5 pt-5" style={{ borderTop: "1px solid #55554A" }}>
                 <div className="flex items-center gap-1.5 text-sm font-bold mb-1.5" style={{ color: "#F2C6C2" }}>

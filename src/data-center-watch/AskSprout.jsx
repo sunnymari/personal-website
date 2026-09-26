@@ -170,6 +170,7 @@ export default function AskSprout({ InfoIcon, SproutIcon, gridKey, live }) {
                 <span className="block text-xs font-semibold text-stone-500 mt-1.5">
                   Live CAISO (California): {(live.currentMW / 1000).toFixed(1)} GW, {live.pctOfPeak}% of
                   today’s forecast peak
+                  {live.price ? `, wholesale $${live.price.usdPerMWh.toFixed(2)}/MWh` : ""}
                 </span>
               ) : null}
             </label>
