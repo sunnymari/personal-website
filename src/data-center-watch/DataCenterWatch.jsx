@@ -5,6 +5,7 @@ import HardwareInterest from "./HardwareInterest.jsx";
 import AboutProject, { AboutFooterBlurb } from "./AboutProject.jsx";
 import LiveDataTracker from "./LiveDataTracker.jsx";
 import JudgingCriteria from "./JudgingCriteria.jsx";
+import AskSprout from "./AskSprout.jsx";
 import { logGridSnapshotEvent } from "./researchLog.js";
 
 const CLUSTERS = [
@@ -46,6 +47,7 @@ const GRID_STATES = [
 
 const TABS = [
   { id: "watch", label: "Watch" },
+  { id: "ask", label: "Ask Sprout" },
   { id: "fact", label: "Daily fact" },
   { id: "tracker", label: "Live tracker" },
   { id: "hardware", label: "Hardware" },
@@ -401,6 +403,10 @@ export default function DataCenterWatch() {
           })}
         </div>
       </section>
+
+      {tab === "ask" ? (
+        <AskSprout InfoIcon={InfoIcon} SproutIcon={SproutIcon} gridKey={state.key} />
+      ) : null}
 
       {tab === "fact" ? (
         <DailyEnergyFact
