@@ -158,6 +158,8 @@ function normalize(payload) {
     utility: clean(payload.utility, 80),
     planNotes: clean(payload.planNotes, 300),
     question: clean(payload.question, 300),
+    localTime: clean(payload.localTime, 20),
+    timeZone: clean(payload.timeZone, 40),
   };
 }
 
@@ -171,6 +173,7 @@ function buildUserPrompt(input) {
       ? `<live_caiso_reading>California ISO demand at ${input.live.asOf}: ${input.live.currentMW} MW, ${input.live.pctOfPeak}% of today's forecast peak${input.live.price !== null ? `; wholesale price $${input.live.price}/MWh at the NP15 trading hub` : ""}</live_caiso_reading>`
       : "",
     `Appliances to plan: ${input.appliances.map((a) => APPLIANCES[a]).join(", ")}`,
+    input.localTime ? `<household_local_time>${input.localTime}${input.timeZone ? ` (${input.timeZone})` : ""}</household_local_time>` : "",
     `<household_city>${input.city || "not given"}</household_city>`,
     `<household_utility>${input.utility || "not given"}</household_utility>`,
     `<time_of_use_plan_notes>${input.planNotes || "not given"}</time_of_use_plan_notes>`,

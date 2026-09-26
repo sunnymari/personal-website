@@ -32,10 +32,12 @@ const CRITERIA = [
     lead: "Other data center trackers serve advocates and investors. Sprout serves the person at the dishwasher.",
     working: [
       "Connects \u201cdata centers are straining the grid\u201d to \u201cshift your laundry tonight.\u201d No existing tracker makes that link.",
-      "Tests an open question: does blaming strain on AI demand move behavior more than generic \u201cpeak hours\u201d? Visitors vote anonymously on which framing would make them act sooner.",
+      "Tests an open question: does blaming strain on AI demand move behavior more than generic \u201cpeak hours\u201d? Visitors vote anonymously on which framing would make them act sooner. It is early: results mean little until enough people vote.",
       "Covers both sides of the meter: household timing here, low-carbon AI routing in the Daily fact.",
     ],
-    next: [],
+    next: [
+      "The vote records stated preference, not behavior. The next step is a randomized test of which framing changes what people actually do.",
+    ],
   },
   {
     id: "applicability",
@@ -44,24 +46,32 @@ const CRITERIA = [
     lead: "One small, familiar ask that saves money: run big appliances at cheaper hours.",
     working: [
       "A plain-language bill tip. No account, no install.",
-      "Maps onto time-of-use plans utilities already sell.",
+      "Maps onto time-of-use plans utilities already sell, with a one-click fill for the typical California 4\u20139pm peak.",
+      "Uses the live CAISO wholesale price and your local time of day, so \u201cwait until 9pm\u201d is relative to right now.",
       "Waitlist captures city and utility, so demand is measured where the grid is stressed.",
       "Says plainly what it can't show: per-facility energy use isn't public.",
     ],
-    next: [],
+    next: [
+      "Retail rates come from the plan window you enter, not a pulled utility tariff. Connecting real tariffs is next.",
+    ],
   },
   {
     id: "market",
     label: "Market Potential & Fundability",
     question: "Could this become venture-backable?",
-    lead: "The device is the wedge. The asset is household demand-response data that utilities can't easily collect.",
+    lead: "The hardware is the wedge: a plug that measures and a display that nudges. The asset is measured household demand-response data that utilities can't easily collect.",
     working: [
+      "The hardware: a smart plug / load monitor that measures real appliance load, and a kitchen or desk display that shows the grid signal at a glance. Both are in development, and the waitlist already asks which one people want.",
+      "Why hardware matters to investors: it turns self-reported behavior into measured load shifts, the evidence utilities and aggregators need to fund or pay for demand response.",
       "Tailwind: FERC Order 2222 opens wholesale markets to aggregated small flexible loads, while AI is driving load growth.",
-      "Two buyers: households save money, utilities and aggregators get evidence of how AI-framed signals shift timing.",
-      "Capital-light: hardware demand is validated by waitlist before any manufacturing spend.",
+      "Two buyers: households save money, utilities and aggregators get measured evidence of how AI-framed signals shift timing.",
+      "Target design partners: California utility demand-response programs (PG&E, SCE, SDG&E) and demand-response aggregators.",
+      "Capital-light: demand by device type is tested by waitlist before any manufacturing spend.",
     ],
     next: [
       "Today: pre-revenue research prototype. Next proof points are measured behavior change and a utility pilot.",
+      "No utility or aggregator conversations yet. Those targets are the first outreach, not existing customers.",
+      "Unproven: who pays for the device (household, utility, or aggregator) is a hypothesis to test in that pilot.",
       "Risks: consumer hardware margins and utility partnerships.",
     ],
   },

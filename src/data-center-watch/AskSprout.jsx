@@ -118,6 +118,8 @@ export default function AskSprout({ InfoIcon, SproutIcon, gridKey, live }) {
           planNotes,
           question,
           live: live && live.stateKey === grid ? live : undefined,
+          localTime: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -236,6 +238,14 @@ export default function AskSprout({ InfoIcon, SproutIcon, gridKey, live }) {
                 placeholder="Peak 4–9pm, cheapest after 9pm"
                 onChange={(e) => setPlanNotes(e.target.value)}
               />
+              <button
+                type="button"
+                className="text-xs font-extrabold mt-1.5 underline"
+                style={{ color: "#7A9464", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                onClick={() => setPlanNotes("Peak 4–9pm daily, cheaper otherwise (typical California time-of-use plan)")}
+              >
+                Use the typical California 4–9pm peak
+              </button>
             </label>
 
             <label className="block text-sm font-bold" style={{ color: "#3A3A32" }}>
