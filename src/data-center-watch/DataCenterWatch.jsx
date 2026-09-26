@@ -4,6 +4,7 @@ import DailyEnergyFact from "./DailyEnergyFact.jsx";
 import HardwareInterest from "./HardwareInterest.jsx";
 import AboutProject, { AboutFooterBlurb } from "./AboutProject.jsx";
 import LiveDataTracker from "./LiveDataTracker.jsx";
+import JudgingCriteria from "./JudgingCriteria.jsx";
 import { logGridSnapshotEvent } from "./researchLog.js";
 
 const CLUSTERS = [
@@ -48,6 +49,7 @@ const TABS = [
   { id: "fact", label: "Daily fact" },
   { id: "tracker", label: "Live tracker" },
   { id: "hardware", label: "Hardware" },
+  { id: "judging", label: "Why Sprout" },
   { id: "about", label: "About" },
   { id: "howto", label: "How to use" },
 ];
@@ -411,6 +413,8 @@ export default function DataCenterWatch() {
       {tab === "tracker" ? <LiveDataTracker InfoIcon={InfoIcon} /> : null}
 
       {tab === "hardware" ? <HardwareInterest SproutIcon={SproutIcon} /> : null}
+
+      {tab === "judging" ? <JudgingCriteria InfoIcon={InfoIcon} onOpenTab={setTab} /> : null}
 
       {tab === "about" ? <AboutProject InfoIcon={InfoIcon} /> : null}
 
