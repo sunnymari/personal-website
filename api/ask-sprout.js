@@ -7,7 +7,7 @@
  * Env: GEMINI_API_KEY (required), GEMINI_MODEL (optional)
  */
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-3.5-flash", "gemini-flash-latest"].filter(Boolean))];
 
 const GRID_STATES = {
   low: {
@@ -206,39 +206,47 @@ export default async function handler(req, res) {
     return;
   }
 
-  try {
-    const upstream = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          contents: [{ role: "user", parts: [{ text: buildUserPrompt(input) }] }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            responseSchema: RESPONSE_SCHEMA,
-            temperature: 0.4,
-            maxOutputTokens: 2048,
-          },
-        }),
-        signal: AbortSignal.timeout(20_000),
-      },
-    );
+  const body = JSON.stringify({
+    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    contents: [{ role: "user", parts: [{ text: buildUserPrompt(input) }] }],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: RESPONSE_SCHEMA,
+      temperature: 0.4,
+      maxOutputTokens: 2048,
+    },
+  });
 
-    if (!upstream.ok) {
-      json(res, 502, { error: "Gemini couldn’t answer right now. Please try again." });
+  for (const model of MODELS) {
+    try {
+      const upstream = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+          body,
+          signal: AbortSignal.timeout(15_000),
+        },
+      );
+
+      if (!upstream.ok) {
+        const detail = await upstream.text().catch(() => "");
+        console.error("ask-sprout upstream", model, upstream.status, detail.slice(0, 500));
+        continue;
+      }
+
+      const plan = parseModelJson(await upstream.json());
+      if (!plan.steps.length || !plan.framing_ai || !plan.framing_generic) {
+        console.error("ask-sprout incomplete answer", model);
+        continue;
+      }
+
+      json(res, 200, { ok: true, model, plan });
       return;
+    } catch (err) {
+      console.error("ask-sprout failure", model, String(err?.message || err).slice(0, 300));
     }
-
-    const plan = parseModelJson(await upstream.json());
-    if (!plan.steps.length || !plan.framing_ai || !plan.framing_generic) {
-      json(res, 502, { error: "Gemini’s answer was incomplete. Please try again." });
-      return;
-    }
-
-    json(res, 200, { ok: true, model: MODEL, plan });
-  } catch {
-    json(res, 502, { error: "Gemini couldn’t answer right now. Please try again." });
   }
+
+  json(res, 502, { error: "Gemini couldn’t answer right now. Please try again." });
 }
