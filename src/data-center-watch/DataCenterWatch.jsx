@@ -63,7 +63,7 @@ const HOW_TO_STEPS = [
   },
   {
     title: "Watch the grid stress panel",
-    body: "The dark panel cycles through relaxed, climbing, and peak states. Marker colors match that stress level. Today this is a demo cycle — later it will pull the same live CAISO / EIA feed as Sprout hardware.",
+    body: "The dark panel cycles through relaxed, climbing, and peak states. Marker colors match that stress level. The reading comes from CAISO’s public real-time demand feed (California ISO only). If it is unavailable, Sprout falls back to a labelled demo cycle.",
   },
   {
     title: "Check the Daily fact tab",
@@ -94,6 +94,36 @@ function useTicker(len, ms = 5000) {
     return () => clearInterval(id);
   }, [len, ms]);
   return i;
+}
+
+function useLiveGrid() {
+  const [live, setLive] = useState(null);
+  const [status, setStatus] = useState("loading");
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const res = await fetch("/api/grid");
+        const data = res.ok ? await res.json() : null;
+        if (cancelled) return;
+        if (data?.ok) {
+          setLive(data);
+          setStatus("live");
+        } else {
+          setStatus((prev) => (prev === "live" ? prev : "demo"));
+        }
+      } catch {
+        if (!cancelled) setStatus((prev) => (prev === "live" ? prev : "demo"));
+      }
+    }
+    load();
+    const id = setInterval(load, 5 * 60 * 1000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
+  return { live, status };
 }
 
 function Icon({ children, size = 18, color = "currentColor" }) {
@@ -191,16 +221,18 @@ function SproutIcon({ size = 22 }) {
 
 export default function DataCenterWatch() {
   const idx = useTicker(GRID_STATES.length);
-  const state = GRID_STATES[idx];
+  const { live, status: gridStatus } = useLiveGrid();
+  const state = live ? GRID_STATES.find((g) => g.key === live.stateKey) || GRID_STATES[idx] : GRID_STATES[idx];
   const [hovered, setHovered] = useState(null);
   const [tab, setTab] = useState("watch");
   const onHoverChange = useCallback((name) => setHovered(name), []);
 
   useEffect(() => {
-    logGridSnapshotEvent(GRID_STATES[idx]);
-    // Log once per page load (title is day-unique), not on every ticker tick.
+    if (gridStatus === "live") logGridSnapshotEvent(state, live);
+    else if (gridStatus === "demo") logGridSnapshotEvent(state, null);
+    // Log once per page load once we know whether the live feed is available.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [gridStatus]);
 
   return (
     <div
@@ -405,7 +437,7 @@ export default function DataCenterWatch() {
       </section>
 
       {tab === "ask" ? (
-        <AskSprout InfoIcon={InfoIcon} SproutIcon={SproutIcon} gridKey={state.key} />
+        <AskSprout InfoIcon={InfoIcon} SproutIcon={SproutIcon} gridKey={state.key} live={live} />
       ) : null}
 
       {tab === "fact" ? (
@@ -516,7 +548,7 @@ export default function DataCenterWatch() {
               <div className="dcw-map-shell">
                 <UsClusterMap
                   clusters={CLUSTERS}
-                  markerColor={state.color}
+                  markerColor={live ? "#8FA876" : state.color}
                   hovered={hovered}
                   onHoverChange={onHoverChange}
                   visible={tab === "watch"}
@@ -542,7 +574,7 @@ export default function DataCenterWatch() {
                   <ZapIcon size={18} color={state.color} />
                   <span className="display-font text-xl font-bold">{state.label}</span>
                 </div>
-                <div className="flex items-center gap-1.5" aria-label="Grid stress cycle">
+                <div className="flex items-center gap-1.5" aria-label="Grid stress cycle" style={{ display: live ? "none" : "flex" }}>
                   {GRID_STATES.map((s, i) => (
                     <span
                       key={s.key}
@@ -554,10 +586,12 @@ export default function DataCenterWatch() {
               </div>
 
               <div className="text-3xl display-font font-bold fade" style={{ color: state.color }}>
-                {state.price}
+                {live ? `${(live.currentMW / 1000).toFixed(1)} GW` : state.price}
               </div>
               <div className="text-xs font-bold mt-0.5" style={{ color: "#B9B4A6" }}>
-                est. regional marginal price · demo cycle
+                {live
+                  ? `CAISO demand now · ${live.pctOfPeak}% of today's forecast peak · ${live.asOf}`
+                  : "est. regional marginal price · demo cycle"}
               </div>
 
               <div className="mt-5 pt-5" style={{ borderTop: "1px solid #55554A" }}>
@@ -574,7 +608,9 @@ export default function DataCenterWatch() {
                 className="mt-5 rounded-2xl px-3.5 py-3 text-xs font-semibold leading-relaxed"
                 style={{ background: "rgba(242,198,194,0.12)", color: "#E8DFD2" }}
               >
-                Live CAISO / EIA feed coming with Sprout hardware. Today&apos;s states auto-cycle so you can preview the experience.
+                {live
+                  ? "Live from CAISO's public demand feed, updated every 5 minutes. It covers the California ISO region only; other regions are not connected yet."
+                  : "Live grid feed unavailable right now. These states auto-cycle as a labelled demo so you can preview the experience."}
               </div>
             </div>
           </section>

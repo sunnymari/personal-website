@@ -11,15 +11,17 @@ const CRITERIA = [
     id: "feasibility",
     label: "Technical Feasibility",
     question: "Does it actually work?",
-    lead: "Yes. The software is live right now on this page. Only the grid-price numbers are still a labelled demo.",
+    lead: "Yes. It runs on real data today: the grid reading comes from CAISO's live public feed, and Gemini writes the plan.",
     working: [
+      "Live grid reading from CAISO's public real-time demand feed, refreshed every 5 minutes, with a labelled demo fallback if the feed is down.",
+      "Ask Sprout: Gemini turns that reading, your utility, and your plan into a run-now-or-wait schedule.",
       "3D satellite map of seven real U.S. data center hubs, from Northern Virginia to Phoenix.",
       "Daily AI energy fact from Carbonbench's API, with an automatic fallback so it never breaks.",
       "Public dated tracker on a Vercel API and Supabase.",
       "Hardware waitlist that saves to Supabase and emails every signup.",
     ],
     next: [
-      "Swap the demo grid cycle for the live CAISO / EIA public feeds.",
+      "The live reading covers California (CAISO) only. Next: EIA data for Virginia, Texas, and other hubs.",
       "Ship the companion smart plug and kitchen display. In development, not shipped.",
     ],
   },
@@ -30,7 +32,7 @@ const CRITERIA = [
     lead: "Other data center trackers serve advocates and investors. Sprout serves the person at the dishwasher.",
     working: [
       "Connects \u201cdata centers are straining the grid\u201d to \u201cshift your laundry tonight.\u201d No existing tracker makes that link.",
-      "Tests an open question: does blaming strain on AI demand move behavior more than generic \u201cpeak hours\u201d?",
+      "Tests an open question: does blaming strain on AI demand move behavior more than generic \u201cpeak hours\u201d? Visitors vote anonymously on which framing would make them act sooner.",
       "Covers both sides of the meter: household timing here, low-carbon AI routing in the Daily fact.",
     ],
     next: [],

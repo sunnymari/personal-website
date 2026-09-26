@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const APPLIANCE_OPTIONS = [
   { id: "dishwasher", label: "Dishwasher" },
@@ -26,8 +26,42 @@ const cardStyle = {
   boxShadow: "0 18px 40px rgba(58,58,50,0.06)",
 };
 
-export default function AskSprout({ InfoIcon, SproutIcon, gridKey }) {
+function VoteResult({ tally }) {
+  const total = tally.ai + tally.generic;
+  const pct = (n) => (total ? Math.round((n / total) * 100) : 0);
+  return (
+    <div aria-live="polite">
+      <p className="text-sm font-extrabold" style={{ color: "#3A3A32" }}>
+        Thanks. Votes so far ({total} total)
+      </p>
+      <p className="text-sm font-semibold text-stone-600 mt-1">
+        AI demand framing: {pct(tally.ai)}% ({tally.ai}) · Peak hours framing: {pct(tally.generic)}% ({tally.generic})
+      </p>
+    </div>
+  );
+}
+
+const VOTE_KEY = "sprout-framing-vote-v1";
+const today = () => new Date().toISOString().slice(0, 10);
+
+function alreadyVotedToday() {
+  try {
+    return localStorage.getItem(VOTE_KEY) === today();
+  } catch {
+    return false;
+  }
+}
+
+export default function AskSprout({ InfoIcon, SproutIcon, gridKey, live }) {
   const [grid, setGrid] = useState(gridKey);
+  const [gridTouched, setGridTouched] = useState(false);
+  const [voted, setVoted] = useState(alreadyVotedToday);
+  const [tally, setTally] = useState(null);
+  const [voteError, setVoteError] = useState("");
+
+  useEffect(() => {
+    if (!gridTouched) setGrid(gridKey);
+  }, [gridKey, gridTouched]);
   const [city, setCity] = useState("");
   const [utility, setUtility] = useState("");
   const [planNotes, setPlanNotes] = useState("");
@@ -42,6 +76,28 @@ export default function AskSprout({ InfoIcon, SproutIcon, gridKey }) {
     setError("");
   }
 
+  async function castVote(choice) {
+    setVoteError("");
+    try {
+      const res = await fetch("/api/framing-vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ choice }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.tally) throw new Error(data.error || "Couldn’t record your vote right now.");
+      setTally(data.tally);
+      setVoted(true);
+      try {
+        localStorage.setItem(VOTE_KEY, today());
+      } catch {
+        /* ignore */
+      }
+    } catch (err) {
+      setVoteError(err.message || "Couldn’t record your vote right now.");
+    }
+  }
+
   async function onSubmit(e) {
     e.preventDefault();
     if (!appliances.length) {
@@ -54,7 +110,15 @@ export default function AskSprout({ InfoIcon, SproutIcon, gridKey }) {
       const res = await fetch("/api/ask-sprout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ grid, appliances, city, utility, planNotes, question }),
+        body: JSON.stringify({
+          grid,
+          appliances,
+          city,
+          utility,
+          planNotes,
+          question,
+          live: live && live.stateKey === grid ? live : undefined,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.plan) {
@@ -91,7 +155,10 @@ export default function AskSprout({ InfoIcon, SproutIcon, gridKey }) {
               <select
                 className="dcw-input mt-1.5"
                 value={grid}
-                onChange={(e) => setGrid(e.target.value)}
+                onChange={(e) => {
+                  setGrid(e.target.value);
+                  setGridTouched(true);
+                }}
               >
                 {GRID_OPTIONS.map((o) => (
                   <option key={o.id} value={o.id}>
@@ -99,6 +166,12 @@ export default function AskSprout({ InfoIcon, SproutIcon, gridKey }) {
                   </option>
                 ))}
               </select>
+              {live ? (
+                <span className="block text-xs font-semibold text-stone-500 mt-1.5">
+                  Live CAISO (California): {(live.currentMW / 1000).toFixed(1)} GW, {live.pctOfPeak}% of
+                  today’s forecast peak
+                </span>
+              ) : null}
             </label>
 
             <fieldset className="border-0 p-0 m-0">
@@ -264,6 +337,35 @@ export default function AskSprout({ InfoIcon, SproutIcon, gridKey }) {
                       {plan.framing_generic}
                     </p>
                   </div>
+                </div>
+
+                <div className="mt-4 rounded-2xl p-4" style={{ background: "rgba(250,246,240,0.85)", border: "1.5px solid rgba(143,168,118,0.22)" }}>
+                  {tally ? (
+                    <VoteResult tally={tally} />
+                  ) : voted ? (
+                    <p className="text-sm font-bold text-stone-600">
+                      Thanks, you already voted today. Your anonymous vote is part of Sprout’s research.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-sm font-extrabold" style={{ color: "#3A3A32" }}>
+                        Which would make you act sooner? (anonymous)
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <button type="button" className="dcw-tab" onClick={() => castVote("ai")}
+                          style={{ padding: "0.45rem 0.9rem", fontSize: "0.85rem", background: "rgba(143,168,118,0.22)", color: "#4F6B3A", border: "2px solid rgba(143,168,118,0.5)" }}>
+                          AI demand framing
+                        </button>
+                        <button type="button" className="dcw-tab" onClick={() => castVote("generic")}
+                          style={{ padding: "0.45rem 0.9rem", fontSize: "0.85rem", background: "rgba(242,198,194,0.4)", color: "#7A3B36", border: "2px solid #E8A8A3" }}>
+                          Peak hours framing
+                        </button>
+                      </div>
+                      {voteError ? (
+                        <p role="alert" className="text-xs font-bold mt-2" style={{ color: "#C9634B" }}>{voteError}</p>
+                      ) : null}
+                    </>
+                  )}
                 </div>
               </div>
             </>
