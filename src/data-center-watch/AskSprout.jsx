@@ -52,7 +52,7 @@ function alreadyVotedToday() {
   }
 }
 
-export default function AskSprout({ InfoIcon, SproutIcon, gridKey, live }) {
+export default function AskSprout({ InfoIcon, SproutIcon, gridKey, live, onOpenTab }) {
   const [grid, setGrid] = useState(gridKey);
   const [gridTouched, setGridTouched] = useState(false);
   const [voted, setVoted] = useState(alreadyVotedToday);
@@ -378,6 +378,23 @@ export default function AskSprout({ InfoIcon, SproutIcon, gridKey, live }) {
                     </>
                   )}
                 </div>
+              </div>
+
+              <div
+                className="mt-6 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3"
+                style={{ background: "rgba(143,168,118,0.16)" }}
+              >
+                <p className="text-sm font-bold" style={{ color: "#3A3A32" }}>
+                  Want this to happen automatically? Sprout&apos;s plug and display are on the way.
+                </p>
+                <button
+                  type="button"
+                  className="dcw-tab"
+                  onClick={() => onOpenTab("hardware")}
+                  style={{ padding: "0.5rem 1rem", background: "linear-gradient(180deg, #FFF8F4 0%, #F2C6C2 100%)", color: "#7A3B36", border: "2px solid #E8A8A3" }}
+                >
+                  Join the waitlist →
+                </button>
               </div>
             </>
           ) : (

@@ -46,12 +46,16 @@ const GRID_STATES = [
 ];
 
 const TABS = [
-  { id: "watch", label: "Watch" },
+  { id: "watch", label: "Now" },
   { id: "ask", label: "Ask Sprout" },
-  { id: "fact", label: "Daily fact" },
-  { id: "tracker", label: "Live tracker" },
   { id: "hardware", label: "Hardware" },
-  { id: "judging", label: "Why Sprout" },
+  { id: "research", label: "Research" },
+];
+
+const RESEARCH_TABS = [
+  { id: "why", label: "Why Sprout" },
+  { id: "tracker", label: "Live tracker" },
+  { id: "fact", label: "Daily fact" },
   { id: "about", label: "About" },
   { id: "howto", label: "How to use" },
 ];
@@ -225,6 +229,7 @@ export default function DataCenterWatch() {
   const state = live ? GRID_STATES.find((g) => g.key === live.stateKey) || GRID_STATES[idx] : GRID_STATES[idx];
   const [hovered, setHovered] = useState(null);
   const [tab, setTab] = useState("watch");
+  const [sub, setSub] = useState("why");
   const onHoverChange = useCallback((name) => setHovered(name), []);
 
   useEffect(() => {
@@ -350,63 +355,65 @@ export default function DataCenterWatch() {
       `}</style>
 
       {/* HERO */}
-      <section className="max-w-5xl mx-auto px-6 pt-12 pb-6">
+      <section className="max-w-5xl mx-auto px-6 pt-8 pb-5">
         <a
           href="/"
-          className="home-pill inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-extrabold mb-6 transition-all"
-          style={{
-            background: "linear-gradient(180deg, #FFF8F4 0%, #F2C6C2 100%)",
-            color: "#7A3B36",
-            border: "2px solid #E8A8A3",
-            textDecoration: "none",
-            boxShadow: "0 8px 18px rgba(242,198,194,0.35)",
-          }}
+          className="text-sm font-extrabold"
+          style={{ color: "#7A9464", textDecoration: "none" }}
         >
           ← Home
         </a>
 
-        <div className="flex flex-col items-center text-center mb-6">
+        <div className="flex items-center gap-4 mt-3">
           <img
             src="/pixel_sprout_dancing.gif"
             alt="Sprout dancing"
             className="dcw-sprout-dance"
-            width={140}
-            height={140}
+            width={72}
+            height={72}
+            style={{ width: 72, height: 72 }}
           />
-          <div className="flex items-center justify-center gap-2 text-sm font-bold mt-1" style={{ color: "#8FA876" }}>
-            <span className="uppercase display-font tracking-wide">
-              Tiny Sprout Smarter Grid
-            </span>
+          <div>
+            <h1
+              className="display-font text-4xl sm:text-5xl font-semibold leading-tight"
+              style={{ color: "#3A3A32" }}
+            >
+              Sprout
+            </h1>
+            <p className="text-base font-semibold text-stone-600 mt-1">
+              Where data centers sit on the grid, and when to run your appliances.
+            </p>
           </div>
         </div>
 
-        <h1
-          className="display-font text-5xl sm:text-6xl font-semibold mt-2 leading-tight text-center sm:text-left"
-          style={{ color: "#3A3A32" }}
-        >
-          Sprout
-        </h1>
-        <p className="text-lg mt-3 max-w-2xl text-stone-600 font-semibold">
-          Where major data center clusters sit on the grid, and what the current
-          demand picture means for when it&apos;s cheapest to run your own appliances.
-        </p>
-
         <div
-          className="mt-4 inline-flex items-start sm:items-center gap-2 rounded-2xl sm:rounded-full px-4 py-2.5 text-sm font-bold max-w-xl"
-          style={{ background: "#F2C6C2", color: "#7A3B36" }}
-          role="note"
+          className="mt-4 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-extrabold"
+          style={{
+            background: "rgba(255,255,255,0.7)",
+            border: "1.5px solid rgba(143,168,118,0.35)",
+            color: live ? "#4F6B3A" : "#8A5F12",
+          }}
+          role="status"
         >
-          <span className="mt-0.5 sm:mt-0 shrink-0">
-            <InfoIcon size={15} color="#7A3B36" />
-          </span>
-          <span>
-            Shows publicly known cluster locations and regional demand — not live
-            per-facility tracking.
-          </span>
+          <span
+            className={live ? "pulse" : ""}
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 999,
+              background: live ? "#8FA876" : "#D9A441",
+              display: "inline-block",
+            }}
+          />
+          {live
+            ? `Live · CAISO ${(live.currentMW / 1000).toFixed(1)} GW · ${live.pctOfPeak}% of forecast peak · ${live.asOf}`
+            : gridStatus === "loading"
+              ? "Checking the grid…"
+              : "Demo mode · live grid feed unavailable"}
         </div>
 
         <div
-          className="dcw-tablist mt-6 inline-flex gap-1 p-1.5 rounded-full"
+          className="dcw-tablist mt-4 flex gap-1 p-1.5 rounded-full w-fit max-w-full"
           style={{ background: "rgba(241,237,228,0.9)", border: "1.5px solid rgba(242,198,194,0.55)" }}
           role="tablist"
           aria-label="Sprout sections"
@@ -437,10 +444,48 @@ export default function DataCenterWatch() {
       </section>
 
       {tab === "ask" ? (
-        <AskSprout InfoIcon={InfoIcon} SproutIcon={SproutIcon} gridKey={state.key} live={live} />
+        <AskSprout InfoIcon={InfoIcon} SproutIcon={SproutIcon} gridKey={state.key} live={live} onOpenTab={setTab} />
       ) : null}
 
-      {tab === "fact" ? (
+      {tab === "research" ? (
+        <div className="max-w-5xl mx-auto px-6 pb-5">
+          <div
+            role="tablist"
+            aria-label="Research sections"
+            className="flex flex-wrap gap-x-6 gap-y-1"
+            style={{ borderBottom: "1.5px solid rgba(143,168,118,0.3)" }}
+          >
+            {RESEARCH_TABS.map((t) => {
+              const active = sub === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setSub(t.id)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "0.55rem 0",
+                    marginBottom: -1.5,
+                    fontFamily: "'Fredoka', sans-serif",
+                    fontWeight: 600,
+                    fontSize: "0.95rem",
+                    color: active ? "#7A3B36" : "#8a8478",
+                    borderBottom: active ? "3px solid #E8A8A3" : "3px solid transparent",
+                  }}
+                >
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {tab === "research" && sub === "fact" ? (
         <DailyEnergyFact
           InfoIcon={InfoIcon}
           LightbulbIcon={LightbulbIcon}
@@ -448,15 +493,15 @@ export default function DataCenterWatch() {
         />
       ) : null}
 
-      {tab === "tracker" ? <LiveDataTracker InfoIcon={InfoIcon} /> : null}
+      {tab === "research" && sub === "tracker" ? <LiveDataTracker InfoIcon={InfoIcon} /> : null}
 
       {tab === "hardware" ? <HardwareInterest SproutIcon={SproutIcon} /> : null}
 
-      {tab === "judging" ? <JudgingCriteria InfoIcon={InfoIcon} onOpenTab={setTab} /> : null}
+      {tab === "research" && sub === "why" ? <JudgingCriteria InfoIcon={InfoIcon} onOpenTab={setTab} /> : null}
 
-      {tab === "about" ? <AboutProject InfoIcon={InfoIcon} /> : null}
+      {tab === "research" && sub === "about" ? <AboutProject InfoIcon={InfoIcon} /> : null}
 
-      {tab === "howto" ? (
+      {tab === "research" && sub === "howto" ? (
         <section className="max-w-5xl mx-auto px-6 pb-16" role="tabpanel" aria-label="How to use this page">
           <div
             className="rounded-[2rem] p-6 sm:p-8"
@@ -517,7 +562,7 @@ export default function DataCenterWatch() {
                 border: "2px solid #E8A8A3",
               }}
             >
-              Back to Watch →
+              Back to Now →
             </button>
           </div>
         </section>
@@ -557,7 +602,7 @@ export default function DataCenterWatch() {
               <div className="mt-2 text-sm font-semibold text-stone-500 min-h-[20px]">
                 {hovered
                   ? `${hovered} — ${CLUSTERS.find((c) => c.name === hovered)?.note}`
-                  : "Hover or tap a marker · drag to pan · right-drag / two-finger to tilt"}
+                  : "Known cluster locations and regional demand, not live per-facility tracking. Hover or tap a marker."}
               </div>
             </div>
 
@@ -620,59 +665,45 @@ export default function DataCenterWatch() {
                   ? "Live from CAISO's public demand feed, updated every 5 minutes. It covers the California ISO region only; other regions are not connected yet."
                   : "Live grid feed unavailable right now. These states auto-cycle as a labelled demo so you can preview the experience."}
               </div>
+
+              <button
+                type="button"
+                className="dcw-tab mt-5 w-full"
+                onClick={() => setTab("ask")}
+                style={{
+                  background: "linear-gradient(180deg, #FFF8F4 0%, #F2C6C2 100%)",
+                  color: "#7A3B36",
+                  border: "2px solid #E8A8A3",
+                }}
+              >
+                Get tonight&apos;s plan →
+              </button>
             </div>
           </section>
 
           {/* QUICK TIPS */}
-          <section className="max-w-5xl mx-auto px-6 pb-16 grid md:grid-cols-3 gap-6">
+          <section className="max-w-5xl mx-auto px-6 pb-14">
             <div
-              className="rounded-2xl p-6"
+              className="rounded-2xl p-5 grid sm:grid-cols-2 gap-5"
               style={{
                 background: "linear-gradient(180deg, #FFF9F5 0%, #F1EDE4 100%)",
                 border: "1.5px solid rgba(143,168,118,0.25)",
               }}
             >
-              <ClockIcon size={22} color="#8FA876" />
-              <h3 className="display-font text-lg font-bold mt-2" style={{ color: "#3A3A32" }}>
-                Check before you run big loads
-              </h3>
-              <p className="text-sm font-semibold text-stone-600 mt-1">
-                Dishwasher, laundry, EV charging, and AC pre-cooling cost less when
-                the grid isn&apos;t stretched thin.
-              </p>
-            </div>
-            <div
-              className="rounded-2xl p-6"
-              style={{
-                background: "linear-gradient(180deg, #FFF9F5 0%, #F1EDE4 100%)",
-                border: "1.5px solid rgba(217,164,65,0.22)",
-              }}
-            >
-              <TrendingDownIcon size={22} color="#D9A441" />
-              <h3 className="display-font text-lg font-bold mt-2" style={{ color: "#3A3A32" }}>
-                Match your utility&apos;s TOU plan
-              </h3>
-              <p className="text-sm font-semibold text-stone-600 mt-1">
-                If you&apos;re on time-of-use billing, peak windows here usually line up
-                with your utility&apos;s most expensive hours too.
-              </p>
-            </div>
-            <div
-              className="rounded-2xl p-6"
-              style={{
-                background: "linear-gradient(180deg, #FFF9F5 0%, #F1EDE4 100%)",
-                border: "1.5px solid rgba(201,99,75,0.2)",
-              }}
-            >
-              <MapPinIcon size={22} color="#C9634B" />
-              <h3 className="display-font text-lg font-bold mt-2" style={{ color: "#3A3A32" }}>
-                Clusters, not exact meters
-              </h3>
-              <p className="text-sm font-semibold text-stone-600 mt-1">
-                Markers show publicly known data center hub locations. Individual
-                facility energy use isn&apos;t public data — this shows regional
-                demand context instead.
-              </p>
+              <div className="flex gap-3">
+                <span className="shrink-0 mt-0.5"><ClockIcon size={20} color="#8FA876" /></span>
+                <p className="text-sm font-semibold text-stone-600">
+                  <strong style={{ color: "#3A3A32" }}>Check before big loads.</strong>{" "}
+                  Dishwasher, laundry, and EV charging cost less when the grid isn&apos;t stretched thin.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <span className="shrink-0 mt-0.5"><TrendingDownIcon size={20} color="#D9A441" /></span>
+                <p className="text-sm font-semibold text-stone-600">
+                  <strong style={{ color: "#3A3A32" }}>Match your plan.</strong>{" "}
+                  On time-of-use billing, peak windows here usually line up with your utility&apos;s priciest hours.
+                </p>
+              </div>
             </div>
           </section>
       </div>
