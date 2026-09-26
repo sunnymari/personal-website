@@ -241,36 +241,38 @@ export default async function handler(req, res) {
     },
   });
 
-  for (const model of MODELS) {
-    try {
-      const upstream = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-          body,
-          signal: AbortSignal.timeout(15_000),
-        },
-      );
+  const controller = new AbortController();
+  const timeout = AbortSignal.timeout(25_000);
 
-      if (!upstream.ok) {
-        const detail = await upstream.text().catch(() => "");
-        console.error("ask-sprout upstream", model, upstream.status, detail.slice(0, 500));
-        continue;
-      }
-
-      const plan = parseModelJson(await upstream.json());
-      if (!plan.steps.length || !plan.framing_ai || !plan.framing_generic) {
-        console.error("ask-sprout incomplete answer", model);
-        continue;
-      }
-
-      json(res, 200, { ok: true, model, plan });
-      return;
-    } catch (err) {
-      console.error("ask-sprout failure", model, String(err?.message || err).slice(0, 300));
+  async function ask(model) {
+    const upstream = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        body,
+        signal: AbortSignal.any([controller.signal, timeout]),
+      },
+    );
+    if (!upstream.ok) {
+      const detail = await upstream.text().catch(() => "");
+      console.error("ask-sprout upstream", model, upstream.status, detail.slice(0, 300));
+      throw new Error(`${model} ${upstream.status}`);
     }
+    const plan = parseModelJson(await upstream.json());
+    if (!plan.steps.length || !plan.framing_ai || !plan.framing_generic) {
+      console.error("ask-sprout incomplete answer", model);
+      throw new Error(`${model} incomplete`);
+    }
+    return { model, plan };
   }
 
-  json(res, 502, { error: "Gemini couldn’t answer right now. Please try again." });
+  try {
+    const { model, plan } = await Promise.any(MODELS.map(ask));
+    controller.abort();
+    json(res, 200, { ok: true, model, plan });
+  } catch {
+    controller.abort();
+    json(res, 502, { error: "Gemini couldn’t answer right now. Please try again." });
+  }
 }
