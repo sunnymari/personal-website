@@ -7,7 +7,7 @@
  * Env: GEMINI_API_KEY (required), GEMINI_MODEL (optional)
  */
 
-const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-3.5-flash", "gemini-flash-latest"].filter(Boolean))];
+const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-3.5-flash", "gemini-flash-latest", "gemini-3.1-flash-lite", "gemini-3.5-flash-lite"].filter(Boolean))];
 
 const GRID_STATES = {
   low: {
@@ -241,10 +241,7 @@ export default async function handler(req, res) {
     },
   });
 
-  const controller = new AbortController();
-  const timeout = AbortSignal.timeout(25_000);
-
-  async function ask(model) {
+  async function ask(model, controller, timeout) {
     const upstream = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
       {
@@ -267,12 +264,18 @@ export default async function handler(req, res) {
     return { model, plan };
   }
 
-  try {
-    const { model, plan } = await Promise.any(MODELS.map(ask));
-    controller.abort();
-    json(res, 200, { ok: true, model, plan });
-  } catch {
-    controller.abort();
-    json(res, 502, { error: "Gemini couldn’t answer right now. Please try again." });
+  for (let round = 0; round < 2; round++) {
+    const controller = new AbortController();
+    const timeout = AbortSignal.timeout(20_000);
+    try {
+      const { model, plan } = await Promise.any(MODELS.map((m) => ask(m, controller, timeout)));
+      controller.abort();
+      json(res, 200, { ok: true, model, plan });
+      return;
+    } catch {
+      controller.abort();
+      if (round === 0) await new Promise((r) => setTimeout(r, 1500));
+    }
   }
+  json(res, 502, { error: "Gemini is very busy right now. Please try again in a moment." });
 }
