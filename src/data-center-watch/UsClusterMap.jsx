@@ -8,6 +8,27 @@ const SIZE_RADIUS = {
   medium: 7,
 };
 
+export const FUEL_COLORS = {
+  nuclear: "#C9A0FF",
+  coal: "#F5F5F5",
+  gas: "#FFB454",
+  hydro: "#4FC3F7",
+  solar: "#FFE44D",
+  wind: "#FF8FB1",
+  other: "#BDBDBD",
+};
+
+function plantsToGeoJSON(plants) {
+  return {
+    type: "FeatureCollection",
+    features: (plants || []).map((p) => ({
+      type: "Feature",
+      properties: { name: p.name, utility: p.utility, fuel: p.fuel, source: p.source, mw: p.mw, state: p.state },
+      geometry: { type: "Point", coordinates: [p.lng, p.lat] },
+    })),
+  };
+}
+
 function clustersToGeoJSON(clusters) {
   return {
     type: "FeatureCollection",
@@ -33,11 +54,14 @@ export default function UsClusterMap({
   hovered = null,
   onHoverChange,
   visible = true,
+  plants = [],
+  showPlants = false,
 }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const onHoverRef = useRef(onHoverChange);
   const hoveredRef = useRef(hovered);
+  const plantsRef = useRef({ plants, showPlants });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,6 +71,10 @@ export default function UsClusterMap({
   useEffect(() => {
     hoveredRef.current = hovered;
   }, [hovered]);
+
+  useEffect(() => {
+    plantsRef.current = { plants, showPlants };
+  }, [plants, showPlants]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -80,6 +108,10 @@ export default function UsClusterMap({
             type: "geojson",
             data: clustersToGeoJSON(clusters),
           },
+          plants: {
+            type: "geojson",
+            data: plantsToGeoJSON(plantsRef.current.plants),
+          },
         },
         layers: [
           {
@@ -95,6 +127,28 @@ export default function UsClusterMap({
             source: "labels",
             minzoom: 0,
             maxzoom: 22,
+          },
+          {
+            id: "plants",
+            type: "circle",
+            source: "plants",
+            layout: { visibility: plantsRef.current.showPlants ? "visible" : "none" },
+            paint: {
+              "circle-radius": ["interpolate", ["linear"], ["get", "mw"], 1000, 3.5, 7000, 10],
+              "circle-color": [
+                "match", ["get", "fuel"],
+                "nuclear", FUEL_COLORS.nuclear,
+                "coal", FUEL_COLORS.coal,
+                "gas", FUEL_COLORS.gas,
+                "hydro", FUEL_COLORS.hydro,
+                "solar", FUEL_COLORS.solar,
+                "wind", FUEL_COLORS.wind,
+                FUEL_COLORS.other,
+              ],
+              "circle-opacity": 0.88,
+              "circle-stroke-width": 1,
+              "circle-stroke-color": "rgba(20,20,20,0.7)",
+            },
           },
           {
             id: "cluster-glow",
@@ -141,21 +195,50 @@ export default function UsClusterMap({
       onHoverRef.current?.(name);
     };
 
+    const popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 10, maxWidth: "240px" });
+
+    const showPlantPopup = (f) => {
+      const { name, utility, source, mw, state } = f.properties;
+      const box = document.createElement("div");
+      box.style.cssText = "font:600 12px Nunito,sans-serif;color:#3A3A32;line-height:1.35";
+      const title = document.createElement("div");
+      title.style.cssText = "font-weight:800";
+      title.textContent = name;
+      const line1 = document.createElement("div");
+      line1.textContent = `${(Number(mw) / 1000).toFixed(1)} GW ${source}${state ? ` · ${state}` : ""}`;
+      const line2 = document.createElement("div");
+      line2.style.color = "#6b6358";
+      line2.textContent = utility;
+      box.append(title, line1, line2);
+      popup.setLngLat(f.geometry.coordinates).setDOMContent(box).addTo(map);
+    };
+
     const onMove = (e) => {
       const feats = map.queryRenderedFeatures(e.point, {
         layers: ["cluster-core", "cluster-glow"],
       });
       if (feats.length) {
         map.getCanvas().style.cursor = "pointer";
+        popup.remove();
         setHover(feats[0].properties.name);
+        return;
+      }
+      const plantFeats = plantsRef.current.showPlants && map.getLayer("plants")
+        ? map.queryRenderedFeatures(e.point, { layers: ["plants"] })
+        : [];
+      if (plantFeats.length) {
+        map.getCanvas().style.cursor = "crosshair";
+        showPlantPopup(plantFeats[0]);
       } else {
         map.getCanvas().style.cursor = "";
-        setHover(null);
+        popup.remove();
       }
+      setHover(null);
     };
 
     const onLeave = () => {
       map.getCanvas().style.cursor = "";
+      popup.remove();
       setHover(null);
     };
 
@@ -233,6 +316,20 @@ export default function UsClusterMap({
     if (map.isStyleLoaded()) apply();
     else map.once("load", apply);
   }, [markerColor]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const apply = () => {
+      const source = map.getSource("plants");
+      if (source) source.setData(plantsToGeoJSON(plants));
+      if (map.getLayer("plants")) {
+        map.setLayoutProperty("plants", "visibility", showPlants ? "visible" : "none");
+      }
+    };
+    if (map.isStyleLoaded()) apply();
+    else map.once("load", apply);
+  }, [plants, showPlants]);
 
   useEffect(() => {
     const map = mapRef.current;

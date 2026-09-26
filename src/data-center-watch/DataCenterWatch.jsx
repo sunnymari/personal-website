@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import UsClusterMap from "./UsClusterMap.jsx";
+import UsClusterMap, { FUEL_COLORS } from "./UsClusterMap.jsx";
 import DailyEnergyFact from "./DailyEnergyFact.jsx";
 import HardwareInterest from "./HardwareInterest.jsx";
 import AboutProject, { AboutFooterBlurb } from "./AboutProject.jsx";
@@ -9,13 +9,13 @@ import AskSprout from "./AskSprout.jsx";
 import { logGridSnapshotEvent } from "./researchLog.js";
 
 const CLUSTERS = [
-  { name: "Northern Virginia", lat: 38.95, lng: -77.45, size: "largest", note: "Largest data center market in the world · Ashburn" },
-  { name: "Silicon Valley", lat: 37.37, lng: -122.04, size: "large", note: "Dense hyperscale + enterprise cluster · Santa Clara" },
-  { name: "Dallas–Fort Worth", lat: 32.93, lng: -97.04, size: "large", note: "Fast-growing hyperscale hub" },
-  { name: "Chicago", lat: 41.88, lng: -87.63, size: "medium", note: "Major interconnection point" },
-  { name: "Phoenix", lat: 33.45, lng: -112.07, size: "large", note: "Rapid hyperscale expansion" },
-  { name: "Columbus", lat: 40.00, lng: -83.02, size: "medium", note: "Growing hyperscale corridor" },
-  { name: "Atlanta", lat: 33.75, lng: -84.39, size: "medium", note: "Southeast hub" },
+  { name: "Northern Virginia", lat: 38.95, lng: -77.45, size: "largest", note: "Largest data center market in the world · Ashburn", utility: "Dominion Energy (Virginia Electric & Power)", grid: "PJM" },
+  { name: "Silicon Valley", lat: 37.37, lng: -122.04, size: "large", note: "Dense hyperscale + enterprise cluster · Santa Clara", utility: "PG&E / Silicon Valley Power", grid: "CAISO" },
+  { name: "Dallas–Fort Worth", lat: 32.93, lng: -97.04, size: "large", note: "Fast-growing hyperscale hub", utility: "Oncor", grid: "ERCOT" },
+  { name: "Chicago", lat: 41.88, lng: -87.63, size: "medium", note: "Major interconnection point", utility: "ComEd", grid: "PJM" },
+  { name: "Phoenix", lat: 33.45, lng: -112.07, size: "large", note: "Rapid hyperscale expansion", utility: "APS / SRP", grid: "Desert Southwest (no ISO)" },
+  { name: "Columbus", lat: 40.00, lng: -83.02, size: "medium", note: "Growing hyperscale corridor", utility: "AEP Ohio", grid: "PJM" },
+  { name: "Atlanta", lat: 33.75, lng: -84.39, size: "medium", note: "Southeast hub", utility: "Georgia Power", grid: "Southern Company balancing area" },
 ];
 
 const GRID_STATES = [
@@ -130,6 +130,26 @@ function useLiveGrid() {
   return { live, status };
 }
 
+function useProviders() {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/providers");
+        const json = res.ok ? await res.json() : null;
+        if (!cancelled && json?.ok) setData(json);
+      } catch {
+        /* overlay stays hidden */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  return data;
+}
+
 function Icon({ children, size = 18, color = "currentColor" }) {
   return (
     <svg
@@ -226,6 +246,8 @@ function SproutIcon({ size = 22 }) {
 export default function DataCenterWatch() {
   const idx = useTicker(GRID_STATES.length);
   const { live, status: gridStatus } = useLiveGrid();
+  const providers = useProviders();
+  const [showPlants, setShowPlants] = useState(false);
   const state = live ? GRID_STATES.find((g) => g.key === live.stateKey) || GRID_STATES[idx] : GRID_STATES[idx];
   const [hovered, setHovered] = useState(null);
   const [tab, setTab] = useState("watch");
@@ -585,9 +607,25 @@ export default function DataCenterWatch() {
                   <MapPinIcon size={16} color="#8FA876" />
                   Known U.S. clusters
                 </div>
-                <div className="text-xs font-bold text-stone-400">
-                  {CLUSTERS.length} hubs · drag to tilt
-                </div>
+                {providers ? (
+                  <button
+                    type="button"
+                    aria-pressed={showPlants}
+                    onClick={() => setShowPlants((v) => !v)}
+                    className="dcw-tab"
+                    style={{
+                      padding: "0.35rem 0.85rem",
+                      fontSize: "0.8rem",
+                      background: showPlants ? "linear-gradient(180deg, #FFF8F4 0%, #F2C6C2 100%)" : "rgba(241,237,228,0.9)",
+                      color: showPlants ? "#7A3B36" : "#6b6358",
+                      border: `2px solid ${showPlants ? "#E8A8A3" : "rgba(143,168,118,0.3)"}`,
+                    }}
+                  >
+                    {showPlants ? "Hide power plants" : "Show power plants"}
+                  </button>
+                ) : (
+                  <div className="text-xs font-bold text-stone-400">{CLUSTERS.length} hubs</div>
+                )}
               </div>
 
               <div className="dcw-map-shell">
@@ -597,13 +635,30 @@ export default function DataCenterWatch() {
                   hovered={hovered}
                   onHoverChange={onHoverChange}
                   visible={tab === "watch"}
+                  plants={providers?.plants || []}
+                  showPlants={showPlants}
                 />
               </div>
               <div className="mt-2 text-sm font-semibold text-stone-500 min-h-[20px]">
                 {hovered
-                  ? `${hovered} — ${CLUSTERS.find((c) => c.name === hovered)?.note}`
+                  ? (() => {
+                      const c = CLUSTERS.find((x) => x.name === hovered);
+                      const liveBit = live && c?.grid === "CAISO" ? ` · live demand ${(live.currentMW / 1000).toFixed(1)} GW` : "";
+                      return `${hovered} — ${c?.note} · Served by ${c?.utility} · Grid: ${c?.grid}${liveBit}`;
+                    })()
                   : "Known cluster locations and regional demand, not live per-facility tracking. Hover or tap a marker."}
               </div>
+              {providers && showPlants ? (
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs font-bold text-stone-500" aria-label="Power plant legend">
+                  {[["nuclear", "Nuclear"], ["gas", "Gas"], ["coal", "Coal"], ["hydro", "Hydro"], ["solar", "Solar"], ["wind", "Wind"]].map(([k, label]) => (
+                    <span key={k} className="inline-flex items-center gap-1.5">
+                      <span style={{ width: 10, height: 10, borderRadius: 999, background: FUEL_COLORS[k], border: "1px solid rgba(20,20,20,0.5)", display: "inline-block" }} />
+                      {label}
+                    </span>
+                  ))}
+                  <span>· dot size = capacity, plants of 1 GW or more</span>
+                </div>
+              ) : null}
             </div>
 
             <div
@@ -680,6 +735,43 @@ export default function DataCenterWatch() {
               </button>
             </div>
           </section>
+
+          {/* PROVIDERS */}
+          {providers ? (
+            <section className="max-w-5xl mx-auto px-6 pb-8">
+              <div
+                className="rounded-2xl p-5"
+                style={{ background: "linear-gradient(180deg, #FFF9F5 0%, #F1EDE4 100%)", border: "1.5px solid rgba(143,168,118,0.25)" }}
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <h3 className="display-font text-lg font-bold" style={{ color: "#3A3A32" }}>
+                    Largest U.S. energy providers
+                  </h3>
+                  <span className="text-xs font-bold text-stone-500">by generating capacity</span>
+                </div>
+                <ul className="mt-3 grid sm:grid-cols-2 gap-x-8 gap-y-2 list-none p-0 m-0">
+                  {providers.providers.slice(0, 8).map((p) => (
+                    <li key={p.name}>
+                      <div className="flex justify-between gap-3 text-sm font-bold" style={{ color: "#3A3A32" }}>
+                        <span className="truncate">{p.name}</span>
+                        <span className="shrink-0">{(p.mw / 1000).toFixed(1)} GW</span>
+                      </div>
+                      <div className="mt-1 h-1.5 rounded-full" style={{ background: "rgba(143,168,118,0.2)" }}>
+                        <div
+                          className="h-1.5 rounded-full"
+                          style={{ width: `${Math.round((p.mw / providers.providers[0].mw) * 100)}%`, background: "#8FA876" }}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs font-semibold text-stone-500 mt-3 leading-relaxed">
+                  Nameplate capacity from EIA&apos;s U.S. Energy Atlas, not real-time output. Live demand is
+                  currently connected for California (CAISO) only.
+                </p>
+              </div>
+            </section>
+          ) : null}
 
           {/* QUICK TIPS */}
           <section className="max-w-5xl mx-auto px-6 pb-14">
