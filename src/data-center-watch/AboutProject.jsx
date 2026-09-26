@@ -1,7 +1,7 @@
 const SOCIAL_LINKS = [
-  { label: "Instagram", href: "https://instagram.com/marissabuilds" },
-  { label: "YouTube", href: "https://youtube.com/@marissabuilds?si=hskyoPCxD-h07H2u" },
-  { label: "Substack", href: "https://substack.com/@marissabuilds" },
+  { label: "Instagram", href: "https://instagram.com/marisummerss" },
+  { label: "YouTube", href: "https://youtube.com/@marisummerss" },
+  { label: "Substack", href: "https://substack.com/@marisummerss" },
   { label: "X/Twitter", href: "https://x.com/marisummerss" },
 ];
 
