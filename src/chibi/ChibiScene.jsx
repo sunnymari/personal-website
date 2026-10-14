@@ -833,6 +833,34 @@ function ClosetFurniture({ showPopup }) {
   );
 }
 
+// Floor bounds for each vertical row of rooms. Used to clamp keyboard movement
+// so the chibi can't walk off the dollhouse floor. Insets keep her clear of the
+// outer walls.
+const FLOOR_INSET_X = 0.15;
+const FLOOR_INSET_Z = 0.25;
+const FLOOR_HALF_WIDTH = 1.9;
+const FLOOR_HALF_DEPTH = 1.75;
+const FLOOR_Z_CENTER = -0.25;
+
+function getRowBounds(y) {
+  const rowRooms = Object.values(ROOMS).filter((r) => Math.abs(r.pos[1] - y) < 0.5);
+  if (rowRooms.length === 0) return null;
+  const xs = rowRooms.map((r) => r.pos[0]);
+  return {
+    xMin: Math.min(...xs) - FLOOR_HALF_WIDTH + FLOOR_INSET_X,
+    xMax: Math.max(...xs) + FLOOR_HALF_WIDTH - FLOOR_INSET_X,
+    zMin: FLOOR_Z_CENTER - FLOOR_HALF_DEPTH + FLOOR_INSET_Z,
+    zMax: FLOOR_Z_CENTER + FLOOR_HALF_DEPTH - FLOOR_INSET_Z,
+  };
+}
+
+const MOVEMENT_KEYS = new Set([
+  'w', 'a', 's', 'd',
+  'W', 'A', 'S', 'D',
+  'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+  'Shift',
+]);
+
 function Chibi({
   chibiPos,
   setChibiPos,
@@ -845,6 +873,7 @@ function Chibi({
   const group = useRef();
   const movingRef = useRef(false);
   const animRef = useRef('idle');
+  const keysRef = useRef(new Set());
 
   const idleGltf = useGLTF('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Idle_4_withSkin.glb');
   const walkGltf = useGLTF('/Meshy_AI_Chibi_Coder_with_Gala_biped_Animation_Walking_withSkin.glb');
@@ -896,11 +925,70 @@ function Chibi({
     };
   }, [actions, idleActionName]);
 
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (!MOVEMENT_KEYS.has(e.key)) return;
+      keysRef.current.add(e.key);
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+      }
+    };
+    const onKeyUp = (e) => {
+      keysRef.current.delete(e.key);
+    };
+    const onBlur = () => {
+      keysRef.current.clear();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', onBlur);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', onBlur);
+    };
+  }, []);
+
   useFrame(({ clock }, delta) => {
     if (!group.current) return;
     let moving = false;
 
-    if (chibiTarget) {
+    const keys = keysRef.current;
+    const forward = keys.has('w') || keys.has('W') || keys.has('ArrowUp');
+    const backward = keys.has('s') || keys.has('S') || keys.has('ArrowDown');
+    const left = keys.has('a') || keys.has('A') || keys.has('ArrowLeft');
+    const right = keys.has('d') || keys.has('D') || keys.has('ArrowRight');
+    const sprinting = keys.has('Shift');
+    const keyboardActive = forward || backward || left || right;
+
+    if (keyboardActive) {
+      // Keyboard input takes priority over click-to-walk targeting.
+      if (chibiTarget) setChibiTarget(null);
+
+      let dx = (right ? 1 : 0) - (left ? 1 : 0);
+      let dz = (backward ? 1 : 0) - (forward ? 1 : 0);
+      const len = Math.hypot(dx, dz);
+      if (len > 0) {
+        dx /= len;
+        dz /= len;
+        const speed = sprinting ? 3.6 : 2.25;
+        const step = speed * delta;
+        let nx = chibiPos[0] + dx * step;
+        let nz = chibiPos[2] + dz * step;
+
+        const bounds = getRowBounds(chibiPos[1]);
+        if (bounds) {
+          nx = Math.min(bounds.xMax, Math.max(bounds.xMin, nx));
+          nz = Math.min(bounds.zMax, Math.max(bounds.zMin, nz));
+        }
+
+        if (nx !== chibiPos[0] || nz !== chibiPos[2]) {
+          moving = true;
+          setChibiPos([nx, chibiPos[1], nz]);
+          group.current.rotation.y = Math.atan2(dx, dz);
+        }
+      }
+    } else if (chibiTarget) {
       const current = new THREE.Vector3(...chibiPos);
       const target = new THREE.Vector3(...chibiTarget);
       const dir = target.clone().sub(current);
@@ -1258,7 +1346,7 @@ export default function ChibiScene({ embedded = false }) {
           display: embedded ? 'none' : 'block',
         }}
       >
-        {chibiSelected ? '✨ Select a room for Chibi' : `📍 ${selectedRoom ? ROOMS[selectedRoom].label : 'Click Chibi to move her'}`}
+        {chibiSelected ? '✨ Select a room for Chibi' : `📍 ${selectedRoom ? ROOMS[selectedRoom].label : 'Click Chibi to move her · WASD / arrows to walk'}`}
       </div>
 
       <Canvas
