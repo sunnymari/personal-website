@@ -298,7 +298,16 @@ export default function WorkWithMe() {
               Ready to work together?
             </p>
             <p style={{ fontSize: "14px", color: "#8f5f79" }}>
-              marissacodes.com · @marisummerss · partnerships, speaking & collab inquiries welcome.
+              marissacodes.com · @marisummerss ·{" "}
+              <a
+                href="https://www.linkedin.com/in/marissa-curry-93674b33/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#b45e89", fontWeight: 700 }}
+              >
+                LinkedIn
+              </a>
+              {" "}· partnerships, speaking & collab inquiries welcome.
             </p>
           </div>
           <a

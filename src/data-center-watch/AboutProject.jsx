@@ -3,6 +3,7 @@ const SOCIAL_LINKS = [
   { label: "YouTube", href: "https://youtube.com/@marisummerss" },
   { label: "Substack", href: "https://substack.com/@marisummerss" },
   { label: "X/Twitter", href: "https://x.com/marisummerss" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/marissa-curry-93674b33/" },
 ];
 
 const RESEARCH = [
