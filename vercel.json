@@ -19,10 +19,6 @@
       "destination": "/growth.html"
     },
     {
-      "source": "/lock-in",
-      "destination": "/lock-in.html"
-    },
-    {
       "source": "/shop",
       "destination": "/shop.html"
     },
@@ -33,10 +29,6 @@
     {
       "source": "/modeling",
       "destination": "/modeling.html"
-    },
-    {
-      "source": "/reading",
-      "destination": "/reading.html"
     },
     {
       "source": "/blog",
@@ -83,6 +75,26 @@
     },
     {
       "source": "/pageant.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lock-in",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lock-in.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/reading",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/reading.html",
       "destination": "/",
       "permanent": false
     }
