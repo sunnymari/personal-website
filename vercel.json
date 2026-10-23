@@ -23,6 +23,10 @@
       "destination": "/lock-in.html"
     },
     {
+      "source": "/shop",
+      "destination": "/shop.html"
+    },
+    {
       "source": "/dream-companies",
       "destination": "/dream-companies.html"
     },

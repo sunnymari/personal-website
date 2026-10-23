@@ -29,6 +29,7 @@ export default defineConfig({
         modeling: resolve(__dirname, 'modeling.html'),
         dataCenterWatch: resolve(__dirname, 'data-center-watch.html'),
         art: resolve(__dirname, 'art.html'),
+        shop: resolve(__dirname, 'shop.html'),
       },
     },
   },
