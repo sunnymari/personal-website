@@ -9,11 +9,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script type="module" src="/src/global-cursor.js"></script>
   <style>
-    .shop-hero { text-align: center; padding: 1rem 0 0.5rem; }
+    .shop-hero { text-align: center; padding: 1rem 0 0.5rem; white-space: normal; overflow: visible; }
     .shop-hero h1 { font-family: 'Fredoka', 'Nunito', sans-serif; margin-bottom: 0.4rem; }
     .shop-bow { font-size: 3.2rem; display: inline-block; animation: shop-wiggle 2.4s ease-in-out infinite; }
     @keyframes shop-wiggle { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
-    .shop-sub { color: var(--island-plum); font-weight: 700; font-size: 1.1rem; margin: 0 auto 1.6rem; max-width: 520px; }
+    .shop-sub { white-space: normal; color: var(--island-plum); font-weight: 700; font-size: 1.1rem; margin: 0 auto 1.6rem; max-width: 520px; }
     .shop-cats { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin: 0 auto 2rem; }
     .shop-cat {
       background: var(--island-cream-light); border: 2px solid var(--island-pink-border);
@@ -24,7 +24,7 @@
     .shop-cat b { font-family: 'Fredoka', 'Nunito', sans-serif; color: var(--island-berry); font-size: 1.1rem; }
     .container a.shop-btn, .shop-btn {
       display: inline-block; background: linear-gradient(180deg, #ef5da8 0%, #b45e89 100%);
-      color: #fff; text-decoration: none; font-family: 'Fredoka', 'Nunito', sans-serif;
+      color: #fff !important; text-decoration: none !important; font-family: 'Fredoka', 'Nunito', sans-serif;
       font-size: 1.25rem; font-weight: 700; padding: 0.95rem 2.4rem; border-radius: 999px;
       box-shadow: 0 6px 0 #8f5f79; transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
@@ -50,11 +50,11 @@
   </nav>
 
   <div class="container">
-    <header class="shop-hero">
+    <div class="shop-hero">
       <div class="shop-bow" aria-hidden="true">🎀</div>
       <h1>Mari Summers Shop</h1>
       <p class="shop-sub">Cute merch made with love ♡ Hats, tees, and tops for networking girlies and cozy days alike.</p>
-    </header>
+    </div>
 
     <div class="shop-cats">
       <div class="shop-cat"><span aria-hidden="true">🧢</span><b>Hats</b></div>
