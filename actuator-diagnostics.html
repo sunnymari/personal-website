@@ -40,11 +40,11 @@
     </section>
     <figure class="starbot-architecture" aria-labelledby="architecture-title">
       <figcaption id="architecture-title">The system at a glance</figcaption>
-      <pre role="img" aria-label="Simulator to 8-byte CAN frames to decoder to detector using rules.json to snapshot to 3D viewer">Simulator → 8-byte CAN frames → Decoder
-                                   ↓
-                         Detector (rules.json)
-                                   ↓
-                               Snapshot → 3D viewer</pre>
+      <pre role="img" aria-label="Simulator to 8-byte CAN frames to decoder to detector using rules.json to snapshot to 3D viewer">Simulator → 8-byte CAN frames
+                           ↓
+Detector (rules.json) ← Decoder
+          ↓
+      Snapshot → 3D viewer</pre>
     </figure>
     <p class="starbot-mobile-tip">Want more room to explore? <a href="https://starbot-actuator-diagnostics.vercel.app/" target="_blank" rel="noopener noreferrer">Open the full demo in a new tab ↗</a></p>
 
