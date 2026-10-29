@@ -7,6 +7,10 @@
       "destination": "/api/carbonbench-proxy?path=:path*"
     },
     {
+      "source": "/actuator-diagnostics",
+      "destination": "/actuator-diagnostics.html"
+    },
+    {
       "source": "/about",
       "destination": "/about.html"
     },

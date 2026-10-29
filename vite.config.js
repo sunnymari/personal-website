@@ -22,6 +22,7 @@ export default defineConfig({
         about: resolve(__dirname, 'about.html'),
         blog: resolve(__dirname, 'blog.html'),
         projects: resolve(__dirname, 'projects.html'),
+        actuatorDiagnostics: resolve(__dirname, 'actuator-diagnostics.html'),
         growth: resolve(__dirname, 'growth.html'),
         dreamCompanies: resolve(__dirname, 'dream-companies.html'),
         modeling: resolve(__dirname, 'modeling.html'),

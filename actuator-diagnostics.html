@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Starbot Actuator Diagnostics | Marissa Codes</title>
+  <meta name="description" content="Meet Starbot: an interactive 3D robot diagnostics demo. Explore 28 simulated actuators, inject faults, and inspect the evidence behind every warning." />
+  <link rel="canonical" href="https://marissacodes.com/actuator-diagnostics" />
+  <link href="/style.css" rel="stylesheet" />
+  <link href="/src/actuator-diagnostics.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="site-page starbot-project-page">
+  <nav class="nav-buttons" aria-label="Site navigation">
+    <a href="/" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Home</span></span></a>
+    <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Projects</span></span></a>
+    <a href="/actuator-diagnostics" class="nav-link" aria-current="page"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Starbot</span></span></a>
+    <a href="/about" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">About</span></span></a>
+  </nav>
+  <main class="starbot-project">
+    <section class="starbot-intro" aria-labelledby="starbot-title">
+      <p class="starbot-kicker">ROBOTICS · DIAGNOSTICS · A LITTLE PINK PERSONALITY</p>
+      <h1 id="starbot-title">Meet Starbot</h1>
+      <p class="starbot-subtitle">A little robot. A clearer picture of what went wrong.</p>
+      <p class="starbot-description">Explore 28 simulated actuators, inject a fault, and follow the evidence from a colored joint to its diagnostic trouble code. Built to show how faster fault isolation can mean less downtime.</p>
+      <div class="starbot-actions">
+        <a class="starbot-button" href="#interactive-demo">Try the demo <span aria-hidden="true">↓</span></a>
+        <a class="starbot-button starbot-button-light" href="https://optimus-actuator-diagnostics.vercel.app/" target="_blank" rel="noopener noreferrer">Open full demo <span aria-hidden="true">↗</span></a>
+        <a class="starbot-source" href="https://github.com/sunnymari/optimus-actuator-diagnostics" target="_blank" rel="noopener noreferrer">View the source on GitHub <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="starbot-mode">The embedded demo runs a browser simulation. The source includes the full Python virtual-CAN implementation. All readings and limits are synthetic.</p>
+    </section>
+
+    <section class="starbot-demo" id="interactive-demo" aria-labelledby="demo-heading">
+      <div class="starbot-window-bar">
+        <h2 id="demo-heading">Starbot actuator diagnostics</h2>
+        <span>Interactive browser demo</span>
+      </div>
+      <iframe src="https://optimus-actuator-diagnostics.vercel.app/" title="Starbot actuator diagnostics interactive demo" allow="fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </section>
+    <p class="starbot-mobile-tip">Want more room to explore? <a href="https://optimus-actuator-diagnostics.vercel.app/" target="_blank" rel="noopener noreferrer">Open the full demo in a new tab ↗</a></p>
+
+    <section class="starbot-walkthrough" aria-labelledby="walkthrough-heading">
+      <h2 id="walkthrough-heading">Try a tiny diagnostics adventure</h2>
+      <div class="starbot-steps">
+        <article><span class="starbot-step-number">01</span><h3>Make a little trouble</h3><p>Select <strong>left knee</strong> and choose <strong>Overcurrent spike</strong>. Watch its marker turn yellow while the detector checks, then red when the fault is confirmed.</p></article>
+        <article><span class="starbot-step-number">02</span><h3>Follow the evidence</h3><p>Click the joint or its alert. Read the measured value, threshold, trigger time, and freeze-frame. Try <strong>Drop heartbeat</strong> on a wrist to see a different kind of fault.</p></article>
+        <article><span class="starbot-step-number">03</span><h3>Help Starbot recover</h3><p>Choose <strong>Reset all injections</strong>. Healthy samples heal the faults while the history stays visible. <strong>Pause connection</strong> demonstrates stale data and automatic recovery.</p></article>
+      </div>
+      <p class="starbot-build-note">Python · virtual CAN · three.js · debounced diagnostic codes · a custom Meshy Pink Starbot</p>
+    </section>
+  </main>
+</body>
+</html>
