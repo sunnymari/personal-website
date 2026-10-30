@@ -48,6 +48,32 @@ Detector (rules.json) ← Decoder
     </figure>
     <p class="starbot-mobile-tip">Want more room to explore? <a href="https://starbot-actuator-diagnostics.vercel.app/" target="_blank" rel="noopener noreferrer">Open the full demo in a new tab ↗</a></p>
 
+    <section class="starbot-breakdown" aria-labelledby="breakdown-heading">
+      <h2 id="breakdown-heading">The project in four questions</h2>
+      <div class="starbot-breakdown-grid">
+        <article>
+          <p class="starbot-breakdown-label">Who</p>
+          <h3>Who it's for</h3>
+          <p>Robotics technicians, field service engineers, and controls teams who get called when a robot stops moving. It's also for anyone curious how a robot "knows" something is wrong. I designed, built, and modeled Starbot end to end.</p>
+        </article>
+        <article>
+          <p class="starbot-breakdown-label">What</p>
+          <h3>What it is</h3>
+          <p>A diagnostics tool for a 28-actuator robot. A Python simulator sends 8-byte CAN frames. A decoder turns them into readings, and a rules-based detector debounces faults into diagnostic trouble codes with freeze-frame evidence. A three.js viewer shows every joint's health on a 3D model.</p>
+        </article>
+        <article>
+          <p class="starbot-breakdown-label">Where</p>
+          <h3>Where it fits</h3>
+          <p>Modeled on the CAN-bus networks inside humanoids, cobots, and factory arms. The data here is synthetic. The full Python virtual-CAN source is on GitHub, and the demo above runs as a browser simulation, so no hardware is needed.</p>
+        </article>
+        <article>
+          <p class="starbot-breakdown-label">Why</p>
+          <h3>Why it matters</h3>
+          <p>When a robot faults, most of the downtime goes into finding the problem, not fixing it. Raw bus logs are hard to read under pressure. Starbot links each colored joint to the reading, threshold, and moment that triggered it. The goal is to turn "something's wrong" into "left knee, overcurrent, here's the proof."</p>
+        </article>
+      </div>
+    </section>
+
     <section class="starbot-walkthrough" aria-labelledby="walkthrough-heading">
       <h2 id="walkthrough-heading">Try a tiny diagnostics adventure</h2>
       <div class="starbot-steps">

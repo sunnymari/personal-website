@@ -33,3 +33,12 @@ body.starbot-project-page { padding:24px 0 60px; }
 .starbot-architecture figcaption { margin-bottom:16px; font-family:'Fredoka','Nunito',sans-serif; font-size:1.2rem; font-weight:600; color:var(--island-berry); }
 .starbot-architecture pre { width:max-content; max-width:100%; overflow-x:auto; margin:0 auto; text-align:left; font:clamp(12px,1.25vw,15px)/1.9 ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--island-plum); }
 @media(max-width:740px) { .starbot-architecture { padding:20px 12px; } }
+
+.starbot-breakdown { max-width:1100px; margin:0 auto 48px; }
+.starbot-breakdown>h2 { margin:0 0 24px; font-family:'Fredoka','Nunito',sans-serif; font-size:clamp(1.4rem,3vw,2rem); color:var(--island-berry); }
+.starbot-breakdown-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; text-align:left; }
+.starbot-breakdown-grid article { padding:24px; border:2px solid var(--island-pink-border); border-radius:24px; background:#fff8fbea; }
+.starbot-breakdown-label { display:inline-block; margin:0; padding:2px 12px; border-radius:999px; background:var(--island-pink-soft); color:var(--island-berry); font-size:.72rem; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
+.starbot-breakdown-grid h3 { margin:10px 0 10px; text-align:left; font-family:'Fredoka','Nunito',sans-serif; font-size:1.15rem; }
+.starbot-breakdown-grid p:not(.starbot-breakdown-label) { margin:0; font-size:.9rem; line-height:1.8; }
+@media(max-width:740px) { .starbot-breakdown-grid { grid-template-columns:1fr; } }
