@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Component, useEffect, useMemo, useState } from 'react';
 import IslandHomepageScene from './IslandHomepageScene.jsx';
 
 const MENU_ITEMS = [
@@ -6,7 +6,6 @@ const MENU_ITEMS = [
   { emoji: '🎀', label: 'Projects', href: '/projects.html' },
   { emoji: '📈', label: 'Growth', href: '/growth' },
   { emoji: '⭐', label: 'Company', href: '/dream-companies' },
-  { emoji: '📷', label: 'Modeling', href: '/modeling' },
   { emoji: '🎨', label: 'Art', href: '/art' },
   { emoji: '🛍️', label: 'Shop', href: '/shop' },
   { emoji: '📝', label: 'Blog', href: '/blog.html' },
@@ -34,19 +33,18 @@ const FLOWER_PATCHES = [
   'left-[70%] top-[77%]',
 ];
 
+// Keep navigation usable if WebGL or a decorative model cannot load.
+class SceneBoundary extends Component {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() { return this.state.failed ? null : this.props.children; }
+}
+
 export default function KawaiiIslandLandingPage() {
-  const [titleVisible, setTitleVisible] = useState(true);
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setTitleVisible((prev) => !prev);
-    }, 2600);
-
-    return () => window.clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const onMove = (event) => {
       const x = (event.clientX / window.innerWidth - 0.5) * 18;
       const y = (event.clientY / window.innerHeight - 0.5) * 18;
@@ -97,6 +95,10 @@ export default function KawaiiIslandLandingPage() {
           animation: uiFadeIn 2s ease-out 0.8s forwards;
           opacity: 0;
         }
+        @media (prefers-reduced-motion: reduce) {
+          .homepage .animate-game-zoom, .homepage .animate-ui-fade,
+          .homepage [style*="floaty"] { animation: none !important; opacity: 1; }
+        }
       `}</style>
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.55),_transparent_30%),linear-gradient(to_bottom,_#9ed8ff_0%,_#aee5ff_35%,_#76d7f6_100%)]" />
@@ -109,7 +111,7 @@ export default function KawaiiIslandLandingPage() {
           maskImage: 'radial-gradient(ellipse at center, black 45%, transparent 75%)'
         }}
       >
-        <IslandHomepageScene />
+        <SceneBoundary><IslandHomepageScene /></SceneBoundary>
       </div>
 
       <Cloud className="left-[8%] top-[9%] scale-100" />
@@ -135,19 +137,13 @@ export default function KawaiiIslandLandingPage() {
             </div>
 
             <div>
-              <div
-                role="heading"
-                aria-level="1"
-                className={`text-lg font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] transition-all duration-1000 sm:text-2xl md:text-3xl ${
-                  titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3'
-                }`}
+              <div role="heading" aria-level="1"
+                className="text-lg font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] sm:text-2xl md:text-3xl"
               >
                 Welcome To My Island
               </div>
               <p
-                className={`mt-1 text-xs font-bold text-[#967bb6] transition-all duration-1000 sm:text-sm md:mt-2 md:text-base ${
-                  titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
-                }`}
+                className="mt-1 text-xs font-bold text-[#967bb6] sm:text-sm md:mt-2 md:text-base"
               >
                 Dreamy code, cozy stories, magical projects
               </p>
@@ -155,7 +151,8 @@ export default function KawaiiIslandLandingPage() {
           </div>
         </div>
 
-        <div className="mt-auto flex w-full max-w-[960px] snap-x snap-mandatory flex-row gap-3 overflow-x-auto pb-4 pt-2 pointer-events-auto sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:pb-0 lg:flex lg:justify-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <p className="mt-auto pt-3 text-sm font-bold sm:hidden">Swipe for more pages →</p>
+        <nav aria-label="Site navigation" className="island-page-menu sm:mt-auto flex w-full max-w-[960px] snap-x snap-mandatory flex-row gap-3 overflow-x-auto pb-4 pt-2 pointer-events-auto sm:grid sm:grid-cols-5 sm:gap-3 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {MENU_ITEMS.map((item) => (
             <a
               key={item.label}
@@ -163,7 +160,7 @@ export default function KawaiiIslandLandingPage() {
               {...(item.external
                 ? { target: '_blank', rel: 'noopener noreferrer' }
                 : {})}
-              className="group shrink-0 snap-center rounded-[24px] border-[4px] border-[#efd2de] bg-[linear-gradient(180deg,#fff8fc_0%,#fff0f7_100%)] px-3 py-3 w-[120px] shadow-[0_10px_20px_rgba(206,140,171,0.16),inset_0_2px_0_rgba(255,255,255,0.95)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_24px_rgba(206,140,171,0.22)] sm:w-auto sm:py-4 lg:w-[130px]"
+              className="group shrink-0 snap-center rounded-[24px] border-[4px] border-[#efd2de] bg-[linear-gradient(180deg,#fff8fc_0%,#fff0f7_100%)] px-3 py-3 w-[120px] shadow-[0_10px_20px_rgba(206,140,171,0.16),inset_0_2px_0_rgba(255,255,255,0.95)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_24px_rgba(206,140,171,0.22)] sm:w-auto sm:py-4"
             >
               <div className="flex flex-col items-center justify-center gap-2">
                 <div className="text-3xl transition group-hover:scale-110">{item.emoji}</div>
@@ -171,7 +168,7 @@ export default function KawaiiIslandLandingPage() {
               </div>
             </a>
           ))}
-        </div>
+        </nav>
 
         <div className="mt-4 rounded-full border-[4px] border-[#efbfd1] bg-[linear-gradient(180deg,#ffe9f2_0%,#ffdbe9_100%)] px-6 py-3 text-center text-sm font-black tracking-wide text-[#b45e89] shadow-[0_12px_24px_rgba(226,126,175,0.18),inset_0_2px_0_rgba(255,255,255,0.88)] pointer-events-auto sm:mt-7 sm:px-10 sm:py-4 sm:text-lg">
           MARISSA CODES ✨ ISLAND EDITION
@@ -506,13 +503,11 @@ export function runSmokeTests() {
     results.push(`✓ ${message}`);
   }
 
-  assert(MENU_ITEMS.length === 11, 'renders 11 menu items');
+  assert(MENU_ITEMS.length === 9, 'renders 9 menu items');
   assert(PATH_STONES.length === 6, 'renders 6 path stones');
   assert(FLOWER_PATCHES.length === 6, 'renders 6 flower patches');
   assert(MENU_ITEMS.some((item) => item.label === 'Projects'), 'includes a "Projects" menu item');
-  assert(MENU_ITEMS.some((item) => item.label === 'Lock-In'), 'includes a "Lock-In" menu item');
   assert(MENU_ITEMS.some((item) => item.label === 'Company'), 'includes a "Company" menu item');
-  assert(MENU_ITEMS.some((item) => item.label === 'Modeling'), 'includes a "Modeling" menu item');
   assert(MENU_ITEMS.some((item) => item.label === 'Art'), 'includes an "Art" menu item');
   assert(MENU_ITEMS.some((item) => item.label === 'Log On Log Off'), 'includes a "Log On Log Off" menu item');
   assert(MENU_ITEMS[0].label === 'About', 'starts menu with "About"');

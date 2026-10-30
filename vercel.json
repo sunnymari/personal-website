@@ -31,10 +31,6 @@
       "destination": "/dream-companies.html"
     },
     {
-      "source": "/modeling",
-      "destination": "/modeling.html"
-    },
-    {
       "source": "/blog",
       "destination": "/blog.html"
     },
@@ -52,6 +48,16 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/modeling",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/modeling.html",
+      "destination": "/",
+      "permanent": true
+    },
     {
       "source": "/work-with-me",
       "destination": "/",

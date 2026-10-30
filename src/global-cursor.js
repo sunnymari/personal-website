@@ -48,7 +48,7 @@ function createSparkle(container, x, y) {
 
 function initGlobalCursor() {
   if (typeof window === "undefined") return;
-  if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
+  if (window.matchMedia("(hover: none), (pointer: coarse), (prefers-reduced-motion: reduce)").matches) return;
   if (document.documentElement.dataset.kawaiiCursorInit === "true") return;
   document.documentElement.dataset.kawaiiCursorInit = "true";
 
@@ -70,6 +70,7 @@ function initGlobalCursor() {
     width: ${CURSOR_SIZE}px;
     height: ${CURSOR_SIZE}px;
     background: transparent;
+    visibility: hidden;
     overflow: visible;
     pointer-events: none;
     z-index: 2147483647;
@@ -83,7 +84,14 @@ function initGlobalCursor() {
   camera.position.set(0, 0.1, 2.2);
   camera.lookAt(0, 0, 0);
 
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  } catch {
+    cursor.remove();
+    sparkleLayer.remove();
+    return;
+  }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(CURSOR_SIZE, CURSOR_SIZE);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -100,6 +108,19 @@ function initGlobalCursor() {
   const modelPivot = new THREE.Group();
   scene.add(modelPivot);
 
+  let ready = false;
+  let pointerInside = false;
+  let animationFrame = 0;
+  const originalHtmlCursor = document.documentElement.style.cursor;
+  const originalBodyCursor = document.body.style.cursor;
+  const hideCursor = () => {
+    pointerInside = false;
+    cursor.style.visibility = "hidden";
+    document.documentElement.style.cursor = originalHtmlCursor;
+    document.body.style.cursor = originalBodyCursor;
+    cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
+  };
   const loader = new GLTFLoader();
   loader.load("/Meshy_AI_Kawaii_Neon_Sword_0422192103_texture.glb", (gltf) => {
     const sword = gltf.scene;
@@ -113,14 +134,23 @@ function initGlobalCursor() {
     sword.position.sub(center);
     sword.rotation.set(-0.45, 0.65, 0.2);
     modelPivot.add(sword);
+    ready = true;
+  }, undefined, () => {
+    hideCursor();
+    cursor.remove();
+    sparkleLayer.remove();
+    renderer.dispose();
   });
-
-  document.documentElement.style.cursor = "none";
-  document.body.style.cursor = "none";
 
   const clock = new THREE.Clock();
   let lastSparkle = 0;
   const onMove = (e) => {
+    if (!ready || document.hidden || e.target.closest("iframe")) return;
+    pointerInside = true;
+    cursor.style.visibility = "visible";
+    document.documentElement.style.cursor = "none";
+    document.body.style.cursor = "none";
+    if (!animationFrame) animationFrame = requestAnimationFrame(animateCursor);
     cursor.style.left = `${e.clientX}px`;
     cursor.style.top = `${e.clientY}px`;
 
@@ -132,33 +162,39 @@ function initGlobalCursor() {
   };
 
   const animateCursor = () => {
+    if (!ready || !pointerInside || document.hidden) { animationFrame = 0; return; }
     const t = clock.getElapsedTime();
     const halfTurn = (Math.sin(t * 0.8) * 0.5 + 0.5) * (Math.PI * 0.45);
     modelPivot.rotation.y = 0;
     modelPivot.rotation.z = halfTurn;
     renderer.render(scene, camera);
-    requestAnimationFrame(animateCursor);
+    animationFrame = requestAnimationFrame(animateCursor);
   };
-  requestAnimationFrame(animateCursor);
 
   const onDown = (e) => {
+    if (!ready) return;
     for (let i = 0; i < 7; i += 1) {
       window.setTimeout(() => createSparkle(sparkleLayer, e.clientX, e.clientY), i * 12);
     }
   };
 
   const onOver = (e) => {
+    if (e.target.closest("iframe")) { hideCursor(); return; }
     if (e.target.closest("a, button, [role='button'], input, textarea, select, label[for]")) {
       cursor.style.transform = "translate(-20%, -14%) scale(1.16)";
     }
   };
 
   const onOut = (e) => {
+    if (!e.relatedTarget) hideCursor();
     if (e.target.closest("a, button, [role='button'], input, textarea, select, label[for]")) {
       cursor.style.transform = "translate(-20%, -14%) scale(1)";
     }
   };
 
+  document.addEventListener("visibilitychange", () => { if (document.hidden) hideCursor(); });
+  window.addEventListener("blur", hideCursor);
+  renderer.domElement.addEventListener("webglcontextlost", () => { ready = false; hideCursor(); });
   document.addEventListener("pointermove", onMove);
   document.addEventListener("pointerdown", onDown);
   document.addEventListener("pointerover", onOver);
