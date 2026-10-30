@@ -42,3 +42,4 @@ body.starbot-project-page { padding:24px 0 60px; }
 .starbot-breakdown-grid h3 { margin:10px 0 10px; text-align:left; font-family:'Fredoka','Nunito',sans-serif; font-size:1.15rem; }
 .starbot-breakdown-grid p:not(.starbot-breakdown-label) { margin:0; font-size:.9rem; line-height:1.8; }
 @media(max-width:740px) { .starbot-breakdown-grid { grid-template-columns:1fr; } }
+.starbot-applications>.starbot-description { margin:-8px auto 24px; }
