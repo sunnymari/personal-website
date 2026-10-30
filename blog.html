@@ -69,7 +69,7 @@
     </header>
 
     <div class="blog-tabs" role="tablist" aria-label="Blog sections">
-      <button type="button" role="tab" id="tab-tech" data-tab="tech" aria-controls="panel-tech" aria-selected="true">💻 Tech <span class="blog-tab-count">5</span></button>
+      <button type="button" role="tab" id="tab-tech" data-tab="tech" aria-controls="panel-tech" aria-selected="true">💻 Tech <span class="blog-tab-count">6</span></button>
       <button type="button" role="tab" id="tab-life" data-tab="life" aria-controls="panel-life" aria-selected="false" tabindex="-1">🌸 Life <span class="blog-tab-count">4</span></button>
     </div>
 
@@ -77,12 +77,59 @@
       <div class="blog-panel-name">💻 Tech</div>
       <p class="blog-panel-lede">Code, AI, and what I've learned building things and working in engineering.</p>
       <ul class="blog-index" aria-label="Tech posts">
+        <li><a href="#we-have-food-at-home">We Have Food at Home</a><span class="blog-index-date">Oct 30, 2026</span></li>
         <li><a href="#education-and-ai">Education Needs AI, and Not for the Reasons You Think</a><span class="blog-index-date">Essay + demo video</span></li>
         <li><a href="#technical-musings">Technical Musings</a><span class="blog-index-date">Oct 28, 2026</span></li>
         <li><a href="#startup-lessons">Four Things I Have Learned from Working at a Startup</a><span class="blog-index-date">Aug 18, 2025</span></li>
         <li><a href="#the-manager">The Manager: Meeting Your Workplace Fate</a><span class="blog-index-date">Aug 15, 2025</span></li>
         <li><a href="#ai-ethics">AI Ethics in Software Development</a><span class="blog-index-date">Aug 12, 2025 · coming soon</span></li>
       </ul>
+
+    <div class="blog-post blog-essay" id="we-have-food-at-home" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>We Have Food at Home</h2>
+      <img
+        class="blog-essay-hero"
+        src="/images/we-have-food-at-home.webp"
+        alt="Illustration of a fluffy white bear happily eating a burger, surrounded by fries, nuggets, dipping sauces, drinks, and pink hearts"
+        width="1983"
+        height="793"
+      />
+      <p class="blog-essay-meta">October 30, 2026</p>
+
+      <p class="blog-essay-lede">The tech industry has never had more money. More talent, more compute, more tools, more access than any generation of builders before us. And yet real innovation has stalled. We have access to everything, and we're shipping the same ideas in new packaging.</p>
+      <blockquote>"Hard times create strong men. Strong men create good times. Good times create weak men. And weak men create hard times." (G. Michael Hopf)</blockquote>
+      <p>Tech is in its good times. The AI boom is making engineers millionaires overnight. And yet, when companies want to be more efficient, they cut people. Layoffs don't breed innovation. Constraints do. Tech has so much that it could afford to work with less. Not less talent. Less waste. I came from the hard times, and they taught me everything I know about building.</p>
+      <p>Being told "we have food at home" when you really want a Happy Meal is devastating for the average 8 to 10 year old. Some of my peers accepted that there was no Happy Meal. I didn't. Instead, I started thinking about how I was going to get one myself.</p>
+      <p>That mindset turned into a lifetime of hustling.</p>
+
+      <h3>A lifetime of hustling</h3>
+      <p><strong>Ages 10 to 15:</strong> I started a dog walking business, pet sat my neighbor's bird, and helped my aunt clean and turn over her Airbnb. My first clients, my first income, my first Happy Meal fund. I also joined the Johns Hopkins Center for Talented Youth coding programs. I loved coding, but I'll be honest: the free food and computer access sealed the deal. Seeing an institution with enough resources to share with kids was revolutionary to me.</p>
+      <p><strong>Ages 15 to 17:</strong> I worked as a server at a pho restaurant and at a local beauty supply store. Real jobs, real paychecks, and a crash course in customer service. I also began to monetize my skills at this time. I could babysit and do makeup, so I got paid for both. If I had a skill, I found a way to turn it into income.</p>
+      <p><strong>At 17:</strong> I cold called tech companies until one said yes. That's how I landed my first tech job at Xometry. Nobody handed me the door. I knocked until it opened. I also had a lifeguard job lined up that summer, and when they asked what I'd be doing if I didn't take the internship, I told them lifeguarding. They said, "Yeah, working here is way better." And for me, it was.</p>
+      <p><strong>In 2020:</strong> I was sitting in my dorm room saying "we're broke" with my friend. So I did something about it. I took the $150 I earned from appearing in a political campaign ad and used it to start dropshipping lashes and press-on nails, then grew the business with organic content on early TikTok. No ad budget. Just understanding the platform before everyone else caught on.</p>
+      <p>Every one of these started the same way: no money, a want, and a decision to figure it out anyway.</p>
+
+      <h3>Infinite wants, limited resources</h3>
+      <p>Looking back, every one of those hustles followed the same formula. I never started with money. I started with a want, whatever I already had, and a refusal to accept "no Happy Meal" as the final answer.</p>
+      <p>Years later, I found the words for it in a macroeconomics class, of all places:</p>
+      <blockquote>"We live in a society with infinite wants but limited resources."</blockquote>
+      <p>That idea became the foundation of how I approach engineering. When you don't have a budget, you can't throw money at a problem. You have to understand it deeply enough to find the leverage: the free tool, the existing skill, the platform nobody's using yet, the simpler system that does the same job.</p>
+      <p>Constraints didn't hold me back. They made me creative. That's my edge, and that same mindset shows up in everything I build today.</p>
+
+      <h3>What I build with what I have</h3>
+      <p><strong>My $0 conference networking kit.</strong> In the gaming community, swag and stickers are how you meet people and how you're remembered. But printing costs money. So for the Roblox Developer Conference, I made everything virtual: a HiHello digital business card behind a QR code, plus a custom "Mari Summers" character sticker people could add straight to iMessage or Telegram. No print costs. No design agency. My name stays in people's chats long after the conference ends.</p>
+      <p><strong><a href="/actuator-diagnostics">Starbot Actuator Diagnostics</a>.</strong> You don't need a robot to learn how to diagnose one. I built a simulated humanoid with 28 actuators running over a virtual CAN bus in Python, then wrapped it in an interactive three.js interface. You can inject a fault, like an overcurrent spike in the left knee, and trace it all the way to its diagnostic trouble code. Real systems thinking, zero hardware.</p>
+      <p><strong><a href="/">marissacodes.com</a>.</strong> Instead of paying for a template, I built my own portfolio as an interactive 3D dollhouse in React Three Fiber, complete with five rooms and a walking chibi character. My portfolio is a project in itself.</p>
+      <p>None of these started with a big budget. They started with a problem, the tools I already had, and the same question I asked at 8 years old: how am I going to get that Happy Meal?</p>
+
+      <h3>Tech's next Happy Meal</h3>
+      <p>And that's exactly the question tech has stopped asking.</p>
+      <p>The industry has more money, more talent, and more tools than ever. It can buy every Happy Meal on the menu. So the real question is: how do companies get to their next Happy Meal, the next real breakthrough, when resources are plentiful?</p>
+      <p>They have to start thinking like the kid who was told "we have food at home." Reframe "how much more do we need?" to "what could we do with what we already have?"</p>
+      <p>The answer isn't more funding, and it isn't more layoffs. It's choosing to build like resources are limited, even when they're not. Treating constraints as design challenges instead of dead ends. I know that works, because it's how I've built everything.</p>
+      <p>For me, "we have food at home" was never the end of the conversation. It was the start of a plan.</p>
+      <p class="blog-essay-lede" style="text-align: center;">If you read this all the way to the end, thank you!<br />And go eat that food at home &lt;3</p>
+    </div>
 
     <div class="blog-group" id="education-and-ai">
     <h2 style="margin-top: 2rem; color: #ff69b4;">🎓 Education & AI</h2>
