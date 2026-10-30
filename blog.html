@@ -7,6 +7,46 @@
   <link href="/style.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&family=Fredoka+One&family=Dancing+Script:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Roboto+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
   <script type="module" src="/src/global-cursor.js"></script>
+  <style>
+    .blog-tabs { display: none; }
+    .js .blog-tabs { display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0 1.25rem; }
+    .blog-tabs button {
+      appearance: none; cursor: pointer; display: inline-flex; align-items: center; gap: .5rem;
+      padding: .65rem 1.4rem; border-radius: 999px; border: 3px solid var(--island-pink-border);
+      background: linear-gradient(180deg, #fff8ef 0%, #fff4fa 100%); color: var(--island-plum);
+      font: 800 1.05rem/1.2 'Nunito', sans-serif; box-shadow: 0 8px 18px rgba(180, 94, 137, .12);
+      transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .blog-tabs button:hover { transform: translateY(-1px); }
+    .blog-tabs button[aria-selected="true"] {
+      background: var(--island-pink); border-color: var(--island-pink); color: #fff;
+      box-shadow: 0 10px 22px rgba(239, 93, 168, .35);
+    }
+    .blog-tabs button:focus-visible { outline: 3px solid var(--island-lavender); outline-offset: 3px; }
+    .blog-tab-count {
+      min-width: 1.5rem; padding: 0 .4rem; border-radius: 999px; text-align: center;
+      font-size: .8rem; background: rgba(255, 255, 255, .85); color: var(--island-berry);
+    }
+    .js .blog-panel:not(.is-active) { height: 0; overflow: hidden; visibility: hidden; }
+    .blog-panel-name { font: 800 1.5rem/1.2 'Nunito', sans-serif; color: var(--island-berry); margin: 2rem 0 .25rem; }
+    .js .blog-panel-name { display: none; }
+    .blog-panel-lede { text-align: center; margin: 0 0 1rem; color: var(--island-plum); }
+    .blog-index { list-style: none; margin: 0 0 1.25rem; padding: 0; display: grid; gap: .5rem; }
+    .blog-index li {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .15rem 1rem;
+      padding: .55rem 1rem; border: 2px solid var(--island-pink-border); border-radius: 16px;
+      background: rgba(255, 255, 255, .6); line-height: 1.4;
+    }
+    .blog-index-date { font-size: .85rem; color: var(--island-plum); white-space: nowrap; }
+    .blog-post, .blog-group { scroll-margin-top: 1rem; }
+    .site-page .blog-essay .blog-cw {
+      margin: 0 0 1.35rem; padding: .7rem 1rem; border-radius: 14px; font-size: .95rem; line-height: 1.5;
+      background: rgba(205, 167, 255, .22); border-left: 4px solid var(--island-lavender);
+      color: var(--island-plum); text-indent: 0;
+    }
+    .blog-soon { color: var(--island-plum); font-style: italic; font-size: .95rem; }
+  </style>
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="site-page">
 <nav class="nav-buttons" style="margin-top: 1.5rem;">
@@ -14,11 +54,12 @@
     <a href="/about" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">About</span></span></a>
     <a href="/projects" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Projects</span></span></a>
     <a href="/growth" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Growth</span></span></a>
-    <a href="/lock-in" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Lock-In</span></span></a>
-    <a href="/dream-companies" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Dream Cos</span></span></a>
-    <a href="/reading" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Reading</span></span></a>
+    <a href="/dream-companies" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Company</span></span></a>
     <a href="/blog" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Blog</span></span></a>
-    <a href="/data-center-watch" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Data Center Watch</span></span></a>
+    <a href="/modeling" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Modeling</span></span></a>
+    <a href="/art" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Art</span></span></a>
+    <a href="/shop" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Shop</span></span></a>
+    <a href="/sprout" class="nav-link"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Sprout</span></span></a>
     <a href="https://logonlogoff.vercel.app" class="nav-link" target="_blank" rel="noopener noreferrer"><span class="nav-cloud-wrap"><span class="nav-cloud-text">Log On Log Off</span></span></a>
   </nav>
 <div class="container">
@@ -27,6 +68,23 @@
       <p>Welcome to my blog! Here I share my thoughts on coding, technology, and life. ✨</p>
     </header>
 
+    <div class="blog-tabs" role="tablist" aria-label="Blog sections">
+      <button type="button" role="tab" id="tab-tech" data-tab="tech" aria-controls="panel-tech" aria-selected="true">💻 Tech <span class="blog-tab-count">5</span></button>
+      <button type="button" role="tab" id="tab-life" data-tab="life" aria-controls="panel-life" aria-selected="false" tabindex="-1">🌸 Life <span class="blog-tab-count">4</span></button>
+    </div>
+
+    <section class="blog-panel is-active" id="panel-tech" data-panel="tech" role="tabpanel" aria-labelledby="tab-tech">
+      <div class="blog-panel-name">💻 Tech</div>
+      <p class="blog-panel-lede">Code, AI, and what I've learned building things and working in engineering.</p>
+      <ul class="blog-index" aria-label="Tech posts">
+        <li><a href="#education-and-ai">Education Needs AI, and Not for the Reasons You Think</a><span class="blog-index-date">Essay + demo video</span></li>
+        <li><a href="#technical-musings">Technical Musings</a><span class="blog-index-date">Oct 28, 2026</span></li>
+        <li><a href="#startup-lessons">Four Things I Have Learned from Working at a Startup</a><span class="blog-index-date">Aug 18, 2025</span></li>
+        <li><a href="#the-manager">The Manager: Meeting Your Workplace Fate</a><span class="blog-index-date">Aug 15, 2025</span></li>
+        <li><a href="#ai-ethics">AI Ethics in Software Development</a><span class="blog-index-date">Aug 12, 2025 · coming soon</span></li>
+      </ul>
+
+    <div class="blog-group" id="education-and-ai">
     <h2 style="margin-top: 2rem; color: #ff69b4;">🎓 Education & AI</h2>
     <p>I'm deeply interested in how education, accessibility, and AI intersect — especially how we can use technology to build more supportive learning environments.</p>
     <div style="margin: 1.5rem 0; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
@@ -66,8 +124,162 @@ On average, this could save teachers 1–2 hours per week, help them act earlier
 While the response from the school was positive,   there was not enough  room in the budget to hire me. 
 </div>
     </div>
+    </div>
 
-    <div class="blog-post blog-essay" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+    <div class="blog-post blog-essay" id="technical-musings" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>Technical Musings</h2>
+      <img
+        class="blog-essay-hero"
+        src="/images/technical-musings-banner.jpg"
+        alt="Illustration of a fluffy white bear with rosy cheeks typing on a laptop at a cozy desk"
+        width="735"
+        height="675"
+        style="height: 220px; object-position: center 35%;"
+      />
+      <p class="blog-essay-meta">October 28, 2026</p>
+
+      <p>After I posted my GitHub that I made kawaii, I received a lot of questions asking how I did it. I love coding demos, but I think there is something to be said for good technical documentation. That is why I started something new on my GitHub: <a href="https://github.com/sunnymari/technical-musings" target="_blank" rel="noopener noreferrer">technical musings</a>, a little corner of GitHub where i think out loud about the things i build, break, and fix. (˶ᵔ ᵕ ᵔ˶)</p>
+
+      <h3>What you'll find there</h3>
+      <p>Each post is a real write-up of a real project, not a tutorial copied from docs. Every one comes with:</p>
+      <ul>
+        <li>🗺️ diagrams that show how the pieces fit together</li>
+        <li>💻 code snippets straight from the actual project</li>
+        <li>🐛 the bugs i hit, what caused them, and how i fixed them</li>
+        <li>💭 what i'd do differently next time</li>
+      </ul>
+      <p>Writing things down helps me understand them better, and if one of my mistakes saves you an afternoon of debugging, that makes me happy ♡</p>
+      <p class="blog-essay-lede">Read it here 👇<br /><a href="https://github.com/sunnymari/technical-musings" target="_blank" rel="noopener noreferrer">github.com/sunnymari/technical-musings</a></p>
+      <p class="blog-essay-lede" style="text-align: center;">More musings coming soon ⋆｡°✩ 🌸 ✩°｡⋆</p>
+    </div>
+
+    <div id="startup-lessons" class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>🚀 Four Things I Have Learned from Working at a Startup</h2>
+      <p style="color: #666; font-size: 0.9rem;">📅 August 18, 2025 | Previously published on my Medium in 2022</p>
+      <p>I am a rising junior in college and a computer science major with a passion for science — especially computer science. So when I was able to apply what I had been learning at school as an engineer for a startup (not just any startup, but one that rebuilds the internet for you), I said YES. Throughout my time working as a software engineer at Sonr, I have learned things I would not have in the traditional college setting. Here are the four main lessons I have learned:</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">1. School is a starting point — it is up to you to finish the rest</h3>
+      <p>My computer science coursework mainly focused on object-oriented programming, and the fact that I have taken applicable math and science courses has aided in the comprehension of my work tasks. However, working in the field has gifted me with irreplaceable knowledge. For example, in the classroom, we are not working in teams, so using Git Flow did not apply to the scope of our coursework. While working at Sonr, I have been able to learn and apply Git Flow. Git Flow is one of the most common tools used by engineering companies; it describes the project's release cycle and adds specific roles to different branches.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">2. You don't learn to swim by reading a book on how to swim</h3>
+      <p>During the school year, one of my greatest resources was my textbook; it was essential to read before lectures. However, to be a good programmer, you don't just read or solve school problems; you build. I had two goals this year: get a certification and add more to my GitHub because my GitHub was actually barren. I can proudly say I have achieved both goals. I received my Chainalysis Cryptocurrency certification, and my GitHub has new additions from work and personal projects. I used to fear personal projects, but with the coaching of my coworkers, I have begun to make them. Currently, I am working on personal projects that intertwine my love of art and science, such as a Y2K-inspired GitHub-hosted website and a pink tic-tac-toe game.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">3. Feel stupid every day</h3>
+      <p>Before my job, I had reached a plateau. I was doing well in school, but I knew there were things I needed to learn because "the wise man knows what he does not know." Working at a startup gave me the ability to learn what I didn't know and learn things ahead of when I would be in school. Therefore, I am confident this upcoming fall semester will be less taxing than previous semesters.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">4. Read about everything</h3>
+      <p>In our office, there are a lot of books. Books about math, science, philosophy, and more — you name it. One thing I've noticed from reading and absorbing a multitude of literature is that it makes you a better thinker and person. By exposing yourself to a variety of literature, you open your mind to diverse thoughts and perspectives and start to see the world differently.</p>
+
+      <p style="font-weight: bold; color: #ff69b4; font-size: 1.1rem; text-align: center; margin-top: 2rem;">
+        Working at Sonr has made me a better learner, thinker, developer, and person. It has shown me how to be resilient, work harder, and adapt to change. This is your sign to go work at a startup. ✨
+      </p>
+    </div>
+
+    <div id="the-manager" class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>👔 The Manager: Meeting Your Workplace Fate (and How to Prepare)</h2>
+      <p style="color: #666; font-size: 0.9rem;">📅 August 15, 2025</p>
+      <p>The manager, also known as the person who decides your workplace fate (just kidding, but only a little). Good managers are critical in one's first job out of undergrad. They play a pivotal role in the trajectory of one's career growth and professional development.</p>
+      
+      <p>I met my manager on Superday when he interviewed me. Ultimately, my Superday was successful, and I got hired for the job—yay! However, being hired is one thing; doing well on the job is another. I believe in the power of preparation because, as Benjamin Franklin said, "By failing to prepare, you are preparing to fail."</p>
+
+      <p>Therefore, I decided to meet with my manager months before my start date to ensure I had knowledge of the tech stack and more insight into the company culture. I prepared for the meeting by making a list of questions reviewed by my career coach. Each question was divided into three categories: tech stack, company culture, and engineering team culture.</p>
+
+      <h3 style="color: #ff69b4; margin-top: 1.5rem;">📋 My Question List:</h3>
+      <ol style="margin-left: 1.5rem; line-height: 1.8;">
+        <li>What are the expectations within the first 30 days of the job?</li>
+        <li>What is your culture around problem-solving?</li>
+        <li>When will I have a chance to meet the team?</li>
+        <li>What project will I be joining what are the expectations - goals -and outcomes?</li>
+        <li>What do you like about the culture, what would you change?</li>
+        <li>How can I be an asset to the culture?</li>
+        <li>Will we be meeting regular basis?</li>
+        <li>Who will I be asking questions in the beginning?</li>
+        <li>What does Day 1 look like/ what are the logistics?</li>
+        <li>What technical things I can learn now to prepare?</li>
+      </ol>
+
+      <p style="font-weight: bold; color: #ff69b4; font-size: 1.1rem; text-align: center; margin-top: 2rem;">
+        I highly encourage every new SWE to set up a meeting with their manager early to begin building a strong relationship. ✨
+      </p>
+    </div>
+
+    <div id="ai-ethics" class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>🤖 AI Ethics in Software Development</h2>
+      <p style="color: #666; font-size: 0.9rem;">📅 August 12, 2025</p>
+      <p>As AI becomes more integrated into our daily lives, it's crucial to consider the ethical implications of the software we build. Here are my thoughts on responsible AI development...</p>
+      <span class="blog-soon">Full post coming soon</span>
+    </div>
+    </section>
+
+    <section class="blog-panel" id="panel-life" data-panel="life" role="tabpanel" aria-labelledby="tab-life">
+      <div class="blog-panel-name">🌸 Life</div>
+      <p class="blog-panel-lede">Personal essays, reading, and creative outlets.</p>
+      <ul class="blog-index" aria-label="Life posts">
+        <li><a href="#orwellian-domestic-violence">The Orwellian Nature of Domestic Violence</a><span class="blog-index-date">Sep 25, 2026 · content note</span></li>
+        <li><a href="#you-cant-hurt-me">You Can't Hurt Me</a><span class="blog-index-date">Aug 12, 2026 · content note</span></li>
+        <li><a href="#reading-challenge">My Reading Challenge: 50 Books This Year</a><span class="blog-index-date">Aug 15, 2025 · coming soon</span></li>
+        <li><a href="#miniature-houses">Miniature House Design: A Creative Outlet</a><span class="blog-index-date">Aug 12, 2025 · coming soon</span></li>
+      </ul>
+
+    <div class="blog-post blog-essay" id="orwellian-domestic-violence" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>The Orwellian Nature of Domestic Violence</h2>
+      <img
+        class="blog-essay-hero"
+        src="/images/orwellian-domestic-violence.jpg"
+        alt="Photograph of the 1984 Party slogans: War is Peace, Freedom is Slavery, Ignorance is Strength"
+        width="1200"
+        height="675"
+      />
+      <p class="blog-essay-meta">September 25, 2026</p>
+      <div class="blog-cw" role="note"><strong>Content note:</strong> this essay discusses domestic violence, child abuse, and assault.</div>
+
+      <p class="blog-essay-lede">My final assault by my longstanding abuser was July 18th, 2026.</p>
+      <p>Since then, I have testified in court for my restraining order. I received that restraining order. I moved across the country. I started my fall semester. And I began going to therapy.</p>
+      <p>When I testified, the judge asked me a question I've heard in a hundred different forms: <em>"Why didn't you leave sooner?"</em></p>
+      <p>I understand that I'm more than a few years past being a minor. But domestic violence doesn't work that way. I wrote about this shortly after:</p>
+      <p class="blog-tweet">
+        <a href="https://x.com/marisummerss/status/2084667840179933467" target="_blank" rel="noopener noreferrer">Read the post on X</a>
+      </p>
+      <blockquote class="twitter-tweet" data-dnt="true">
+        <a href="https://x.com/marisummerss/status/2084667840179933467">September 2026 post from @marisummerss</a>
+      </blockquote>
+      <p>The more I reflected, and the more time I spent sitting across from a therapist, the more I realized there was a better way to explain what I lived through. Domestic violence has a lot of parallels with dystopian novels. Particularly <em>1984</em>.</p>
+
+      <h3>Doublethink: 2+2=5</h3>
+      <p>In <em>1984</em>, the Party doesn't just want obedience. It wants you to believe that 2+2=5, and to believe it sincerely. Orwell calls this doublethink: holding two contradictory realities in your mind and accepting the one you're given.</p>
+      <p>Out of all the emotional, physical, and financial abuse I faced, doublethink was the worst. Because there were always two realities. Mine, and theirs.</p>
+      <p>You begin to question everything. You can be sitting there with literal bruises and still ask yourself: <em>Did this actually happen? Do they care? Maybe they didn't mean it.</em></p>
+      <p>That is what doublethink does. It doesn't need you to forget the bruises. It just needs you to doubt what they mean.</p>
+      <p>I have had to speak with my abuser since July, because they have violated the restraining order multiple times. Their recounting of what happened on July 18th is vastly different from mine. But so is their account of my entire childhood.</p>
+      <p>To them, their actions were a form of love and compassion, rooted in the traditional parenting of their background.</p>
+      <p>In reality, it was child abuse. And then it was adult abuse.</p>
+
+      <h3>Why People Abuse</h3>
+      <p>When you search "why do people abuse," the answers are consistent. People abuse others to gain power, control, or dominance. Abusers often feel entitled to control the people around them. They use fear and intimidation to keep the upper hand when they feel threatened. And they shift blame onto their victims, or onto outside stress, instead of taking responsibility.</p>
+      <p>Blame-shifting is doublethink in practice. If the story can be rewritten so it was your fault, or so it never happened at all, then the abuser never has to be accountable. A victim who doubts her own memory is a victim who stays.</p>
+
+      <h3>Big Brother Is Always Watching</h3>
+      <p>In <em>1984</em>, Big Brother is always watching. In my home, that slogan worked the other way.</p>
+      <p>My abuser hated when I recorded or took pictures of them in the middle of their acts. Because you can't argue with pictures or videos. You can't doublethink a recording. Evidence was the one reality they couldn't overwrite.</p>
+      <p>So in a strange way, I became Big Brother. The camera was the only witness that couldn't be convinced 2+2=5.</p>
+
+      <h3>When the System Looks Away</h3>
+      <p>But there was another kind of watching that failed me.</p>
+      <p>In high school, I told my school that my abuser had assaulted me. The system sent me home. Back to my abuser.</p>
+      <p>In the car, they asked me, <em>"Did you tell?"</em></p>
+      <p>I responded with silence.</p>
+      <p>I'm pretty sure I was assaulted later that evening.</p>
+      <p>That is part of the answer to the judge's question. I did try to leave. I told the people who were supposed to protect me, and they returned me to the person I was afraid of. When you learn as a child that telling makes things worse, you carry that lesson into adulthood.</p>
+
+      <h3>So, Why Didn't I Leave Sooner?</h3>
+      <p>Because it started when I was four years old. That is my earliest memory of domestic violence. I don't remember a time before it.</p>
+      <p>Because when I told, the system sent me back.</p>
+      <p>Because for years, I was taught that my own eyes were lying to me, and that what I called abuse was actually love.</p>
+      <p>Leaving isn't one decision you make on one day. It's the slow, exhausting work of taking back reality. Of saying, out loud and in a courtroom if you have to: 2+2=4.</p>
+      <p>There is so much more I could say. But I'm still wrapping my head around my exit from my dystopian household, and some of it I don't have words for yet. If you are reading this, you are not alone.</p>
+    </div>
+
+    <div id="you-cant-hurt-me" class="blog-post blog-essay" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
       <h2>You Can't Hurt Me</h2>
       <img
         class="blog-essay-hero"
@@ -77,6 +289,7 @@ While the response from the school was positive,   there was not enough  room in
         height="675"
       />
       <p class="blog-essay-meta">August 12, 2026</p>
+      <div class="blog-cw" role="note"><strong>Content note:</strong> this essay discusses domestic violence, child abuse, assault, illness, and the death of loved ones, including gun violence.</div>
 
       <p><em>Can't Hurt Me</em> by David Goggins is one of the most relatable books I've ever read.</p>
       <p>I found it while googling books to read when you're going through a tough time. At that point I was still in the middle of an ongoing health battle, with a second appointment with my oncologist and hematologist still looming. I had already left a software engineering job I loved so I could move closer to my family (begrudgingly, they're complicated), help them financially, and get care from doctors who'd actually known me for more than one visit.</p>
@@ -122,80 +335,74 @@ While the response from the school was positive,   there was not enough  room in
       <p>So his title turned out to be right. You can't hurt me. I'll just get back up.</p>
     </div>
 
-    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
-      <h2>🚀 Four Things I Have Learned from Working at a Startup</h2>
-      <p style="color: #666; font-size: 0.9rem;">📅 August 18, 2025 | Previously published on my Medium in 2022</p>
-      <p>I am a rising junior in college and a computer science major with a passion for science — especially computer science. So when I was able to apply what I had been learning at school as an engineer for a startup (not just any startup, but one that rebuilds the internet for you), I said YES. Throughout my time working as a software engineer at Sonr, I have learned things I would not have in the traditional college setting. Here are the four main lessons I have learned:</p>
-
-      <h3 style="color: #ff69b4; margin-top: 1.5rem;">1. School is a starting point — it is up to you to finish the rest</h3>
-      <p>My computer science coursework mainly focused on object-oriented programming, and the fact that I have taken applicable math and science courses has aided in the comprehension of my work tasks. However, working in the field has gifted me with irreplaceable knowledge. For example, in the classroom, we are not working in teams, so using Git Flow did not apply to the scope of our coursework. While working at Sonr, I have been able to learn and apply Git Flow. Git Flow is one of the most common tools used by engineering companies; it describes the project's release cycle and adds specific roles to different branches.</p>
-
-      <h3 style="color: #ff69b4; margin-top: 1.5rem;">2. You don't learn to swim by reading a book on how to swim</h3>
-      <p>During the school year, one of my greatest resources was my textbook; it was essential to read before lectures. However, to be a good programmer, you don't just read or solve school problems; you build. I had two goals this year: get a certification and add more to my GitHub because my GitHub was actually barren. I can proudly say I have achieved both goals. I received my Chainalysis Cryptocurrency certification, and my GitHub has new additions from work and personal projects. I used to fear personal projects, but with the coaching of my coworkers, I have begun to make them. Currently, I am working on personal projects that intertwine my love of art and science, such as a Y2K-inspired GitHub-hosted website and a pink tic-tac-toe game.</p>
-
-      <h3 style="color: #ff69b4; margin-top: 1.5rem;">3. Feel stupid every day</h3>
-      <p>Before my job, I had reached a plateau. I was doing well in school, but I knew there were things I needed to learn because "the wise man knows what he does not know." Working at a startup gave me the ability to learn what I didn't know and learn things ahead of when I would be in school. Therefore, I am confident this upcoming fall semester will be less taxing than previous semesters.</p>
-
-      <h3 style="color: #ff69b4; margin-top: 1.5rem;">4. Read about everything</h3>
-      <p>In our office, there are a lot of books. Books about math, science, philosophy, and more — you name it. One thing I've noticed from reading and absorbing a multitude of literature is that it makes you a better thinker and person. By exposing yourself to a variety of literature, you open your mind to diverse thoughts and perspectives and start to see the world differently.</p>
-
-      <p style="font-weight: bold; color: #ff69b4; font-size: 1.1rem; text-align: center; margin-top: 2rem;">
-        Working at Sonr has made me a better learner, thinker, developer, and person. It has shown me how to be resilient, work harder, and adapt to change. This is your sign to go work at a startup. ✨
-      </p>
-    </div>
-
-    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
-      <h2>👔 The Manager: Meeting Your Workplace Fate (and How to Prepare)</h2>
-      <p style="color: #666; font-size: 0.9rem;">📅 August 15, 2025</p>
-      <p>The manager, also known as the person who decides your workplace fate (just kidding, but only a little). Good managers are critical in one's first job out of undergrad. They play a pivotal role in the trajectory of one's career growth and professional development.</p>
-      
-      <p>I met my manager on Superday when he interviewed me. Ultimately, my Superday was successful, and I got hired for the job—yay! However, being hired is one thing; doing well on the job is another. I believe in the power of preparation because, as Benjamin Franklin said, "By failing to prepare, you are preparing to fail."</p>
-
-      <p>Therefore, I decided to meet with my manager months before my start date to ensure I had knowledge of the tech stack and more insight into the company culture. I prepared for the meeting by making a list of questions reviewed by my career coach. Each question was divided into three categories: tech stack, company culture, and engineering team culture.</p>
-
-      <h3 style="color: #ff69b4; margin-top: 1.5rem;">📋 My Question List:</h3>
-      <ol style="margin-left: 1.5rem; line-height: 1.8;">
-        <li>What are the expectations within the first 30 days of the job?</li>
-        <li>What is your culture around problem-solving?</li>
-        <li>When will I have a chance to meet the team?</li>
-        <li>What project will I be joining what are the expectations - goals -and outcomes?</li>
-        <li>What do you like about the culture, what would you change?</li>
-        <li>How can I be an asset to the culture?</li>
-        <li>Will we be meeting regular basis?</li>
-        <li>Who will I be asking questions in the beginning?</li>
-        <li>What does Day 1 look like/ what are the logistics?</li>
-        <li>What technical things I can learn now to prepare?</li>
-      </ol>
-
-      <p style="font-weight: bold; color: #ff69b4; font-size: 1.1rem; text-align: center; margin-top: 2rem;">
-        I highly encourage every new SWE to set up a meeting with their manager early to begin building a strong relationship. ✨
-      </p>
-    </div>
-
-    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
-      <h2>🤖 AI Ethics in Software Development</h2>
-      <p style="color: #666; font-size: 0.9rem;">📅 August 12, 2025</p>
-      <p>As AI becomes more integrated into our daily lives, it's crucial to consider the ethical implications of the software we build. Here are my thoughts on responsible AI development...</p>
-      <a href="#" style="color: #ff69b4; font-weight: bold;">Read more →</a>
-    </div>
-
-    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+    <div id="reading-challenge" class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
       <h2>📚 My Reading Challenge: 50 Books This Year</h2>
       <p style="color: #666; font-size: 0.9rem;">📅 August 15, 2025</p>
       <p>I've set a goal to read 50 books this year! Here's my current progress and some of my favorite reads so far. Reading has been such a great way to learn and grow...</p>
-      <a href="#" style="color: #ff69b4; font-weight: bold;">Read more →</a>
+      <span class="blog-soon">Full post coming soon</span>
     </div>
 
-    <div class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+    <div id="miniature-houses" class="blog-post" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
       <h2>🏠 Miniature House Design: A Creative Outlet</h2>
       <p style="color: #666; font-size: 0.9rem;">📅 August 12, 2025</p>
       <p>When I'm not coding, I love working on miniature house designs. It's a perfect creative outlet that helps me relax and think differently about design and space...</p>
-      <a href="#" style="color: #ff69b4; font-weight: bold;">Read more →</a>
+      <span class="blog-soon">Full post coming soon</span>
     </div>
+    </section>
 
     <p style="text-align: center; margin-top: 2rem; font-style: italic; color: #ff69b4;">
       More posts under construction.
     </p>
   </div>
+  <script>
+    (function () {
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.blog-tabs [role="tab"]'));
+      var panels = Array.prototype.slice.call(document.querySelectorAll('.blog-panel'));
+      if (!tabs.length || !panels.length) return;
+
+      function select(name, focus) {
+        tabs.forEach(function (t) {
+          var on = t.getAttribute('data-tab') === name;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+          if (on && focus) t.focus();
+        });
+        panels.forEach(function (p) {
+          p.classList.toggle('is-active', p.getAttribute('data-panel') === name);
+        });
+      }
+
+      function fromHash() {
+        var id = '';
+        try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { return; }
+        if (!id) return;
+        if (id === 'tech' || id === 'life') { select(id); return; }
+        var el = document.getElementById(id);
+        var panel = el && el.closest('.blog-panel');
+        if (!panel) return;
+        select(panel.getAttribute('data-panel'));
+        el.scrollIntoView();
+      }
+
+      tabs.forEach(function (t, i) {
+        t.addEventListener('click', function () {
+          select(t.getAttribute('data-tab'));
+          history.replaceState(null, '', '#' + t.getAttribute('data-tab'));
+        });
+        t.addEventListener('keydown', function (e) {
+          var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+          if (!d) return;
+          e.preventDefault();
+          var n = tabs[(i + d + tabs.length) % tabs.length];
+          select(n.getAttribute('data-tab'), true);
+          history.replaceState(null, '', '#' + n.getAttribute('data-tab'));
+        });
+      });
+
+      window.addEventListener('hashchange', fromHash);
+      fromHash();
+    })();
+  </script>
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>

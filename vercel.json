@@ -7,6 +7,10 @@
       "destination": "/api/carbonbench-proxy?path=:path*"
     },
     {
+      "source": "/actuator-diagnostics",
+      "destination": "/actuator-diagnostics.html"
+    },
+    {
       "source": "/about",
       "destination": "/about.html"
     },
@@ -19,16 +23,16 @@
       "destination": "/growth.html"
     },
     {
-      "source": "/lock-in",
-      "destination": "/lock-in.html"
+      "source": "/shop",
+      "destination": "/shop.html"
     },
     {
       "source": "/dream-companies",
       "destination": "/dream-companies.html"
     },
     {
-      "source": "/reading",
-      "destination": "/reading.html"
+      "source": "/modeling",
+      "destination": "/modeling.html"
     },
     {
       "source": "/blog",
@@ -37,6 +41,10 @@
     {
       "source": "/data-center-watch",
       "destination": "/data-center-watch.html"
+    },
+    {
+      "source": "/art",
+      "destination": "/art.html"
     },
     {
       "source": "/sprout",
@@ -71,6 +79,26 @@
     },
     {
       "source": "/pageant.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lock-in",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/lock-in.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/reading",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/reading.html",
       "destination": "/",
       "permanent": false
     }

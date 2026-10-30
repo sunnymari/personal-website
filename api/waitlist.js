@@ -167,6 +167,37 @@ export default async function handler(req, res) {
   const formsubmit = await forwardToFormSubmit(row);
 
   if (supabase.ok || formsubmit.ok) {
+    // Dated research signal only — never include name/email.
+    try {
+      const day = new Date().toISOString().slice(0, 10);
+      const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+      const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (url && key) {
+        await fetch(`${url}/rest/v1/sprout_research_logs`, {
+          method: "POST",
+          headers: {
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=ignore-duplicates,return=minimal",
+          },
+          body: JSON.stringify({
+            log_date: day,
+            kind: "waitlist_signal",
+            title: "Hardware waitlist interest recorded",
+            summary:
+              "At least one new Sprout hardware waitlist signup was recorded today. Personal details stay private.",
+            why_important:
+              "Waitlist dates show real demand for grid-aware hardware. That interest signal is part of the research record, not just a marketing list.",
+            meta: { no_pii: true },
+            source: "sprout",
+          }),
+        });
+      }
+    } catch {
+      /* tracker write is best-effort */
+    }
+
     json(res, 200, {
       ok: true,
       saved: {

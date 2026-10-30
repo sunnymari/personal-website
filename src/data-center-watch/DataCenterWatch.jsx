@@ -1,20 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
-import UsClusterMap from "./UsClusterMap.jsx";
+import UsClusterMap, { FUEL_COLORS } from "./UsClusterMap.jsx";
 import DailyEnergyFact from "./DailyEnergyFact.jsx";
 import HardwareInterest from "./HardwareInterest.jsx";
 import AboutProject, { AboutFooterBlurb } from "./AboutProject.jsx";
 import LiveDataTracker from "./LiveDataTracker.jsx";
 import GridTrends from "./GridTrends.jsx";
+import JudgingCriteria from "./JudgingCriteria.jsx";
+import AskSprout from "./AskSprout.jsx";
 import { logGridSnapshotEvent } from "./researchLog.js";
 
 const CLUSTERS = [
-  { name: "Northern Virginia", lat: 38.95, lng: -77.45, size: "largest", note: "Largest data center market in the world · Ashburn" },
-  { name: "Silicon Valley", lat: 37.37, lng: -122.04, size: "large", note: "Dense hyperscale + enterprise cluster · Santa Clara" },
-  { name: "Dallas–Fort Worth", lat: 32.93, lng: -97.04, size: "large", note: "Fast-growing hyperscale hub" },
-  { name: "Chicago", lat: 41.88, lng: -87.63, size: "medium", note: "Major interconnection point" },
-  { name: "Phoenix", lat: 33.45, lng: -112.07, size: "large", note: "Rapid hyperscale expansion" },
-  { name: "Columbus", lat: 40.00, lng: -83.02, size: "medium", note: "Growing hyperscale corridor" },
-  { name: "Atlanta", lat: 33.75, lng: -84.39, size: "medium", note: "Southeast hub" },
+  { name: "Northern Virginia", lat: 38.95, lng: -77.45, size: "largest", note: "Largest data center market in the world · Ashburn", utility: "Dominion Energy (Virginia Electric & Power)", grid: "PJM" },
+  { name: "Silicon Valley", lat: 37.37, lng: -122.04, size: "large", note: "Dense hyperscale + enterprise cluster · Santa Clara", utility: "PG&E / Silicon Valley Power", grid: "CAISO" },
+  { name: "Dallas–Fort Worth", lat: 32.93, lng: -97.04, size: "large", note: "Fast-growing hyperscale hub", utility: "Oncor", grid: "ERCOT" },
+  { name: "Chicago", lat: 41.88, lng: -87.63, size: "medium", note: "Major interconnection point", utility: "ComEd", grid: "PJM" },
+  { name: "Phoenix", lat: 33.45, lng: -112.07, size: "large", note: "Rapid hyperscale expansion", utility: "APS / SRP", grid: "Desert Southwest (no ISO)" },
+  { name: "Columbus", lat: 40.00, lng: -83.02, size: "medium", note: "Growing hyperscale corridor", utility: "AEP Ohio", grid: "PJM" },
+  { name: "Atlanta", lat: 33.75, lng: -84.39, size: "medium", note: "Southeast hub", utility: "Georgia Power", grid: "Southern Company balancing area" },
 ];
 
 const GRID_STATES = [
@@ -45,11 +47,17 @@ const GRID_STATES = [
 ];
 
 const TABS = [
-  { id: "watch", label: "Watch" },
-  { id: "fact", label: "Daily fact" },
-  { id: "trends", label: "Trends" },
-  { id: "tracker", label: "Live tracker" },
+  { id: "watch", label: "Now" },
+  { id: "ask", label: "Ask Sprout" },
   { id: "hardware", label: "Hardware" },
+  { id: "research", label: "Research" },
+];
+
+const RESEARCH_TABS = [
+  { id: "why", label: "Why Sprout" },
+  { id: "tracker", label: "Live tracker" },
+  { id: "trends", label: "Trends" },
+  { id: "fact", label: "Daily fact" },
   { id: "about", label: "About" },
   { id: "howto", label: "How to use" },
 ];
@@ -61,7 +69,7 @@ const HOW_TO_STEPS = [
   },
   {
     title: "Watch the grid stress panel",
-    body: "The dark panel cycles through relaxed, climbing, and peak states. Marker colors match that stress level. Today this is a demo cycle — later it will pull the same live CAISO / EIA feed as Sprout hardware.",
+    body: "The dark panel cycles through relaxed, climbing, and peak states. Marker colors match that stress level. The reading comes from CAISO’s public real-time demand feed (California ISO only). If it is unavailable, Sprout falls back to a labelled demo cycle.",
   },
   {
     title: "Check the Daily fact tab",
@@ -73,7 +81,7 @@ const HOW_TO_STEPS = [
   },
   {
     title: "Explore the Trends heatmap",
-    body: "The Trends tab shows when grid stress peaks (day × hour heatmap) and how price/demand evolved over the past week. Compare regions (CAISO, ERCOT, PJM) to see different grid patterns — based on public feeds, not per-facility data.",
+    body: "Under Research, the Trends tab shows when grid stress peaks (day × hour heatmap) and how price/demand evolved over the past week. Compare regions (CAISO, ERCOT, PJM) to see different grid patterns — based on public feeds, not per-facility data.",
   },
   {
     title: "Join the Hardware waitlist",
@@ -96,6 +104,56 @@ function useTicker(len, ms = 5000) {
     return () => clearInterval(id);
   }, [len, ms]);
   return i;
+}
+
+function useLiveGrid() {
+  const [live, setLive] = useState(null);
+  const [status, setStatus] = useState("loading");
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const res = await fetch("/api/grid");
+        const data = res.ok ? await res.json() : null;
+        if (cancelled) return;
+        if (data?.ok) {
+          setLive(data);
+          setStatus("live");
+        } else {
+          setStatus((prev) => (prev === "live" ? prev : "demo"));
+        }
+      } catch {
+        if (!cancelled) setStatus((prev) => (prev === "live" ? prev : "demo"));
+      }
+    }
+    load();
+    const id = setInterval(load, 5 * 60 * 1000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
+  return { live, status };
+}
+
+function useProviders() {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/providers");
+        const json = res.ok ? await res.json() : null;
+        if (!cancelled && json?.ok) setData(json);
+      } catch {
+        /* overlay stays hidden */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  return data;
 }
 
 function Icon({ children, size = 18, color = "currentColor" }) {
@@ -193,16 +251,21 @@ function SproutIcon({ size = 22 }) {
 
 export default function DataCenterWatch() {
   const idx = useTicker(GRID_STATES.length);
-  const state = GRID_STATES[idx];
+  const { live, status: gridStatus } = useLiveGrid();
+  const providers = useProviders();
+  const [showPlants, setShowPlants] = useState(false);
+  const state = live ? GRID_STATES.find((g) => g.key === live.stateKey) || GRID_STATES[idx] : GRID_STATES[idx];
   const [hovered, setHovered] = useState(null);
   const [tab, setTab] = useState("watch");
+  const [sub, setSub] = useState("why");
   const onHoverChange = useCallback((name) => setHovered(name), []);
 
   useEffect(() => {
-    logGridSnapshotEvent(GRID_STATES[idx]);
-    // Log once per page load (title is day-unique), not on every ticker tick.
+    if (gridStatus === "live") logGridSnapshotEvent(state, live);
+    else if (gridStatus === "demo") logGridSnapshotEvent(state, null);
+    // Log once per page load once we know whether the live feed is available.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [gridStatus]);
 
   return (
     <div
@@ -320,63 +383,65 @@ export default function DataCenterWatch() {
       `}</style>
 
       {/* HERO */}
-      <section className="max-w-5xl mx-auto px-6 pt-12 pb-6">
+      <section className="max-w-5xl mx-auto px-6 pt-8 pb-5">
         <a
           href="/"
-          className="home-pill inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-extrabold mb-6 transition-all"
-          style={{
-            background: "linear-gradient(180deg, #FFF8F4 0%, #F2C6C2 100%)",
-            color: "#7A3B36",
-            border: "2px solid #E8A8A3",
-            textDecoration: "none",
-            boxShadow: "0 8px 18px rgba(242,198,194,0.35)",
-          }}
+          className="text-sm font-extrabold"
+          style={{ color: "#7A9464", textDecoration: "none" }}
         >
           ← Home
         </a>
 
-        <div className="flex flex-col items-center text-center mb-6">
+        <div className="flex items-center gap-4 mt-3">
           <img
             src="/pixel_sprout_dancing.gif"
             alt="Sprout dancing"
             className="dcw-sprout-dance"
-            width={140}
-            height={140}
+            width={72}
+            height={72}
+            style={{ width: 72, height: 72 }}
           />
-          <div className="flex items-center justify-center gap-2 text-sm font-bold mt-1" style={{ color: "#8FA876" }}>
-            <span className="uppercase display-font tracking-wide">
-              Tiny Sprout Smarter Grid
-            </span>
+          <div>
+            <h1
+              className="display-font text-4xl sm:text-5xl font-semibold leading-tight"
+              style={{ color: "#3A3A32" }}
+            >
+              Sprout
+            </h1>
+            <p className="text-base font-semibold text-stone-600 mt-1">
+              Where data centers sit on the grid, and when to run your appliances.
+            </p>
           </div>
         </div>
 
-        <h1
-          className="display-font text-5xl sm:text-6xl font-semibold mt-2 leading-tight text-center sm:text-left"
-          style={{ color: "#3A3A32" }}
-        >
-          Sprout
-        </h1>
-        <p className="text-lg mt-3 max-w-2xl text-stone-600 font-semibold">
-          Where major data center clusters sit on the grid, and what the current
-          demand picture means for when it&apos;s cheapest to run your own appliances.
-        </p>
-
         <div
-          className="mt-4 inline-flex items-start sm:items-center gap-2 rounded-2xl sm:rounded-full px-4 py-2.5 text-sm font-bold max-w-xl"
-          style={{ background: "#F2C6C2", color: "#7A3B36" }}
-          role="note"
+          className="mt-4 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-extrabold"
+          style={{
+            background: "rgba(255,255,255,0.7)",
+            border: "1.5px solid rgba(143,168,118,0.35)",
+            color: live ? "#4F6B3A" : "#8A5F12",
+          }}
+          role="status"
         >
-          <span className="mt-0.5 sm:mt-0 shrink-0">
-            <InfoIcon size={15} color="#7A3B36" />
-          </span>
-          <span>
-            Shows publicly known cluster locations and regional demand — not live
-            per-facility tracking.
-          </span>
+          <span
+            className={live ? "pulse" : ""}
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 999,
+              background: live ? "#8FA876" : "#D9A441",
+              display: "inline-block",
+            }}
+          />
+          {live
+            ? `Live · CAISO ${(live.currentMW / 1000).toFixed(1)} GW · ${live.pctOfPeak}% of forecast peak · ${live.asOf}`
+            : gridStatus === "loading"
+              ? "Checking the grid…"
+              : "Demo mode · live grid feed unavailable"}
         </div>
 
         <div
-          className="dcw-tablist mt-6 inline-flex gap-1 p-1.5 rounded-full"
+          className="dcw-tablist mt-4 flex gap-1 p-1.5 rounded-full w-fit max-w-full"
           style={{ background: "rgba(241,237,228,0.9)", border: "1.5px solid rgba(242,198,194,0.55)" }}
           role="tablist"
           aria-label="Sprout sections"
@@ -406,7 +471,49 @@ export default function DataCenterWatch() {
         </div>
       </section>
 
-      {tab === "fact" ? (
+      {tab === "ask" ? (
+        <AskSprout InfoIcon={InfoIcon} SproutIcon={SproutIcon} gridKey={state.key} live={live} onOpenTab={setTab} />
+      ) : null}
+
+      {tab === "research" ? (
+        <div className="max-w-5xl mx-auto px-6 pb-5">
+          <div
+            role="tablist"
+            aria-label="Research sections"
+            className="flex flex-wrap gap-x-6 gap-y-1"
+            style={{ borderBottom: "1.5px solid rgba(143,168,118,0.3)" }}
+          >
+            {RESEARCH_TABS.map((t) => {
+              const active = sub === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setSub(t.id)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "0.55rem 0",
+                    marginBottom: -1.5,
+                    fontFamily: "'Fredoka', sans-serif",
+                    fontWeight: 600,
+                    fontSize: "0.95rem",
+                    color: active ? "#7A3B36" : "#8a8478",
+                    borderBottom: active ? "3px solid #E8A8A3" : "3px solid transparent",
+                  }}
+                >
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {tab === "research" && sub === "fact" ? (
         <DailyEnergyFact
           InfoIcon={InfoIcon}
           LightbulbIcon={LightbulbIcon}
@@ -414,15 +521,16 @@ export default function DataCenterWatch() {
         />
       ) : null}
 
-      {tab === "trends" ? <GridTrends InfoIcon={InfoIcon} /> : null}
-
-      {tab === "tracker" ? <LiveDataTracker InfoIcon={InfoIcon} /> : null}
+      {tab === "research" && sub === "tracker" ? <LiveDataTracker InfoIcon={InfoIcon} /> : null}
+      {tab === "research" && sub === "trends" ? <GridTrends InfoIcon={InfoIcon} /> : null}
 
       {tab === "hardware" ? <HardwareInterest SproutIcon={SproutIcon} /> : null}
 
-      {tab === "about" ? <AboutProject InfoIcon={InfoIcon} /> : null}
+      {tab === "research" && sub === "why" ? <JudgingCriteria InfoIcon={InfoIcon} onOpenTab={setTab} /> : null}
 
-      {tab === "howto" ? (
+      {tab === "research" && sub === "about" ? <AboutProject InfoIcon={InfoIcon} /> : null}
+
+      {tab === "research" && sub === "howto" ? (
         <section className="max-w-5xl mx-auto px-6 pb-16" role="tabpanel" aria-label="How to use this page">
           <div
             className="rounded-[2rem] p-6 sm:p-8"
@@ -483,7 +591,7 @@ export default function DataCenterWatch() {
                 border: "2px solid #E8A8A3",
               }}
             >
-              Back to Watch →
+              Back to Now →
             </button>
           </div>
         </section>
@@ -506,25 +614,58 @@ export default function DataCenterWatch() {
                   <MapPinIcon size={16} color="#8FA876" />
                   Known U.S. clusters
                 </div>
-                <div className="text-xs font-bold text-stone-400">
-                  {CLUSTERS.length} hubs · drag to tilt
-                </div>
+                {providers ? (
+                  <button
+                    type="button"
+                    aria-pressed={showPlants}
+                    onClick={() => setShowPlants((v) => !v)}
+                    className="dcw-tab"
+                    style={{
+                      padding: "0.35rem 0.85rem",
+                      fontSize: "0.8rem",
+                      background: showPlants ? "linear-gradient(180deg, #FFF8F4 0%, #F2C6C2 100%)" : "rgba(241,237,228,0.9)",
+                      color: showPlants ? "#7A3B36" : "#6b6358",
+                      border: `2px solid ${showPlants ? "#E8A8A3" : "rgba(143,168,118,0.3)"}`,
+                    }}
+                  >
+                    {showPlants ? "Hide power plants" : "Show power plants"}
+                  </button>
+                ) : (
+                  <div className="text-xs font-bold text-stone-400">{CLUSTERS.length} hubs</div>
+                )}
               </div>
 
               <div className="dcw-map-shell">
                 <UsClusterMap
                   clusters={CLUSTERS}
-                  markerColor={state.color}
+                  markerColor={live ? "#8FA876" : state.color}
                   hovered={hovered}
                   onHoverChange={onHoverChange}
                   visible={tab === "watch"}
+                  plants={providers?.plants || []}
+                  showPlants={showPlants}
                 />
               </div>
               <div className="mt-2 text-sm font-semibold text-stone-500 min-h-[20px]">
                 {hovered
-                  ? `${hovered} — ${CLUSTERS.find((c) => c.name === hovered)?.note}`
-                  : "Hover or tap a marker · drag to pan · right-drag / two-finger to tilt"}
+                  ? (() => {
+                      const c = CLUSTERS.find((x) => x.name === hovered);
+                      const liveBit = live && c?.grid === "CAISO" ? ` · live demand ${(live.currentMW / 1000).toFixed(1)} GW` : "";
+                      return `${hovered} — ${c?.note} · Served by ${c?.utility} · Grid: ${c?.grid}${liveBit}`;
+                    })()
+                  : "Known cluster locations and regional demand, not live per-facility tracking. Hover or tap a marker."}
               </div>
+              {providers && showPlants ? (
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs font-bold text-stone-500" aria-label="Power plant legend">
+                  {[["nuclear", "Nuclear"], ["gas", "Gas"], ["coal", "Coal"], ["hydro", "Hydro"], ["solar", "Solar"], ["wind", "Wind"]].map(([k, label]) => (
+                    <span key={k} className="inline-flex items-center gap-1.5">
+                      <span style={{ width: 10, height: 10, borderRadius: 999, background: FUEL_COLORS[k], border: "1px solid rgba(20,20,20,0.5)", display: "inline-block" }} />
+                      {label}
+                    </span>
+                  ))}
+                  <span>· dot size = capacity, plants of 1 GW or more</span>
+                </div>
+              ) : null}
             </div>
 
             <div
@@ -540,7 +681,7 @@ export default function DataCenterWatch() {
                   <ZapIcon size={18} color={state.color} />
                   <span className="display-font text-xl font-bold">{state.label}</span>
                 </div>
-                <div className="flex items-center gap-1.5" aria-label="Grid stress cycle">
+                <div className="flex items-center gap-1.5" aria-label="Grid stress cycle" style={{ display: live ? "none" : "flex" }}>
                   {GRID_STATES.map((s, i) => (
                     <span
                       key={s.key}
@@ -552,11 +693,21 @@ export default function DataCenterWatch() {
               </div>
 
               <div className="text-3xl display-font font-bold fade" style={{ color: state.color }}>
-                {state.price}
+                {live ? `${(live.currentMW / 1000).toFixed(1)} GW` : state.price}
               </div>
               <div className="text-xs font-bold mt-0.5" style={{ color: "#B9B4A6" }}>
-                est. regional marginal price · demo cycle
+                {live
+                  ? `CAISO demand now · ${live.pctOfPeak}% of today's forecast peak · ${live.asOf}`
+                  : "est. regional marginal price · demo cycle"}
               </div>
+              {live?.price ? (
+                <div className="mt-2 text-sm font-bold" style={{ color: "#F2C6C2" }}>
+                  Wholesale price now: ${live.price.usdPerMWh.toFixed(2)}/MWh
+                  <span className="block text-xs font-semibold mt-0.5" style={{ color: "#B9B4A6" }}>
+                    CAISO {live.price.hub} hub, 5-minute real-time. Wholesale, not your retail rate.
+                  </span>
+                </div>
+              ) : null}
 
               <div className="mt-5 pt-5" style={{ borderTop: "1px solid #55554A" }}>
                 <div className="flex items-center gap-1.5 text-sm font-bold mb-1.5" style={{ color: "#F2C6C2" }}>
@@ -572,61 +723,86 @@ export default function DataCenterWatch() {
                 className="mt-5 rounded-2xl px-3.5 py-3 text-xs font-semibold leading-relaxed"
                 style={{ background: "rgba(242,198,194,0.12)", color: "#E8DFD2" }}
               >
-                Live CAISO / EIA feed coming with Sprout hardware. Today&apos;s states auto-cycle so you can preview the experience.
+                {live
+                  ? "Live from CAISO's public demand feed, updated every 5 minutes. It covers the California ISO region only; other regions are not connected yet."
+                  : "Live grid feed unavailable right now. These states auto-cycle as a labelled demo so you can preview the experience."}
               </div>
+
+              <button
+                type="button"
+                className="dcw-tab mt-5 w-full"
+                onClick={() => setTab("ask")}
+                style={{
+                  background: "linear-gradient(180deg, #FFF8F4 0%, #F2C6C2 100%)",
+                  color: "#7A3B36",
+                  border: "2px solid #E8A8A3",
+                }}
+              >
+                Get tonight&apos;s plan →
+              </button>
             </div>
           </section>
 
+          {/* PROVIDERS */}
+          {providers ? (
+            <section className="max-w-5xl mx-auto px-6 pb-8">
+              <div
+                className="rounded-2xl p-5"
+                style={{ background: "linear-gradient(180deg, #FFF9F5 0%, #F1EDE4 100%)", border: "1.5px solid rgba(143,168,118,0.25)" }}
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <h3 className="display-font text-lg font-bold" style={{ color: "#3A3A32" }}>
+                    Largest U.S. energy providers
+                  </h3>
+                  <span className="text-xs font-bold text-stone-500">by generating capacity</span>
+                </div>
+                <ul className="mt-3 grid sm:grid-cols-2 gap-x-8 gap-y-2 list-none p-0 m-0">
+                  {providers.providers.slice(0, 8).map((p) => (
+                    <li key={p.name}>
+                      <div className="flex justify-between gap-3 text-sm font-bold" style={{ color: "#3A3A32" }}>
+                        <span className="truncate">{p.name}</span>
+                        <span className="shrink-0">{(p.mw / 1000).toFixed(1)} GW</span>
+                      </div>
+                      <div className="mt-1 h-1.5 rounded-full" style={{ background: "rgba(143,168,118,0.2)" }}>
+                        <div
+                          className="h-1.5 rounded-full"
+                          style={{ width: `${Math.round((p.mw / providers.providers[0].mw) * 100)}%`, background: "#8FA876" }}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs font-semibold text-stone-500 mt-3 leading-relaxed">
+                  Nameplate capacity from EIA&apos;s U.S. Energy Atlas, not real-time output. Live demand is
+                  currently connected for California (CAISO) only.
+                </p>
+              </div>
+            </section>
+          ) : null}
+
           {/* QUICK TIPS */}
-          <section className="max-w-5xl mx-auto px-6 pb-16 grid md:grid-cols-3 gap-6">
+          <section className="max-w-5xl mx-auto px-6 pb-14">
             <div
-              className="rounded-2xl p-6"
+              className="rounded-2xl p-5 grid sm:grid-cols-2 gap-5"
               style={{
                 background: "linear-gradient(180deg, #FFF9F5 0%, #F1EDE4 100%)",
                 border: "1.5px solid rgba(143,168,118,0.25)",
               }}
             >
-              <ClockIcon size={22} color="#8FA876" />
-              <h3 className="display-font text-lg font-bold mt-2" style={{ color: "#3A3A32" }}>
-                Check before you run big loads
-              </h3>
-              <p className="text-sm font-semibold text-stone-600 mt-1">
-                Dishwasher, laundry, EV charging, and AC pre-cooling cost less when
-                the grid isn&apos;t stretched thin.
-              </p>
-            </div>
-            <div
-              className="rounded-2xl p-6"
-              style={{
-                background: "linear-gradient(180deg, #FFF9F5 0%, #F1EDE4 100%)",
-                border: "1.5px solid rgba(217,164,65,0.22)",
-              }}
-            >
-              <TrendingDownIcon size={22} color="#D9A441" />
-              <h3 className="display-font text-lg font-bold mt-2" style={{ color: "#3A3A32" }}>
-                Match your utility&apos;s TOU plan
-              </h3>
-              <p className="text-sm font-semibold text-stone-600 mt-1">
-                If you&apos;re on time-of-use billing, peak windows here usually line up
-                with your utility&apos;s most expensive hours too.
-              </p>
-            </div>
-            <div
-              className="rounded-2xl p-6"
-              style={{
-                background: "linear-gradient(180deg, #FFF9F5 0%, #F1EDE4 100%)",
-                border: "1.5px solid rgba(201,99,75,0.2)",
-              }}
-            >
-              <MapPinIcon size={22} color="#C9634B" />
-              <h3 className="display-font text-lg font-bold mt-2" style={{ color: "#3A3A32" }}>
-                Clusters, not exact meters
-              </h3>
-              <p className="text-sm font-semibold text-stone-600 mt-1">
-                Markers show publicly known data center hub locations. Individual
-                facility energy use isn&apos;t public data — this shows regional
-                demand context instead.
-              </p>
+              <div className="flex gap-3">
+                <span className="shrink-0 mt-0.5"><ClockIcon size={20} color="#8FA876" /></span>
+                <p className="text-sm font-semibold text-stone-600">
+                  <strong style={{ color: "#3A3A32" }}>Check before big loads.</strong>{" "}
+                  Dishwasher, laundry, and EV charging cost less when the grid isn&apos;t stretched thin.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <span className="shrink-0 mt-0.5"><TrendingDownIcon size={20} color="#D9A441" /></span>
+                <p className="text-sm font-semibold text-stone-600">
+                  <strong style={{ color: "#3A3A32" }}>Match your plan.</strong>{" "}
+                  On time-of-use billing, peak windows here usually line up with your utility&apos;s priciest hours.
+                </p>
+              </div>
             </div>
           </section>
       </div>

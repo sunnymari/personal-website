@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Sprout — One-Pager</title>
+<style>
+  @page { size: Letter; margin: 0.5in; }
+  * { box-sizing: border-box; }
+  body { font: 10.5px/1.45 -apple-system, "Helvetica Neue", Arial, sans-serif; color: #2f2f28; margin: 0; }
+  h1 { font-size: 26px; margin: 0; color: #3A3A32; }
+  .tag { color: #6f8a56; font-weight: 700; font-size: 12px; margin: 2px 0 8px; }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #7A3B36; margin: 11px 0 3px; border-bottom: 1.5px solid #F2C6C2; padding-bottom: 2px; }
+  p { margin: 0 0 4px; } ul { margin: 2px 0 0; padding-left: 15px; } li { margin-bottom: 2px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .live { background: #eef3e8; border-radius: 6px; padding: 6px 9px; }
+  .ahead { background: #fbeceb; border-radius: 6px; padding: 6px 9px; }
+  .small { font-size: 9.5px; color: #6b6358; }
+</style></head><body>
+<h1>Sprout</h1>
+<div class="tag">Make AI's grid demand visible, then tell households what to do about it tonight.</div>
+
+<h2>The problem</h2>
+<p>AI data centers are reshaping electricity demand, and they cluster in a few hubs (Northern Virginia, Dallas, Phoenix). Households on time-of-use plans pay the most when data center load and home demand overlap in the evening, but nothing connects "the grid is stressed" to "shift your dishwasher tonight." Existing data center trackers serve advocates and investors, not the person at the appliance.</p>
+
+<h2>The solution</h2>
+<p>Sprout maps known U.S. data center clusters, shows the regional grid-stress picture, and uses <b>Google Gemini</b> to turn it into a personal plan. In <b>Ask Sprout</b>, a user enters utility, city, time-of-use plan, and appliances. Gemini returns a run-now-or-wait schedule with reasons. It then writes the <i>same advice two ways</i>: framed around AI demand, and framed as generic "peak hours." That pair is Sprout's research question: does naming AI as the cause change behavior?</p>
+
+<div class="cols">
+<div>
+<h2>What works today</h2>
+<div class="live"><ul>
+<li>Live grid reading from CAISO's public feeds (California): real-time demand and wholesale price (NP15 hub), refreshed every 5 minutes</li>
+<li>Live 3D map of 7 real U.S. data center hubs</li>
+<li>Ask Sprout, powered by Gemini with structured JSON output and a model fallback chain</li>
+<li>Daily low-carbon AI routing fact (Carbonbench API + fallback)</li>
+<li>Public dated research tracker (Vercel API + Supabase)</li>
+<li>Anonymous vote on which framing (AI demand vs peak hours) would make people act sooner</li>
+<li>Hardware waitlist that saves and emails every signup</li>
+</ul></div>
+</div>
+<div>
+<h2>Still ahead (stated honestly)</h2>
+<div class="ahead"><ul>
+<li>Live grid data covers California (CAISO) only; next is EIA data for Virginia, Texas, and other hubs. The price shown is wholesale, not a household retail rate</li>
+<li>Companion hardware (smart plug, kitchen display) is in development, not shipped</li>
+<li>Enough votes to draw conclusions: the anonymous vote is live but early, and it measures stated preference, not behavior. Next is a randomized test of real behavior change</li>
+<li>Real utility tariffs: today the plan window is entered by the user (one-click typical California 4&ndash;9pm peak)</li>
+</ul></div>
+</div>
+</div>
+
+<h2>Why now, and why it can be venture-backable</h2>
+<ul>
+<li><b>Tailwind:</b> AI is driving load growth, and FERC Order 2222 opens wholesale markets to aggregated small flexible resources.</li>
+<li><b>Hardware wedge to platform:</b> a smart plug / load monitor that measures real appliance load, plus a kitchen or desk display that shows the grid signal. Hardware turns self-reported behavior into <i>measured</i> load shifts, the evidence utilities and aggregators need for demand response. Both devices are in development.</li>
+<li><b>Capital-light start:</b> software is live, and demand by device type (plug, display, or both) is tested by waitlist before manufacturing spend.</li>
+<li><b>Stage:</b> pre-revenue research prototype. Next proof points are measured behavior change and a utility or aggregator pilot. Target design partners are California utility demand-response programs (PG&amp;E, SCE, SDG&amp;E) and aggregators; no conversations yet. Who pays for the device (household, utility, or aggregator) is a hypothesis to test in a pilot. Main risks: consumer hardware margins and utility partnerships.</li>
+</ul>
+
+<h2>Go-to-market</h2>
+<p>Short-form video to site to waitlist. The founder builds in public; her Instagram insights (published at marissacodes.com/growth) show 781K+ views with about 93% from non-followers, so the content travels beyond her existing audience. Every waitlist signup is logged by date on the public tracker.</p>
+
+<h2>Team</h2>
+<p><b>Marissa Curry</b>, founder. Software engineer and creator, applying to PhD programs in AI-energy policy and grid market design. Built and shipped the full Sprout stack (React, MapLibre, Vercel serverless, Supabase, Gemini).</p>
+
+<h2>Links</h2>
+<p>Live: marissacodes.com/sprout &nbsp;·&nbsp; Ask Sprout tab: marissacodes.com/sprout (tab "Ask Sprout") &nbsp;·&nbsp; Code: github.com/sunnymari/personal-website &nbsp;·&nbsp; marissacurry@berkeley.edu &nbsp;·&nbsp; @marisummerss</p>
+<p class="small">Grid stress is CAISO demand as a share of the day's forecast peak (California only), with a labelled demo fallback. Individual data center energy use is not public data.</p>
+</body></html>

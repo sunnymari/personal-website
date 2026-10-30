@@ -176,14 +176,30 @@ export function logDailyFactEvent(fact) {
   });
 }
 
-export function logGridSnapshotEvent(state) {
+export function logGridSnapshotEvent(state, live) {
   if (!state) return Promise.resolve();
+  if (live) {
+    return logResearchEvent({
+      kind: "grid_snapshot",
+      title: "Live CAISO grid reading observed",
+      summary: `Visitor session saw the live CAISO reading: ${live.currentMW} MW, ${live.pctOfPeak}% of today's forecast peak (${live.asOf}), shown as "${state.label}".`,
+      why_important:
+        "Dated live readings show what grid conditions visitors actually saw, which anchors any later analysis of when people act on Sprout's advice.",
+      meta: {
+        key: state.key,
+        currentMW: live.currentMW,
+        pctOfPeak: live.pctOfPeak,
+        source: "CAISO",
+        demo: false,
+      },
+    });
+  }
   return logResearchEvent({
     kind: "grid_snapshot",
     title: "Grid stress panel observed",
     summary: `Visitor session saw stress UX state "${state.label}" with reference price ${state.price}. Tip shown: ${state.tip}`,
     why_important:
-      "Even before full CAISO/EIA ingestion, dated stress snapshots document what visitors saw and when. That timeline is the bridge from demo UX to real grid research history.",
+      "When the live CAISO feed is unavailable, Sprout shows a labelled demo cycle. Dated snapshots record what visitors saw and when.",
     meta: { key: state.key, price: state.price, demo: true },
   });
 }

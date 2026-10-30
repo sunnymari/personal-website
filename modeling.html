@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modeling | Marissa Curry</title>
+  <meta name="description" content="Modeling portfolio — a curated gallery of Marissa Curry." />
+  <link href="/style.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script type="module" src="/src/global-cursor.js"></script>
+</head>
+<body class="gallery-page">
+  <header class="gallery-topbar">
+    <a class="gallery-brand" href="/">Marissa</a>
+    <nav class="gallery-nav" aria-label="Site">
+      <a href="/about">About</a>
+      <a href="/projects">Projects</a>
+      <a href="/modeling" aria-current="page">Modeling</a>
+      <a href="/sprout">Sprout</a>
+      <a href="/blog">Blog</a>
+    </nav>
+  </header>
+
+  <section class="gallery-hero" aria-label="Exhibition opening">
+    <div class="gallery-hero-media">
+      <img
+        src="/images/modeling/01-portrait.jpg"
+        alt="Marissa Curry, studio portrait in black turtleneck"
+        width="1200"
+        height="1500"
+      />
+    </div>
+    <div class="gallery-hero-copy">
+      <p class="gallery-kicker">Exhibition</p>
+      <h1>Modeling</h1>
+      <p class="gallery-lede">
+        A quiet room of light and pose — selected works from studio sittings.
+      </p>
+    </div>
+  </section>
+
+  <main class="gallery-main">
+    <header class="gallery-room-head">
+      <h2>Selected works</h2>
+      <p>Click any piece to view it larger.</p>
+    </header>
+
+    <div class="gallery-wall" id="gallery-wall">
+      <!-- filled by script for lightbox wiring -->
+    </div>
+  </main>
+
+  <footer class="gallery-footer">
+    <p>Marissa Curry · Modeling</p>
+    <a href="/">Return home</a>
+  </footer>
+
+  <div class="gallery-lightbox" id="gallery-lightbox" hidden>
+    <button type="button" class="gallery-lightbox-close" aria-label="Close">×</button>
+    <button type="button" class="gallery-lightbox-prev" aria-label="Previous">‹</button>
+    <figure class="gallery-lightbox-figure">
+      <img id="gallery-lightbox-img" alt="" />
+      <figcaption id="gallery-lightbox-cap"></figcaption>
+    </figure>
+    <button type="button" class="gallery-lightbox-next" aria-label="Next">›</button>
+  </div>
+
+  <script type="module">
+    const WORKS = [
+      { src: "/images/modeling/01-portrait.jpg", title: "Portrait I", note: "Studio · black turtleneck", alt: "Studio portrait of Marissa looking toward camera" },
+      { src: "/images/modeling/02-coral-hat.jpg", title: "Coral study I", note: "Seated with hat", alt: "Marissa seated in coral bodysuit holding a floral hat" },
+      { src: "/images/modeling/03-coral-seated.jpg", title: "Coral study II", note: "Floor pose", alt: "Marissa seated in coral bodysuit looking at camera" },
+      { src: "/images/modeling/04-coral-standing.jpg", title: "Coral study III", note: "Standing · hat at rest", alt: "Marissa standing in coral bodysuit with arms raised" },
+      { src: "/images/modeling/05-black-editorial.jpg", title: "Editorial I", note: "Black set · laptop prop", alt: "Marissa in black turtleneck and trousers with a laptop" },
+      ...Array.from({ length: 23 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          src: `/images/modeling/air-${n}.jpg`,
+          title: `Sitting ${i + 1}`,
+          note: "AirDrop series",
+          alt: `Modeling photograph ${i + 1} from studio AirDrop set`,
+        };
+      }),
+      ...Array.from({ length: 26 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          src: `/images/modeling/tony-${n}.jpg`,
+          title: `Tony Adams ${i + 1}`,
+          note: "Studio series",
+          alt: `Modeling photograph ${i + 1} from Tony Adams studio session`,
+        };
+      }),
+      ...Array.from({ length: 39 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          src: `/images/modeling/sumsept-extra-${n}.jpg`,
+          title: `Summer / Sept ${i + 14}`,
+          note: "Series",
+          alt: `Modeling photograph from Summer September series ${i + 14}`,
+        };
+      }),
+      ...Array.from({ length: 12 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          src: `/images/modeling/phone-${n}.jpg`,
+          title: `Selects ${i + 1}`,
+          note: "AirDrop selects",
+          alt: `Modeling photograph select ${i + 1}`,
+        };
+      }),
+    ];
+
+    const wall = document.getElementById("gallery-wall");
+    const lightbox = document.getElementById("gallery-lightbox");
+    const lbImg = document.getElementById("gallery-lightbox-img");
+    const lbCap = document.getElementById("gallery-lightbox-cap");
+    let index = 0;
+
+    wall.innerHTML = WORKS.map((work, i) => `
+      <figure class="gallery-piece" style="--d:${(i % 6) * 0.06}s">
+        <button type="button" class="gallery-piece-btn" data-index="${i}" aria-label="View ${work.title}">
+          <img src="${work.src}" alt="${work.alt}" loading="${i < 4 ? "eager" : "lazy"}" width="900" height="1200" />
+        </button>
+        <figcaption>
+          <span class="gallery-piece-title">${work.title}</span>
+          <span class="gallery-piece-note">${work.note}</span>
+        </figcaption>
+      </figure>
+    `).join("");
+
+    function openAt(i) {
+      index = (i + WORKS.length) % WORKS.length;
+      const work = WORKS[index];
+      lbImg.src = work.src;
+      lbImg.alt = work.alt;
+      lbCap.textContent = `${work.title} · ${work.note}`;
+      lightbox.hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeLb() {
+      lightbox.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    wall.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-index]");
+      if (!btn) return;
+      openAt(Number(btn.dataset.index));
+    });
+
+    lightbox.querySelector(".gallery-lightbox-close").addEventListener("click", closeLb);
+    lightbox.querySelector(".gallery-lightbox-prev").addEventListener("click", () => openAt(index - 1));
+    lightbox.querySelector(".gallery-lightbox-next").addEventListener("click", () => openAt(index + 1));
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLb();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (lightbox.hidden) return;
+      if (e.key === "Escape") closeLb();
+      if (e.key === "ArrowLeft") openAt(index - 1);
+      if (e.key === "ArrowRight") openAt(index + 1);
+    });
+  </script>
+</body>
+</html>

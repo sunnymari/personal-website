@@ -5,11 +5,12 @@ const MENU_ITEMS = [
   { emoji: '🌸', label: 'About', href: '/about.html' },
   { emoji: '🎀', label: 'Projects', href: '/projects.html' },
   { emoji: '📈', label: 'Growth', href: '/growth' },
-  { emoji: '🔒', label: 'Lock-In', href: '/lock-in' },
-  { emoji: '⚡', label: 'Dream Cos', href: '/dream-companies' },
-  { emoji: '📚', label: 'Reading', href: '/reading.html' },
+  { emoji: '⭐', label: 'Company', href: '/dream-companies' },
+  { emoji: '📷', label: 'Modeling', href: '/modeling' },
+  { emoji: '🎨', label: 'Art', href: '/art' },
+  { emoji: '🛍️', label: 'Shop', href: '/shop' },
   { emoji: '📝', label: 'Blog', href: '/blog.html' },
-  { emoji: '🌱', label: 'Data Center Watch', href: '/data-center-watch' },
+  { emoji: '🌱', label: 'Sprout', href: '/sprout' },
   { emoji: '💾', label: 'Log On Log Off', href: 'https://logonlogoff.vercel.app', external: true },
 ];
 
@@ -505,12 +506,14 @@ export function runSmokeTests() {
     results.push(`✓ ${message}`);
   }
 
-  assert(MENU_ITEMS.length === 9, 'renders 9 menu items');
+  assert(MENU_ITEMS.length === 11, 'renders 11 menu items');
   assert(PATH_STONES.length === 6, 'renders 6 path stones');
   assert(FLOWER_PATCHES.length === 6, 'renders 6 flower patches');
   assert(MENU_ITEMS.some((item) => item.label === 'Projects'), 'includes a "Projects" menu item');
   assert(MENU_ITEMS.some((item) => item.label === 'Lock-In'), 'includes a "Lock-In" menu item');
-  assert(MENU_ITEMS.some((item) => item.label === 'Dream Cos'), 'includes a "Dream Cos" menu item');
+  assert(MENU_ITEMS.some((item) => item.label === 'Company'), 'includes a "Company" menu item');
+  assert(MENU_ITEMS.some((item) => item.label === 'Modeling'), 'includes a "Modeling" menu item');
+  assert(MENU_ITEMS.some((item) => item.label === 'Art'), 'includes an "Art" menu item');
   assert(MENU_ITEMS.some((item) => item.label === 'Log On Log Off'), 'includes a "Log On Log Off" menu item');
   assert(MENU_ITEMS[0].label === 'About', 'starts menu with "About"');
 
