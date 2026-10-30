@@ -55,7 +55,7 @@
     <a href="/">Return home</a>
   </footer>
 
-  <div class="gallery-lightbox" id="gallery-lightbox" hidden>
+  <dialog class="gallery-lightbox" id="gallery-lightbox" aria-labelledby="gallery-lightbox-cap">
     <button type="button" class="gallery-lightbox-close" aria-label="Close">×</button>
     <button type="button" class="gallery-lightbox-prev" aria-label="Previous">‹</button>
     <figure class="gallery-lightbox-figure">
@@ -63,7 +63,7 @@
       <figcaption id="gallery-lightbox-cap"></figcaption>
     </figure>
     <button type="button" class="gallery-lightbox-next" aria-label="Next">›</button>
-  </div>
+  </dialog>
 
   <script type="module">
     const WORKS = [
@@ -134,12 +134,12 @@
       lbImg.src = work.src;
       lbImg.alt = work.alt;
       lbCap.textContent = `${work.title} · ${work.note}`;
-      lightbox.hidden = false;
+      if (!lightbox.open) lightbox.showModal();
       document.body.style.overflow = "hidden";
     }
 
     function closeLb() {
-      lightbox.hidden = true;
+      lightbox.close();
       document.body.style.overflow = "";
     }
 
@@ -155,8 +155,9 @@
     lightbox.addEventListener("click", (e) => {
       if (e.target === lightbox) closeLb();
     });
+    lightbox.addEventListener("close", () => { document.body.style.overflow = ""; });
     window.addEventListener("keydown", (e) => {
-      if (lightbox.hidden) return;
+      if (!lightbox.open) return;
       if (e.key === "Escape") closeLb();
       if (e.key === "ArrowLeft") openAt(index - 1);
       if (e.key === "ArrowRight") openAt(index + 1);
