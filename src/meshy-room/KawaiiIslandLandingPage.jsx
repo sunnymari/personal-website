@@ -122,7 +122,7 @@ export default function KawaiiIslandLandingPage() {
           <p className="homepage-intro-detail">Production backend experience. Hands-on projects in robot diagnostics and energy systems.</p>
           <nav className="homepage-intro-actions" aria-label="Explore my work and get in touch">
             <a className="homepage-intro-primary" href="/projects">View projects <span aria-hidden="true">↗</span></a>
-            <a href="/Marissa-Curry-Resume-Fall-2026.pdf" target="_blank" rel="noopener noreferrer">Résumé <span className="homepage-intro-file">PDF ↗</span></a>
+            <a href="/Marissa-Curry-Resume-Winter-2026.pdf" target="_blank" rel="noopener noreferrer">Résumé <span className="homepage-intro-file">PDF ↗</span></a>
             <a href="mailto:marissacurry@berkeley.edu">Get in touch <span aria-hidden="true">♡</span></a>
           </nav>
           <a className="homepage-intro-feature" href="/actuator-diagnostics"><span aria-hidden="true">★</span> Featured: Starbot actuator diagnostics <span aria-hidden="true">→</span></a>
