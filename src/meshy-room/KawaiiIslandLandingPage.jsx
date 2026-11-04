@@ -1,5 +1,6 @@
-import { Component, useEffect, useMemo, useState } from 'react';
-import IslandHomepageScene from './IslandHomepageScene.jsx';
+import { Component, lazy, Suspense, useEffect, useMemo, useState } from 'react';
+
+const IslandHomepageScene = lazy(() => import('./IslandHomepageScene.jsx'));
 
 const MENU_ITEMS = [
   { emoji: '🌸', label: 'About', href: '/about.html' },
@@ -84,16 +85,8 @@ export default function KawaiiIslandLandingPage() {
           0% { transform: scale(0.4); opacity: 0; filter: blur(10px); }
           100% { transform: scale(1); opacity: 1; filter: blur(0px); }
         }
-        @keyframes uiFadeIn {
-          0% { opacity: 0; transform: translateY(30px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
         .animate-game-zoom {
           animation: gameZoomIn 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .animate-ui-fade {
-          animation: uiFadeIn 2s ease-out 0.8s forwards;
-          opacity: 0;
         }
         @media (prefers-reduced-motion: reduce) {
           .homepage .animate-game-zoom, .homepage .animate-ui-fade,
@@ -111,7 +104,7 @@ export default function KawaiiIslandLandingPage() {
           maskImage: 'radial-gradient(ellipse at center, black 45%, transparent 75%)'
         }}
       >
-        <SceneBoundary><IslandHomepageScene /></SceneBoundary>
+        <SceneBoundary><Suspense fallback={null}><IslandHomepageScene /></Suspense></SceneBoundary>
       </div>
 
       <Cloud className="left-[8%] top-[9%] scale-100" />
@@ -119,37 +112,21 @@ export default function KawaiiIslandLandingPage() {
       <Cloud className="left-[26%] top-[18%] scale-75" />
 
 
-      <section className="relative z-20 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center px-4 pb-6 pt-4 sm:px-6 sm:pb-14 sm:pt-7 animate-ui-fade pointer-events-none">
+      <section className="relative z-20 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center px-4 pb-6 pt-4 sm:px-6 sm:pb-14 sm:pt-7 pointer-events-none">
 
-        <div
-          className="relative mb-2 w-full max-w-[480px] transition-transform duration-500 ease-out sm:mb-6 md:mb-4 pointer-events-auto"
-          style={heroStyle}
-        >
-          <div className="relative rounded-[30px] border-[4px] border-[#ffb3d9] bg-[#fffafc] px-4 py-3 text-center shadow-[0_8px_16px_rgba(212,130,170,0.12),inset_0_2px_0_rgba(255,255,255,1)] sm:px-8 sm:py-4 md:mt-0 md:px-10 md:py-5">
-            <div className="absolute -right-3 -top-4 text-3xl sm:text-4xl" style={{ animation: 'floaty 3s ease-in-out infinite' }}>
-              🎀
-            </div>
-            <div className="absolute -left-3 top-[40%] text-lg sm:text-xl" style={{ animation: 'floaty 2.8s ease-in-out infinite' }}>
-              🌸
-            </div>
-            <div className="absolute -bottom-3 right-5 text-lg sm:text-xl" style={{ animation: 'floaty 3.2s ease-in-out infinite' }}>
-              🌸
-            </div>
-
-            <div>
-              <div role="heading" aria-level="1"
-                className="text-lg font-black leading-snug tracking-wide text-[#f45fac] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)] sm:text-2xl md:text-3xl"
-              >
-                Welcome To My Island
-              </div>
-              <p
-                className="mt-1 text-xs font-bold text-[#967bb6] sm:text-sm md:mt-2 md:text-base"
-              >
-                Dreamy code, cozy stories, magical projects
-              </p>
-            </div>
-          </div>
-        </div>
+        <header className="homepage-intro pointer-events-auto" style={heroStyle}>
+          <span className="homepage-intro-bow" aria-hidden="true">🎀</span>
+          <p className="homepage-intro-role">Software engineer · UC Berkeley MAS-E</p>
+          <h1>Marissa Curry</h1>
+          <p className="homepage-intro-headline">I build backend systems and tools for robotics &amp; energy.</p>
+          <p className="homepage-intro-detail">Production backend experience. Hands-on projects in robot diagnostics and energy systems.</p>
+          <nav className="homepage-intro-actions" aria-label="Explore my work and get in touch">
+            <a className="homepage-intro-primary" href="/projects">View projects <span aria-hidden="true">↗</span></a>
+            <a href="/Marissa-Curry-Resume-Fall-2026.pdf" target="_blank" rel="noopener noreferrer">Résumé <span className="homepage-intro-file">PDF ↗</span></a>
+            <a href="mailto:marissacurry@berkeley.edu">Get in touch <span aria-hidden="true">♡</span></a>
+          </nav>
+          <a className="homepage-intro-feature" href="/actuator-diagnostics"><span aria-hidden="true">★</span> Featured: Starbot actuator diagnostics <span aria-hidden="true">→</span></a>
+        </header>
 
         <p className="mt-auto pt-3 text-sm font-bold sm:hidden">Swipe for more pages →</p>
         <nav aria-label="Site navigation" className="island-page-menu sm:mt-auto flex w-full max-w-[960px] snap-x snap-mandatory flex-row gap-3 overflow-x-auto pb-4 pt-2 pointer-events-auto sm:grid sm:grid-cols-5 sm:gap-3 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">

@@ -2118,3 +2118,114 @@ body.gallery-page::after {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
+
+/* Introduce the engineer before the decorative island finishes loading. */
+.homepage .homepage-intro {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  overflow: visible;
+  white-space: normal;
+  backdrop-filter: none;
+  width: min(100%, 760px);
+  padding: 22px 28px 18px;
+  margin-bottom: 24px;
+  border: 3px solid #ffb3d9;
+  border-radius: 30px;
+  background: #fffafc;
+  color: #62475d;
+  text-align: center;
+  box-shadow: 0 12px 28px rgba(143, 95, 121, .14), inset 0 2px 0 #fff;
+}
+.homepage .homepage-intro-bow {
+  position: absolute;
+  top: -17px;
+  right: 12px;
+  font-size: 34px;
+}
+.homepage .homepage-intro-role {
+  margin: 0 0 6px;
+  color: #825173;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.homepage .homepage-intro h1 {
+  display: block;
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 900;
+  line-height: 1.15;
+  color: #b42f78;
+  text-shadow: none;
+}
+.homepage .homepage-intro-headline {
+  max-width: 610px;
+  margin: 10px auto 0;
+  font-size: clamp(18px, 2vw, 23px);
+  font-weight: 800;
+  line-height: 1.35;
+}
+.homepage .homepage-intro-detail {
+  max-width: 580px;
+  margin: 8px auto 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.homepage .homepage-intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0 12px;
+  padding: 0;
+  width: auto;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  position: static;
+  transform: none;
+}
+.homepage .homepage-intro-actions a {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 17px;
+  min-height: 44px;
+  border: 2px solid #e7b6d0;
+  border-radius: 14px;
+  background: #fff;
+  color: #79375d;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.homepage .homepage-intro-actions .homepage-intro-primary {
+  background: #a92e70;
+  border-color: #a92e70;
+  color: #fff;
+}
+.homepage .homepage-intro-file { font-size: 11px; }
+.homepage .homepage-intro-feature {
+  display: inline-block;
+  color: #79375d;
+  font-size: 14px;
+  font-weight: 800;
+  text-underline-offset: 4px;
+}
+.homepage .homepage-intro a:hover { filter: brightness(.93); }
+.homepage .homepage-intro a:focus-visible {
+  outline: 3px solid #693b92;
+  outline-offset: 4px;
+}
+@media (max-width: 639px) {
+  .homepage .homepage-intro { padding: 20px 16px 18px; margin-bottom: 14px; }
+  .homepage .homepage-intro-role { font-size: 11px; letter-spacing: .025em; }
+  .homepage .homepage-intro-detail { font-size: 13px; }
+  .homepage .homepage-intro-actions { gap: 8px; margin-top: 15px; }
+  .homepage .homepage-intro-actions a { flex: 1 1 42%; padding: 9px 10px; font-size: 14px; }
+  .homepage .homepage-intro-feature { font-size: 13px; }
+}
