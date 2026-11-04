@@ -6,7 +6,6 @@ const MENU_ITEMS = [
   { emoji: '🌸', label: 'About', href: '/about.html' },
   { emoji: '🎀', label: 'Projects', href: '/projects.html' },
   { emoji: '📈', label: 'Growth', href: '/growth' },
-  { emoji: '⭐', label: 'Company', href: '/dream-companies' },
   { emoji: '🎨', label: 'Art', href: '/art' },
   { emoji: '🛍️', label: 'Shop', href: '/shop' },
   { emoji: '📝', label: 'Blog', href: '/blog.html' },

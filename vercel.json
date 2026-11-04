@@ -27,10 +27,6 @@
       "destination": "/shop.html"
     },
     {
-      "source": "/dream-companies",
-      "destination": "/dream-companies.html"
-    },
-    {
       "source": "/blog",
       "destination": "/blog.html"
     },
@@ -48,6 +44,16 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/dream-companies",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/dream-companies.html",
+      "destination": "/",
+      "permanent": true
+    },
     {
       "source": "/modeling",
       "destination": "/",
