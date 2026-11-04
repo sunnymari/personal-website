@@ -2229,3 +2229,35 @@ body.gallery-page::after {
   .homepage .homepage-intro-actions a { flex: 1 1 42%; padding: 9px 10px; font-size: 14px; }
   .homepage .homepage-intro-feature { font-size: 13px; }
 }
+
+/* Keep a small, reversible way back to the introduction while enjoying the island. */
+.homepage .homepage-intro-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 760px);
+  margin-bottom: 24px;
+}
+.homepage .homepage-intro-shell .homepage-intro { margin-bottom: 0; }
+.homepage .homepage-intro[hidden] { display: none; }
+.homepage .homepage-intro-toggle {
+  min-height: 44px;
+  max-width: 100%;
+  margin: 0 0 12px;
+  padding: 9px 18px;
+  border: 2px solid #ffd0e5;
+  border-radius: 999px;
+  background: #fffafc;
+  color: #79375d;
+  font: 800 14px/1.4 'Nunito', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(143, 95, 121, .1);
+}
+.homepage .homepage-intro-toggle:hover { background: #ffe8f2; }
+.homepage .homepage-intro-toggle:focus-visible {
+  outline: 3px solid #693b92;
+  outline-offset: 4px;
+}
+@media (max-width: 639px) {
+  .homepage .homepage-intro-shell { margin-bottom: 14px; }
+}

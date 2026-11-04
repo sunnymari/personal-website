@@ -1,4 +1,4 @@
-import { Component, lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { Component, lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 
 const IslandHomepageScene = lazy(() => import('./IslandHomepageScene.jsx'));
 
@@ -43,6 +43,21 @@ class SceneBoundary extends Component {
 
 export default function KawaiiIslandLandingPage() {
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
+  const [introOpen, setIntroOpen] = useState(true);
+  const [introExpired, setIntroExpired] = useState(false);
+  const introRef = useRef(null);
+  const introToggleRef = useRef(null);
+
+  useEffect(() => {
+    if (!introOpen) return;
+    setIntroExpired(false);
+    const timer = window.setTimeout(() => {
+      setIntroExpired(true);
+      // Let someone finish using a résumé or project link before minimizing.
+      if (!introRef.current?.contains(document.activeElement)) setIntroOpen(false);
+    }, 30_000);
+    return () => window.clearTimeout(timer);
+  }, [introOpen]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -114,19 +129,41 @@ export default function KawaiiIslandLandingPage() {
 
       <section className="relative z-20 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center px-4 pb-6 pt-4 sm:px-6 sm:pb-14 sm:pt-7 pointer-events-none">
 
-        <header className="homepage-intro pointer-events-auto" style={heroStyle}>
-          <span className="homepage-intro-bow" aria-hidden="true">🎀</span>
-          <p className="homepage-intro-role">Software engineer · UC Berkeley MAS-E</p>
-          <h1>Marissa Curry</h1>
-          <p className="homepage-intro-headline">I build backend systems and tools for robotics &amp; energy.</p>
-          <p className="homepage-intro-detail">Production backend experience. Hands-on projects in robot diagnostics and energy systems.</p>
-          <nav className="homepage-intro-actions" aria-label="Explore my work and get in touch">
-            <a className="homepage-intro-primary" href="/projects">View projects <span aria-hidden="true">↗</span></a>
-            <a href="/Marissa-Curry-Resume-Winter-2026.pdf" target="_blank" rel="noopener noreferrer">Check out my most recent résumé <span aria-hidden="true">↗</span></a>
-            <a href="mailto:marissacurry@berkeley.edu">Get in touch <span aria-hidden="true">♡</span></a>
-          </nav>
-          <a className="homepage-intro-feature" href="/actuator-diagnostics"><span aria-hidden="true">★</span> Featured: Starbot actuator diagnostics <span aria-hidden="true">→</span></a>
-        </header>
+        <div className="homepage-intro-shell pointer-events-auto" style={heroStyle}>
+          <button
+            ref={introToggleRef}
+            type="button"
+            className="homepage-intro-toggle"
+            aria-expanded={introOpen}
+            aria-controls="homepage-introduction"
+            onClick={() => setIntroOpen(!introOpen)}
+          >
+            {introOpen ? 'See the island ↓' : 'Marissa Curry · About & résumé ♡'}
+          </button>
+          <header
+            ref={introRef}
+            id="homepage-introduction"
+            className="homepage-intro"
+            hidden={!introOpen}
+            onBlurCapture={(event) => {
+              if (introExpired && event.relatedTarget !== introToggleRef.current && !event.currentTarget.contains(event.relatedTarget)) {
+                setIntroOpen(false);
+              }
+            }}
+          >
+            <span className="homepage-intro-bow" aria-hidden="true">🎀</span>
+            <p className="homepage-intro-role">Software engineer · UC Berkeley MAS-E</p>
+            <h1>Marissa Curry</h1>
+            <p className="homepage-intro-headline">I build backend systems and tools for robotics &amp; energy.</p>
+            <p className="homepage-intro-detail">Production backend experience. Hands-on projects in robot diagnostics and energy systems.</p>
+            <nav className="homepage-intro-actions" aria-label="Explore my work and get in touch">
+              <a className="homepage-intro-primary" href="/projects">View projects <span aria-hidden="true">↗</span></a>
+              <a href="/Marissa-Curry-Resume-Winter-2026.pdf" target="_blank" rel="noopener noreferrer">Check out my most recent résumé <span aria-hidden="true">↗</span></a>
+              <a href="mailto:marissacurry@berkeley.edu">Get in touch <span aria-hidden="true">♡</span></a>
+            </nav>
+            <a className="homepage-intro-feature" href="/actuator-diagnostics"><span aria-hidden="true">★</span> Featured: Starbot actuator diagnostics <span aria-hidden="true">→</span></a>
+          </header>
+        </div>
 
         <p className="mt-auto pt-3 text-sm font-bold sm:hidden">Swipe for more pages →</p>
         <nav aria-label="Site navigation" className="island-page-menu sm:mt-auto flex w-full max-w-[960px] snap-x snap-mandatory flex-row gap-3 overflow-x-auto pb-4 pt-2 pointer-events-auto sm:grid sm:grid-cols-5 sm:gap-3 sm:overflow-visible sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
