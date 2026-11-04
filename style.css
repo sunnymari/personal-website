@@ -2130,7 +2130,7 @@ body.gallery-page::after {
   width: min(100%, 760px);
   padding: 22px 28px 18px;
   margin-bottom: 24px;
-  border: 3px solid #ffb3d9;
+  border: 3px solid #ffd0e5;
   border-radius: 30px;
   background: #fffafc;
   color: #62475d;
@@ -2158,7 +2158,7 @@ body.gallery-page::after {
   font-size: clamp(32px, 4vw, 48px);
   font-weight: 900;
   line-height: 1.15;
-  color: #b42f78;
+  color: #d64f94;
   text-shadow: none;
 }
 .homepage .homepage-intro-headline {
@@ -2204,9 +2204,9 @@ body.gallery-page::after {
   text-decoration: none;
 }
 .homepage .homepage-intro-actions .homepage-intro-primary {
-  background: #a92e70;
-  border-color: #a92e70;
-  color: #fff;
+  background: #ffd6e8;
+  border-color: #f1aecf;
+  color: #79375d;
 }
 .homepage .homepage-intro-file { font-size: 11px; }
 .homepage .homepage-intro-feature {
