@@ -27,6 +27,10 @@
       "destination": "/shop.html"
     },
     {
+      "source": "/modeling",
+      "destination": "/modeling.html"
+    },
+    {
       "source": "/blog",
       "destination": "/blog.html"
     },
@@ -51,16 +55,6 @@
     },
     {
       "source": "/dream-companies.html",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/modeling",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/modeling.html",
       "destination": "/",
       "permanent": true
     },

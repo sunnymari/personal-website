@@ -1792,6 +1792,7 @@ body.gallery-page::after {
   line-height: 0.92;
   letter-spacing: 0.02em;
   color: #f7f3ec;
+  text-shadow: none;
   text-align: left;
   display: block;
 }
@@ -1806,12 +1807,24 @@ body.gallery-page::after {
 }
 
 .gallery-main {
+  width: 100%;
+  margin: 0;
+  text-align: left;
   padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.25rem, 4vw, 3rem) 4rem;
 }
 
 .gallery-room-head {
+  position: static;
+  width: auto;
   max-width: 40rem;
   margin: 0 0 2rem;
+  padding: 0;
+  overflow: visible;
+  white-space: normal;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
   animation: galleryRise 0.8s ease both;
   animation-delay: 0.12s;
 }
@@ -1894,6 +1907,13 @@ body.gallery-page::after {
 }
 
 .gallery-footer {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  background: transparent;
+  white-space: normal;
+  box-shadow: none;
+  backdrop-filter: none;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;

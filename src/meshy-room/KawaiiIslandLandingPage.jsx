@@ -6,6 +6,7 @@ const MENU_ITEMS = [
   { emoji: '🌸', label: 'About', href: '/about.html' },
   { emoji: '🎀', label: 'Projects', href: '/projects.html' },
   { emoji: '📈', label: 'Growth', href: '/growth' },
+  { emoji: '📷', label: 'Modeling', href: '/modeling' },
   { emoji: '🎨', label: 'Art', href: '/art' },
   { emoji: '🛍️', label: 'Shop', href: '/shop' },
   { emoji: '📝', label: 'Blog', href: '/blog.html' },
@@ -520,7 +521,7 @@ export function runSmokeTests() {
   assert(PATH_STONES.length === 6, 'renders 6 path stones');
   assert(FLOWER_PATCHES.length === 6, 'renders 6 flower patches');
   assert(MENU_ITEMS.some((item) => item.label === 'Projects'), 'includes a "Projects" menu item');
-  assert(MENU_ITEMS.some((item) => item.label === 'Company'), 'includes a "Company" menu item');
+  assert(MENU_ITEMS.some((item) => item.label === 'Modeling'), 'includes a "Modeling" menu item');
   assert(MENU_ITEMS.some((item) => item.label === 'Art'), 'includes an "Art" menu item');
   assert(MENU_ITEMS.some((item) => item.label === 'Log On Log Off'), 'includes a "Log On Log Off" menu item');
   assert(MENU_ITEMS[0].label === 'About', 'starts menu with "About"');
