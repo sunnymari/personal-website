@@ -12,6 +12,7 @@ const MENU_ITEMS = [
   { emoji: '📝', label: 'Blog', href: '/blog.html' },
   { emoji: '🌱', label: 'Sprout', href: '/sprout' },
   { emoji: '💾', label: 'Log On Log Off', href: 'https://logonlogoff.vercel.app', external: true },
+  { emoji: '🤖', label: 'Let’s Learn About Robots', href: 'https://robotics-upskill-hub.lovable.app', external: true },
 ];
 
 
@@ -517,7 +518,7 @@ export function runSmokeTests() {
     results.push(`✓ ${message}`);
   }
 
-  assert(MENU_ITEMS.length === 9, 'renders 9 menu items');
+  assert(MENU_ITEMS.length === 10, 'renders 10 menu items');
   assert(PATH_STONES.length === 6, 'renders 6 path stones');
   assert(FLOWER_PATCHES.length === 6, 'renders 6 flower patches');
   assert(MENU_ITEMS.some((item) => item.label === 'Projects'), 'includes a "Projects" menu item');
