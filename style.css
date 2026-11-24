@@ -1258,6 +1258,28 @@ footer {
   text-shadow: none;
 }
 
+.site-page .blog-essay h4 {
+  color: var(--island-berry);
+  font-family: 'Nunito', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 1.12rem;
+  letter-spacing: -0.01em;
+  margin: 1.35rem 0 0.45rem;
+  text-shadow: none;
+}
+
+.site-page .blog-essay h3 + h4 {
+  margin-top: 0.15rem;
+}
+
+.site-page .blog-essay .blog-essay-photo {
+  width: min(100%, 26rem);
+  height: auto;
+  margin: 0.35rem auto 1.2rem;
+  border-radius: 18px;
+}
+
 .site-page .blog-essay p {
   margin: 0 0 0.95rem;
   text-indent: 1.5em;
@@ -1265,6 +1287,7 @@ footer {
 
 .site-page .blog-essay p:first-of-type,
 .site-page .blog-essay h3 + p,
+.site-page .blog-essay h4 + p,
 .site-page .blog-essay .blog-essay-lede,
 .site-page .blog-essay blockquote {
   text-indent: 0;

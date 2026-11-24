@@ -68,7 +68,7 @@
     </header>
 
     <div class="blog-tabs" role="tablist" aria-label="Blog sections">
-      <button type="button" role="tab" id="tab-tech" data-tab="tech" aria-controls="panel-tech" aria-selected="true">💻 Tech <span class="blog-tab-count">6</span></button>
+      <button type="button" role="tab" id="tab-tech" data-tab="tech" aria-controls="panel-tech" aria-selected="true">💻 Tech <span class="blog-tab-count">7</span></button>
       <button type="button" role="tab" id="tab-life" data-tab="life" aria-controls="panel-life" aria-selected="false" tabindex="-1">🌸 Life <span class="blog-tab-count">4</span></button>
     </div>
 
@@ -76,6 +76,7 @@
       <div class="blog-panel-name">💻 Tech</div>
       <p class="blog-panel-lede">Code, AI, and what I've learned building things and working in engineering.</p>
       <ul class="blog-index" aria-label="Tech posts">
+        <li><a href="#make-it-well-cheap-scale">Make It Well. Make It Cheap. Make It Scale.</a><span class="blog-index-date">Nov 5, 2026</span></li>
         <li><a href="#we-have-food-at-home">We Have Food at Home</a><span class="blog-index-date">Oct 30, 2026</span></li>
         <li><a href="#education-and-ai">Education Needs AI, and Not for the Reasons You Think</a><span class="blog-index-date">Essay + demo video</span></li>
         <li><a href="#technical-musings">Technical Musings</a><span class="blog-index-date">Oct 28, 2026</span></li>
@@ -83,6 +84,98 @@
         <li><a href="#the-manager">The Manager: Meeting Your Workplace Fate</a><span class="blog-index-date">Aug 15, 2025</span></li>
         <li><a href="#ai-ethics">AI Ethics in Software Development</a><span class="blog-index-date">Aug 12, 2025 · coming soon</span></li>
       </ul>
+
+    <div class="blog-post blog-essay" id="make-it-well-cheap-scale" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
+      <h2>Make It Well. Make It Cheap. Make It Scale.</h2>
+      <img
+        class="blog-essay-hero"
+        src="/images/make-it-well-cheap-scale.webp"
+        alt="Illustration of a white bear in a yellow hard hat and pink overalls, hammer raised, at a pink construction site with blueprints, a toolbox, traffic cones, and a crane"
+        width="1983"
+        height="793"
+      />
+      <p class="blog-essay-meta">November 5, 2026 · <a href="https://x.com/marisummerss/status/2118480057845035049" target="_blank" rel="noopener noreferrer">Originally posted on X</a></p>
+
+      <p>I've called myself an engineer for years. Turns out I've been a product engineer (but still a software engineer) the whole time.</p>
+      <p>I recently said this in an interview:</p>
+      <blockquote>make it well make it cheap make it scale is my methodology</blockquote>
+      <p>That is how I approach all my work which unbeknownst to me is very tied to various core principles of product engineering.</p>
+
+      <h3>Engineer vs. Product Engineer</h3>
+      <p>An engineer asks: does it work?</p>
+      <p>A product engineer asks that too, and then keeps going. Who is it for? What does it cost? What happens when ten thousand people use it instead of ten?</p>
+      <p>I've always asked the second set of questions. I just never had a name for it. Now I do, and it comes in three parts.</p>
+
+      <h3>Make it well</h3>
+      <p>A while back I interviewed at a school for a data analyst position. Part of the process was grading 50 papers and modeling the data. Tedious, so I got creative. In about an hour I built a RAG system based on the worksheet concepts, used an LLM to grade the assignments, and put it all in an interactive dashboard with an AI chatbot teachers could ask about their students.</p>
+      <p>What I'm proud of isn't the stack. It's that I started with the teacher's problem. Student data was reactive: by the time you see the test score, the gap has already happened. The dashboard made it proactive. Teachers could see which concepts each student needed help with, where the whole class had gaps, and what to do next.</p>
+      <p>That's what "well" means to me. Not elegant code. A user who can actually act on what you gave them.</p>
+      <p>Even when I sketched the bigger vision, a teacher copilot that pulls together SIS, LMS, assessments and attendance, I measured it in teacher time: one to two hours back per week. That's not an engineering metric. That's a product metric.</p>
+
+      <h3>Make it cheap</h3>
+      <p>I learned about cost the way a lot of kids do: "we have food at home."</p>
+      <p>Some kids accept that there's no Happy Meal. I started figuring out how to get one myself. Pet sitting my neighbor's bird. Turning over my aunt's Airbnb. Serving pho. Taking $150 from a political campaign ad and turning it into a lash and press-on nail business on early TikTok, with no ad budget.</p>
+      <p>At the time it was just hustling. Looking back, it was product work. Dropshipping on early TikTok wasn't really about the lashes. It was about understanding a distribution channel before everyone else caught on.</p>
+      <p>Years later, a macroeconomics class gave me the words for it: infinite wants, limited resources. That became how I engineer. When you can't throw money at a problem, you have to understand it deeply enough to find the leverage. A $0 conference networking kit instead of printed swag. A simulated robot instead of hardware. A 3D portfolio I built myself instead of a template.</p>
+      <p>Cheap isn't cutting corners. Cheap is a design constraint, and usually it's the one that decides whether something reaches people at all.</p>
+
+      <h3>Make it scale</h3>
+      <p>Henry Ford didn't dominate because he reinvented the car. He dominated because he made it cheaper and got it to everyone. That's the argument I made about robotics, and it's why I'm building Starbot.</p>
+      <p>Starbot is actuator diagnostics for humanoid robots. Production robots already have most of the sensors it needs: motor current, joint position, and often temperature. So on a real robot, Starbot is mostly software. That means the cost per robot approaches zero while the savings grow with the fleet.</p>
+      <p>That sentence is the whole philosophy. Cheap to add. Expensive not to have. Worth more the more of it there is.</p>
+      <p>I also did the math, because a product engineer has to. Downtime is the real bill: an hour in a large automotive plant costs about $2.3M. Take a hypothetical plant with 20 hours of unplanned downtime a year and cut it by 30%, the low end of McKinsey's predictive maintenance range, and the savings land somewhere between about $750K and $13.8M a year.</p>
+      <p>Then I put an honesty note right under it: those numbers are industry benchmarks, not Starbot results. Knowing the difference between a pitch and proof is part of making it well too.</p>
+
+      <h3>The pattern is in all my best work</h3>
+      <p><a href="https://www.linkedin.com/pulse/education-needs-ai-reasons-you-think-marissa-curry-edfjc/" target="_blank" rel="noopener noreferrer">Education Needs AI</a>. The problem: reactive student data. The constraint: one hour, no budget. What I shipped: a grader, dashboard and chatbot.</p>
+      <p><a href="https://www.linkedin.com/pulse/we-have-food-home-marissa-curry-risfc/" target="_blank" rel="noopener noreferrer">We Have Food at Home</a>. The problem: wanting more than you have. The constraint: $0. What I shipped: a lifetime of scrappy builds.</p>
+      <p><a href="https://www.linkedin.com/pulse/ford-didnt-reinvent-car-he-made-cheaper-robotics-needs-marissa-curry-8qlpc/" target="_blank" rel="noopener noreferrer">Ford Didn't Reinvent the Car</a>. The problem: robots too expensive to run. The constraint: no hardware. What I shipped: the Starbot diagnostics demo.</p>
+      <p>Every one names a user, a cost, and a path to scale. Every one ends with something you can click and try.</p>
+      <p>Engineers write about how they built something. Product engineers write about why it matters, and then they let you try it.</p>
+
+      <h3>It always starts with something I saw</h3>
+      <p>I've always been like this. I wanted the Happy Meal, so I started a dog walking business. I didn't want to spend my summer lifeguarding, I wanted to work in my field, so I cold called tech companies until Xometry said yes. See a want, find a way.</p>
+      <p>It's not just work, either. I used to get paid to do people's makeup, a skill I taught myself from YouTube, and when the air conditioning in my car went out, I fixed it with YouTube tutorials and the emotional support of the guy at AutoZone.</p>
+      <img
+        class="blog-essay-photo"
+        src="/images/make-it-cheap-car-ac.webp"
+        alt="Marissa smiling beside a white Jeep with the hood open, holding an air-conditioning diagnostic tool in a parking lot. The caption reads Make it cheap."
+        width="1080"
+        height="1350"
+      />
+      <p>It still works that way. Almost everything I build starts with something I saw in real life, not with a technology I wanted to try.</p>
+
+      <h3>Smaller Projects</h3>
+      <h4>Log Off and Long On</h4>
+      <p>I watched a 60 Minutes segment about AI and kids, and honestly, it made me sad. Parents are being asked to keep up with something that's moving faster than anyone can. I didn't want to just feel bad about it. I wanted to help parents, so I started building.</p>
+      <h4>Sprout</h4>
+      <p>I come from an agricultural state. When I was home, everyone was talking about data centers, and the conversation was loud and confusing. People had real questions and very few clear answers. Sprout started as a way to give them clarity.</p>
+      <h4>Great Grids</h4>
+      <p>This one started closer to home. I kept asking my friend for advice on what to post, over and over. Eventually I realized the problem wasn't my content, it was that I had no system. So I built an AI Instagram strategy tool that gives me that advice on demand, and now nobody has to answer my texts about it.</p>
+      <img
+        class="blog-essay-photo"
+        src="/images/great-grids.webp"
+        alt="Great Grids phone screen showing Instagram connected for @carriebradshaw, with options to view posts, plan a grid, get AI suggestions, schedule posts, and analyze performance"
+        width="1080"
+        height="1350"
+      />
+      <p>Different problems, same starting point: notice something real, figure out who it affects, then build. That's the empathy behind "make it well," and it comes before any code.</p>
+
+      <h3>Why naming it matters</h3>
+      <p>Naming it changes what I go after. It changes which problems I pick, how I pitch, and which teams I want to be on. I'm not just looking for hard technical problems. I'm looking for problems where well, cheap and scale all matter at once.</p>
+      <p>And there's one detail from the education story I keep coming back to. The school loved the tool. They just didn't have the budget to hire me.</p>
+      <p>That was "we have food at home" all over again. It's also exactly why I design for cheap. The people who need good tools the most are usually the ones who can't pay much for them.</p>
+
+      <h3>So</h3>
+      <p>Make it well. Make it cheap. Make it scale.</p>
+      <p>I've been an engineer this whole time. I've also been shipping products this whole time. The job title is just catching up.</p>
+
+      <h3>Demos &amp; Projects</h3>
+      <p class="blog-essay-lede"><a href="/actuator-diagnostics">Try Starbot</a><br /><a href="/blog.html#education-and-ai">Try the education dashboard</a></p>
+
+      <h3>Read About Projects Mentioned</h3>
+      <p class="blog-essay-lede"><a href="https://www.linkedin.com/pulse/education-needs-ai-reasons-you-think-marissa-curry-edfjc/" target="_blank" rel="noopener noreferrer">Education Needs AI</a><br /><a href="https://www.linkedin.com/pulse/we-have-food-home-marissa-curry-risfc/" target="_blank" rel="noopener noreferrer">We Have Food at Home</a><br /><a href="https://www.linkedin.com/pulse/ford-didnt-reinvent-car-he-made-cheaper-robotics-needs-marissa-curry-8qlpc/" target="_blank" rel="noopener noreferrer">Ford Didn't Reinvent the Car</a></p>
+    </div>
 
     <div class="blog-post blog-essay" id="we-have-food-at-home" style="margin: 2rem 0; padding: 1.5rem; background: rgba(255, 255, 255, 0.8); border-radius: 15px; border: 2px solid #ff69b4;">
       <h2>We Have Food at Home</h2>
