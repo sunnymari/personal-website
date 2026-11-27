@@ -24,7 +24,6 @@ export default defineConfig({
         projects: resolve(__dirname, 'projects.html'),
         actuatorDiagnostics: resolve(__dirname, 'actuator-diagnostics.html'),
         growth: resolve(__dirname, 'growth.html'),
-        modeling: resolve(__dirname, 'modeling.html'),
         dataCenterWatch: resolve(__dirname, 'data-center-watch.html'),
         art: resolve(__dirname, 'art.html'),
         shop: resolve(__dirname, 'shop.html'),
